@@ -9,14 +9,8 @@ export default function Navigation() {
     return (
         <div className="bg-white dark:bg-slate-950">
             <nav className="container flex justify-between p-2 text-white">
-                <div>
-                    <NavigationLink href="/dashboard/tasks">{t('pathnames')}</NavigationLink>
-                    <NavigationLink
-                        href="/dashboard">{t('dashboard')}</NavigationLink>
-
-                    <NavigationLink href="/">{t('dashboard')}</NavigationLink>
-                </div>
-                <div>
+                <p className=' text-black dark:text-white px-2 py-3 font-semibold'>Home</p>
+                <div className='flex'>
                     <ThemeChanger />
                     <LocaleSwitcher />
                 </div>

@@ -20,7 +20,7 @@ export const ThemeChanger = () => {
         <Toggle onClick={() => {
             setTheme(theme === 'light' ? 'dark' : 'light');
         }}>
-            < MdDarkMode className='text-black' />
+            < MdDarkMode className='text-slate-900 dark:text-white mr-4' />
         </Toggle>
 
     );

@@ -32,7 +32,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
 
     return (
-        <div className="h-[91vh] w-full overflow-y-auto px-8">
+        <div className="h-[90vh] w-full overflow-y-auto px-8">
             <DataTableDemo onProjectClick={handleProjectClick} />
         </div>
     );

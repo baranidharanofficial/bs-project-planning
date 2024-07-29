@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useParams } from 'next/navigation';
 import { ChangeEvent, ReactNode, useTransition } from 'react';
 import { useRouter, usePathname } from '@/navigation';
+import { MdArrowDropDown } from 'react-icons/md';
 
 type Props = {
     children: ReactNode;
@@ -35,22 +36,23 @@ export default function LocaleSwitcherSelect({
     }
 
     return (
-        <label
+        <div
             className={clsx(
-                'relative text-gray-400',
+                'flex text-slate-900 dark:text-white cursor-pointer',
                 isPending && 'transition-opacity [&:disabled]:opacity-30'
             )}
         >
             <p className="sr-only">{label}</p>
             <select
-                className="inline-flex appearance-none bg-transparent py-3 pl-2 pr-6"
+                className="inline-flex outline-none appearance-none bg-transparent py-3 pl-2 pr-6"
                 defaultValue={defaultValue}
                 disabled={isPending}
                 onChange={onSelectChange}
             >
                 {children}
+                <MdArrowDropDown />
             </select>
-            <span className="pointer-events-none absolute right-2 top-[8px]">⌄</span>
-        </label>
+
+        </div>
     );
 }

@@ -33,21 +33,20 @@ export default async function DashboardLayout({
                         <p className="ml-2 text-green-700">Projects</p>
                     </div>
                 </Link>
-                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
+                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
                     <MdOutlineBook className="text-xl" />
                     <p className="ml-2">Book</p>
                 </div>
-                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
+                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
                     <MdOutlineGroup className="text-xl" />
                     <p className="ml-2">Teams</p>
                 </div>
-                <div className="absolute top-8 right-[-16px] p-2 bg-white shadow-lg hover:shadow-md rounded-full cursor-pointer">
+                <div className="absolute top-8 z-10 right-[-16px] p-2 bg-white dark:bg-slate-900 text-slate-700 dark:text-white shadow-lg hover:shadow-md rounded-full cursor-pointer">
                     <IoIosArrowBack className="text-xl" />
                 </div>
             </div>
             <div className="w-full h-[100vh]">
                 <Navigation />
-
                 {children}
             </div>
         </main>
