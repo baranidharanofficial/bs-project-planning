@@ -8,6 +8,7 @@ import {
 } from 'next-intl/server';
 import { ReactNode } from 'react';
 import { locales } from '@/config';
+import { ThemeProvider } from '@/components/custom/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,11 +43,20 @@ export default async function LocaleLayout({
     const messages = await getMessages();
 
     return (
-        <html className="h-full" lang={locale}>
+        <html lang={locale}>
             <body className={clsx(inter.className, 'flex h-full flex-col')}>
-                <NextIntlClientProvider messages={messages}>
-                    {children}
-                </NextIntlClientProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                    key="theme-provider"
+                >
+                    <NextIntlClientProvider messages={messages}>
+                        {children}
+                    </NextIntlClientProvider>
+                </ThemeProvider>
+
             </body>
         </html>
     );

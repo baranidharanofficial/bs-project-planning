@@ -1,5 +1,5 @@
-import Navigation from '@/components/navigation';
-import NavigationLink from '@/components/navigation-link';
+
+import NavigationLink from '@/components/custom/navigation-link';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 
