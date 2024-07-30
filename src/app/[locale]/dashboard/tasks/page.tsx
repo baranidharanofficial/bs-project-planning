@@ -9,7 +9,7 @@ type Props = {
     params: { locale: string };
 };
 
-export default function TasksPage({ projectname }: { projectname: string }) {
+export default function TasksPage({ projectname }: { projectname: any }) {
 
 
     const t = useTranslations('PathnamesPage');
