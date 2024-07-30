@@ -298,7 +298,7 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
                                         key={column.id}
                                         className="capitalize"
                                         checked={column.getIsVisible()}
-                                        onCheckedChange={(value: String) =>
+                                        onCheckedChange={(value: Boolean) =>
                                             column.toggleVisibility(!!value)
                                         }
                                     >
