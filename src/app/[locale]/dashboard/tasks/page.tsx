@@ -5,11 +5,8 @@ import { useTranslations } from 'next-intl';
 import { MdCheckCircle, MdFileOpen, MdFolder, MdOutlineBook, MdOutlineGroup, MdPerson } from "react-icons/md";
 import { useCallback, useState } from 'react';
 
-type Props = {
-    params: { locale: string };
-};
 
-export default function TasksPage({ projectname }: { projectname: any }) {
+export default function TasksPage() {
 
 
     const t = useTranslations('PathnamesPage');
@@ -25,7 +22,7 @@ export default function TasksPage({ projectname }: { projectname: any }) {
         <main className="w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
             <div className="w-[280px] h-full p-4 relative dark:bg-black">
 
-                <p className="text-sm text-slate-400 mb-2 ml-2">{projectname}</p>
+                <p className="text-sm text-slate-400 mb-2 ml-2">Project ${project}</p>
 
                 <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 text-sm rounded-md cursor-pointer">
                     <MdCheckCircle className="text-xl text-green-700" />
