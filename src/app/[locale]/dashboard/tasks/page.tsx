@@ -20,13 +20,13 @@ export default function TasksPage() {
 
     return (
         <main className="w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
-            <div className="w-[280px] h-full p-4 relative dark:bg-black">
+            <div className="w-[280px] h-full p-4 relative">
 
-                <p className="text-sm text-slate-400 mb-2 ml-2">Project ${project}</p>
+                <p className="text-sm text-slate-400 mb-2 ml-2">Project {project}</p>
 
-                <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 text-sm rounded-md cursor-pointer">
-                    <MdCheckCircle className="text-xl text-green-700" />
-                    <p className="ml-2 text-green-700">Tasks</p>
+                <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
+                    <MdCheckCircle className="text-xl text-green-700 dark:text-white" />
+                    <p className="ml-2 text-green-700 dark:text-white">Tasks</p>
                 </div>
                 <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
                     <MdPerson className="text-xl" />

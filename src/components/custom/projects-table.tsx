@@ -231,7 +231,9 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
     const [rowSelection, setRowSelection] = React.useState({})
     const [data, setData] = React.useState<Project[]>([])
     const [loading, setLoading] = React.useState(false)
-    const [error, setError] = React.useState<string | null>(null)
+    const [error, setError] = React.useState<string | null>(null);
+
+    const [tab, setTab] = React.useState("all");
 
     React.useEffect(() => {
         setData(projects);
@@ -265,11 +267,23 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
         <Tabs defaultValue="all" className="w-full h-full">
             <div className="flex items-center pb-4 h-[10%]">
                 <TabsList>
-                    <TabsTrigger value="all">All</TabsTrigger>
+                    <TabsTrigger onClick={() => { setTab("All"); console.log("All"); }} value="all">
+                        All
+                        <p className="px-1 ml-2 bg-slate-700 rounded-sm text-white" >14</p>
+                    </TabsTrigger>
                     <TabsTrigger value="new">New</TabsTrigger>
-                    <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-                    <TabsTrigger value="delayed">Delayed</TabsTrigger>
-                    <TabsTrigger value="completed">Completed</TabsTrigger>
+                    <TabsTrigger onClick={() => { setTab("Ongoing"); console.log("Ongoing"); }} value="ongoing">
+                        Ongoing
+                        <p className="px-1 ml-2 bg-sky-500 rounded-sm text-white" >11</p>
+                    </TabsTrigger>
+                    <TabsTrigger value="delayed">
+                        Delayed
+                        <p className="px-1 ml-2 bg-red-400 rounded-sm text-white" >1</p>
+                    </TabsTrigger>
+                    <TabsTrigger onClick={() => { setTab("Completed"); console.log("Completed"); }} value="completed">
+                        Completed
+                        <p className="px-1 ml-2 bg-green-500 rounded-sm text-white" >2</p>
+                    </TabsTrigger>
                 </TabsList>
             </div>
 
@@ -310,58 +324,210 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
                 </DropdownMenu>
             </div>
 
-            <TabsContent value="all" className="rounded-md border h-[65%] overflow-y-auto">
-                <div>
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                            </TableHead>
-                                        )
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
+            <TabsContent value="all" className="rounded-md border h-[64%] overflow-y-auto">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
                                                 )}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        No results.
-                                    </TableCell>
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ?
+                            (table.getRowModel().rows.map((row) => (
+
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
+                            ))
+                            ) : (<TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    No results.
+                                </TableCell>
+                            </TableRow>
                             )}
-                        </TableBody>
-                    </Table>
-                </div>
+
+
+                    </TableBody>
+                </Table>
             </TabsContent>
+
+            <TabsContent value="ongoing" className="rounded-md border h-[64%] overflow-y-auto">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ?
+                            (table.getRowModel().rows.map((row) => (
+
+                                row.getValue("status") == "Ongoing" && <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                            ) : (<TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                            )}
+                    </TableBody>
+                </Table>
+            </TabsContent>
+
+            <TabsContent value="delayed" className="rounded-md border h-[64%] overflow-y-auto">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.filter((rowValue) => rowValue.getValue("status") == "Delayed")?.length ?
+                            (table.getRowModel().rows.filter((rowValue) => rowValue.getValue("status") == "Delayed").map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                            ) : (<TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                            )}
+                    </TableBody>
+                </Table>
+            </TabsContent>
+
+            <TabsContent value="completed" className="rounded-md border h-[64%] overflow-y-auto">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.filter((rowValue) => rowValue.getValue("status") == "Completed")?.length ?
+                            (table.getRowModel().rows.filter((rowValue) => rowValue.getValue("status") == "Completed").map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                            ) : (<TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                            )}
+                    </TableBody>
+                </Table>
+            </TabsContent>
+
             <div className="flex items-center justify-end space-x-2 py-4 h-[15%]">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}

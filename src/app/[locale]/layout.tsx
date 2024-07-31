@@ -56,7 +56,6 @@ export default async function LocaleLayout({
                         {children}
                     </NextIntlClientProvider>
                 </ThemeProvider>
-
             </body>
         </html>
     );
