@@ -36,6 +36,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { RiBuilding2Fill, RiBuilding2Line } from "react-icons/ri";
+import { Progress } from "../ui/progress";
 
 export type Project = {
     id: string
@@ -190,10 +192,16 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
             )
         },
         cell: ({ row }) => (
-            <div className="capitalize ml-4 cursor-pointer hover:underline" onClick={() => {
+            <div className="capitalize ml-4 cursor-pointer flex items-center hover:underline" onClick={() => {
                 onProjectClick(row.getValue("project_name"));
             }}>
-                {row.getValue("project_name")}
+                <div className="bg-green-50 border-green-300 border-[1px] rounded-md p-2 mr-2">
+                    <RiBuilding2Line className="text-4xl text-green-700 dark:text-white " />
+                </div>
+                <div>
+                    <p className="text-md font-semibold mb-1">{row.getValue("project_name")}</p>
+                    <p className="text-sm text-slate-400">Calicut</p>
+                </div>
             </div>
         ),
     },
@@ -201,14 +209,19 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
+            <div className={`capitalize w-max px-2 py-1 rounded-sm ${row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"}`} >
+                {row.getValue("status")}
+            </div>
         ),
     },
     {
         accessorKey: "percent_complete",
         header: "Progress",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("percent_complete")}</div>
+            <div  >
+                <Progress className="h-2 bg-green-100 w-[80%] mb-1" indicatorColor="bg-green-500" value={parseInt(row.getValue("percent_complete"), 10)} />
+                <p className="capitalize">{String(row.getValue("percent_complete")).split(".")[0]} %</p>
+            </div>
         ),
     },
     {
@@ -222,9 +235,10 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
 
 type DataTableDemoProps = {
     onProjectClick: (projectName: string) => void;
+    onAddProjectClick: () => void;
 };
 
-export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
+export function DataTableDemo({ onProjectClick, onAddProjectClick }: DataTableDemoProps) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -265,7 +279,7 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
 
     return (
         <Tabs defaultValue="all" className="w-full h-full">
-            <div className="flex items-center pb-4 h-[10%]">
+            <div className="flex items-center justify-between pb-4 h-[10%]">
                 <TabsList>
                     <TabsTrigger onClick={() => { setTab("All"); console.log("All"); }} value="all">
                         All
@@ -285,6 +299,7 @@ export function DataTableDemo({ onProjectClick }: DataTableDemoProps) {
                         <p className="px-1 ml-2 bg-green-500 rounded-sm text-white" >2</p>
                     </TabsTrigger>
                 </TabsList>
+                <Button onClick={onAddProjectClick}>Add Project</Button>
             </div>
 
             <div className="flex items-center pb-4 h-[10%]">
