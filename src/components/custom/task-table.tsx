@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Progress } from "../ui/progress"
+import { formatDate } from "./date-format"
 
 export type Task = {
   id: string
@@ -217,7 +218,9 @@ const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>
     accessorKey: "expected_end_date",
     header: () => <div className="text-left">End Date</div>,
     cell: ({ row }) => {
-      return <div className="text-left font-medium">{row.getValue("expected_end_date")}</div>
+      return <div className="text-left font-medium">
+        {formatDate(row.getValue("expected_end_date"))}
+      </div>
     },
   },
 ];

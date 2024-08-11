@@ -38,6 +38,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { RiBuilding2Fill, RiBuilding2Line } from "react-icons/ri";
 import { Progress } from "../ui/progress";
+import { formatDate } from "./date-format";
 
 export type Project = {
     id: string
@@ -171,13 +172,13 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         enableSorting: false,
         enableHiding: false,
     },
-    {
-        accessorKey: "id",
-        header: "Project ID",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("id")}</div>
-        ),
-    },
+    // {
+    //     accessorKey: "id",
+    //     header: "Project ID",
+    //     cell: ({ row }) => (
+    //         <div className="capitalize">{row.getValue("id")}</div>
+    //     ),
+    // },
     {
         accessorKey: "project_name",
         header: ({ column }) => {
@@ -228,7 +229,14 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         accessorKey: "expected_end_date",
         header: () => <div className="text-left">End Date</div>,
         cell: ({ row }) => {
-            return <div className="text-left font-medium">{row.getValue("expected_end_date")}</div>
+            return <div className="text-left font-medium">{formatDate(row.getValue("expected_end_date"))}</div>
+        },
+    },
+    {
+        accessorKey: "issues",
+        header: () => <div className="text-left">Issues</div>,
+        cell: ({ row }) => {
+            return <div className="text-left font-medium">2</div>
         },
     },
 ];

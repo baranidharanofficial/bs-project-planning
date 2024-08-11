@@ -22,7 +22,7 @@ export default function TaskLayout({ children }: Props) {
   const router = useRouter();
 
   return (
-    <main className=" w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
+    <main className="relative w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
       <div className="w-[280px] h-full p-4 relative">
         <p className="text-sm text-slate-400 mb-2 ml-2">Project {project}</p>
         <Link href="/dashboard/tasks">
