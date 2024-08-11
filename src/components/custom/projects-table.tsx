@@ -445,9 +445,9 @@ export function DataTableDemo({ onProjectClick, onAddProjectClick }: DataTableDe
 
             <TabsContent value="delayed" className="rounded-md border h-[64%] overflow-y-auto">
                 <Table>
-                    <TableHeader>
+                    <TableHeader >
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow  key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead key={header.id}>

@@ -1,55 +1,76 @@
-"use client"
+"use client";
 
-import { TaskTableDemo } from '@/components/custom/task-table';
-import { useTranslations } from 'next-intl';
-import { MdCheckCircle, MdFileOpen, MdFolder, MdOutlineBook, MdOutlineGroup, MdPerson } from "react-icons/md";
-import { useCallback, useState } from 'react';
-
+import { TaskTableDemo } from "@/components/custom/task-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { MdClose } from "react-icons/md";
 
 export default function TasksPage() {
+  const t = useTranslations("PathnamesPage");
+  const [addTask, setAddTask] = useState(false);
 
+  const router = useRouter();
 
-    const t = useTranslations('PathnamesPage');
+  return (
+    <div>
+      <TaskTableDemo
+        onTaskClick={() => {
+          router.replace("/dashboard/tasks/task-detail");
+        }}
 
-    const [project, setProject] = useState("");
+        onAddTaskClick={() => {
+            setAddTask(!addTask);
+        }}
+      />
 
-    const handleProjectClick = useCallback((projectName: any) => {
-        console.log(`Project clicked: ${projectName}`);
-        setProject(projectName);
-    }, []);
+      <div
+        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
+          addTask ? "block" : "hidden"
+        }`}
+      >
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="font-semibold">Add New Task</h1>
+          <MdClose
+            onClick={() => setAddTask(false)}
+            className="cursor-pointer border-2 border-gray-200 text-3xl p-1 rounded-3xl"
+          />
+        </div>
 
-    return (
-        <main className="w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
-            <div className="w-[280px] h-full p-4 relative">
+        <form className="w-full" onSubmit={() => {}}>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="email">Task name</Label>
+            <Input
+              type="email"
+              id="email"
+              className="mb-6 w-full"
+              placeholder="Task name"
+              onChange={(e) => {}}
+            />
+          </div>
 
-                <p className="text-sm text-slate-400 mb-2 ml-2">Project {project}</p>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="password">Categories</Label>
+            <Input
+              type="password"
+              id="password"
+              className="mb-8 w-full"
+              placeholder="Select Category"
+              onChange={(e) => {}}
+            />
+          </div>
 
-                <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
-                    <MdCheckCircle className="text-xl text-green-700 dark:text-white" />
-                    <p className="ml-2 text-green-700 dark:text-white">Tasks</p>
-                </div>
-                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
-                    <MdPerson className="text-xl" />
-                    <p className="ml-2">Attendance</p>
-                </div>
-                <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
-                    <MdFolder className="text-xl" />
-                    <p className="ml-2">Files</p>
-                </div>
-                {/* <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
-              <IoDocumentTextOutline className="text-xl" />
-              <p className="ml-2">Files</p>
-            </div>
-            <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
-              <MdOutlineInventory2 className="text-xl" />
-              <p className="ml-2">Stocks</p>
-            </div> */}
-
-
-            </div>
-            <div className="w-full h-full p-6">
-                <TaskTableDemo onTaskClick={handleProjectClick} />
-            </div>
-        </main>
-    );
+          <Button
+            type="submit"
+            className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600"
+          >
+            Add Project
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
 }
