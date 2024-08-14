@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useState } from "react";
-import { MdCheckCircle, MdClose, MdFolder, MdPerson } from "react-icons/md";
+import { MdCheckCircle, MdClose, MdFolder, MdOutlineFolder, MdOutlinePerson, MdPerson } from "react-icons/md";
 
 type Props = {
     children: ReactNode;
@@ -23,8 +23,14 @@ export default function TaskLayout({ children }: Props) {
 
   return (
     <main className="relative w-full h-[90vh] flex items-center justify-between box-border shadow-sm">
-      <div className="w-[280px] h-full p-4 relative">
-        <p className="text-sm text-slate-400 mb-2 ml-2">Project {project}</p>
+
+
+      <div className="w-[280px] h-full bg-white dark:bg-slate-900 p-4 rounded-sm">
+        <div className="w-[100%] flex flex-col items-center justify-center">
+          <img src="https://cdn.cpdonline.co.uk/wp-content/uploads/2023/03/04151341/Everything-you-need-to-know-about-Construction-Site-Safety.jpg" className="h-[150px] w-[150px] object-cover rounded-full" />
+          <p className="text-lg font-semibold text-slate-900 dark:text-white  mt-2 mb-6">Project {project}</p>
+        </div>
+        
         <Link href="/dashboard/tasks">
             <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
                 <MdCheckCircle className="text-xl text-green-700 dark:text-white" />
@@ -34,26 +40,17 @@ export default function TaskLayout({ children }: Props) {
 
         <Link href="/dashboard/tasks/attendance">
             <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
-                <MdPerson className="text-xl" />
+                <MdOutlinePerson className="text-xl" />
                 <p className="ml-2">Attendance</p>
             </div>
         </Link>
         
         <Link href="/dashboard/tasks/files">
             <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
-                <MdFolder className="text-xl" />
+                <MdOutlineFolder className="text-xl" />
                 <p className="ml-2">Files</p>
             </div>
         </Link>
-        
-        {/* <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
-        <IoDocumentTextOutline className="text-xl" />
-        <p className="ml-2">Files</p>
-        </div>
-        <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 text-sm rounded-md cursor-pointer">
-        <MdOutlineInventory2 className="text-xl" />
-        <p className="ml-2">Stocks</p>
-        </div> */}
       </div>
 
       <div className="w-full h-full p-6 relative">

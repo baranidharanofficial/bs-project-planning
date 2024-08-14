@@ -16,7 +16,7 @@ export default function TasksPage() {
   const router = useRouter();
 
   return (
-    <div  className="h-[90vh] w-full overflow-y-hidden px-8">
+    <div  className="h-[87vh] w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8">
       <TaskTableDemo
         onTaskClick={() => {
           router.replace("/dashboard/tasks/task-detail");

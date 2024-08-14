@@ -1,10 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-} from "@radix-ui/react-icons"
+import * as React from "react";
+import { CaretSortIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,17 +13,17 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,18 +31,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Progress } from "../ui/progress"
-import { formatDate } from "./date-format"
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Progress } from "../ui/progress";
+import { formatDate } from "./date-format";
+import { RiBuilding2Line } from "react-icons/ri";
 
 export type Task = {
-  id: string
-  task_name: string
-  status: "Ongoing" | "Completed" | "Delayed"
-  expected_end_date: string
-  percent_complete: number
-}
+  id: string;
+  task_name: string;
+  status: "Ongoing" | "Completed" | "Delayed";
+  expected_end_date: string;
+  percent_complete: number;
+};
 
 const tasks: Task[] = [
   {
@@ -53,102 +51,104 @@ const tasks: Task[] = [
     task_name: "New World",
     status: "Ongoing",
     expected_end_date: "2024-03-30",
-    percent_complete: 90.554744526
+    percent_complete: 90.554744526,
   },
   {
     id: "TASK-0014",
     task_name: "Hexa",
     status: "Ongoing",
     expected_end_date: "2024-06-05",
-    percent_complete: 100.0
+    percent_complete: 100.0,
   },
   {
     id: "TASK-0004",
     task_name: "Safar Home",
     status: "Ongoing",
     expected_end_date: "2024-03-31",
-    percent_complete: 83.013071895
+    percent_complete: 83.013071895,
   },
   {
     id: "TASK-0002",
     task_name: "Green Land",
     status: "Ongoing",
     expected_end_date: "2024-01-31",
-    percent_complete: 34.489092997
+    percent_complete: 34.489092997,
   },
   {
     id: "TASK-0009",
     task_name: "Glory",
     status: "Delayed",
     expected_end_date: "2024-02-29",
-    percent_complete: 100.0
+    percent_complete: 100.0,
   },
   {
     id: "TASK-0010",
     task_name: "OP apartments",
     status: "Ongoing",
     expected_end_date: "2024-04-04",
-    percent_complete: 0.0
+    percent_complete: 0.0,
   },
   {
     id: "TASK-0005",
     task_name: "New Oasis",
     status: "Ongoing",
     expected_end_date: "2024-02-02",
-    percent_complete: 50.0
+    percent_complete: 50.0,
   },
   {
     id: "TASK-0013",
     task_name: "JST",
     status: "Completed",
     expected_end_date: "2024-06-19",
-    percent_complete: 100.0
+    percent_complete: 100.0,
   },
   {
     id: "TASK-0006",
     task_name: "Mini Golf 2",
     status: "Ongoing",
     expected_end_date: "2024-02-19",
-    percent_complete: 66.67
+    percent_complete: 66.67,
   },
   {
     id: "TASK-0011",
     task_name: "Nila",
     status: "Ongoing",
     expected_end_date: "2024-04-10",
-    percent_complete: 38.46
+    percent_complete: 38.46,
   },
   {
     id: "TASK-0012",
     task_name: "Emmanuel Estate's Interior",
     status: "Ongoing",
     expected_end_date: "2024-06-14",
-    percent_complete: 40.0
+    percent_complete: 40.0,
   },
   {
     id: "TASK-0008",
     task_name: "DD Apartments",
     status: "Completed",
     expected_end_date: "2024-06-30",
-    percent_complete: 0.0
+    percent_complete: 0.0,
   },
   {
     id: "TASK-0001",
     task_name: "MidLand",
     status: "Ongoing",
     expected_end_date: "2024-02-23",
-    percent_complete: 40.0
+    percent_complete: 40.0,
   },
   {
     id: "TASK-0007",
     task_name: "Test TASK",
     status: "Ongoing",
     expected_end_date: "2024-02-28",
-    percent_complete: 100.0
-  }
+    percent_complete: 100.0,
+  },
 ];
 
-const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>[] => [
+const createColumns = (
+  onTaskClick: (TaskName: string) => void
+): ColumnDef<Task>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -174,9 +174,7 @@ const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>
   {
     accessorKey: "id",
     header: "Task ID",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
   },
   {
     accessorKey: "task_name",
@@ -189,12 +187,24 @@ const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>
           Task
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => (
-      <div className="capitalize ml-4 cursor-pointer hover:underline" onClick={() => onTaskClick(row.getValue("task_name"))}>
-        {row.getValue("task_name")}
+      <div
+        className="capitalize ml-4 cursor-pointer flex items-center "
+        onClick={() => onTaskClick(row.getValue("task_name"))}
+      >
+        <img src="https://cdn.cpdonline.co.uk/wp-content/uploads/2023/03/04151341/Everything-you-need-to-know-about-Construction-Site-Safety.jpg" className="h-[40px] w-[40px] object-cover rounded-md mr-2" />
+        <div>
+          <p className="text-md font-semibold mb-1 hover:underline">
+            {row.getValue("task_name")}
+          </p>
+          <p className="text-sm text-slate-400">Calicut</p>
+        </div>
       </div>
+      // <div className="capitalize ml-4 cursor-pointer hover:underline" onClick={() => onTaskClick(row.getValue("task_name"))}>
+      //   {row.getValue("task_name")}
+      // </div>
     ),
   },
   {
@@ -209,8 +219,14 @@ const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>
     header: "Progress",
     cell: ({ row }) => (
       <div className="capitalize">
-         <Progress className="h-2 bg-green-100 w-[80%] mb-1" indicatorColor="bg-green-500" value={parseInt(row.getValue("percent_complete"), 10)} />
-         <p className="capitalize">{String(row.getValue("percent_complete")).split(".")[0]} %</p>
+        <Progress
+          className="h-2 bg-green-100 w-[80%] mb-1"
+          indicatorColor="bg-green-500"
+          value={parseInt(row.getValue("percent_complete"), 10)}
+        />
+        <p className="capitalize">
+          {String(row.getValue("percent_complete")).split(".")[0]} %
+        </p>
       </div>
     ),
   },
@@ -218,9 +234,11 @@ const createColumns = (onTaskClick: (TaskName: string) => void): ColumnDef<Task>
     accessorKey: "expected_end_date",
     header: () => <div className="text-left">End Date</div>,
     cell: ({ row }) => {
-      return <div className="text-left font-medium">
-        {formatDate(row.getValue("expected_end_date"))}
-      </div>
+      return (
+        <div className="text-left font-medium">
+          {formatDate(row.getValue("expected_end_date"))}
+        </div>
+      );
     },
   },
 ];
@@ -230,20 +248,29 @@ type DataTableDemoProps = {
   onAddTaskClick: () => void;
 };
 
-export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [data, setData] = React.useState<Task[]>([])
-  const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState<string | null>(null)
+export function TaskTableDemo({
+  onTaskClick,
+  onAddTaskClick,
+}: DataTableDemoProps) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [data, setData] = React.useState<Task[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setData(tasks);
-  }, [])
+  }, []);
 
-  const columns = React.useMemo(() => createColumns(onTaskClick), [onTaskClick]);
+  const columns = React.useMemo(
+    () => createColumns(onTaskClick),
+    [onTaskClick]
+  );
 
   const table = useReactTable({
     data,
@@ -262,10 +289,10 @@ export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProp
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>{error}</p>
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <Tabs defaultValue="all" className="w-full h-full">
@@ -284,7 +311,9 @@ export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProp
       <div className="flex items-center pb-4 h-[10%]">
         <Input
           placeholder="Filter Task Name..."
-          value={(table.getColumn("task_name")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("task_name")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("task_name")?.setFilterValue(event.target.value)
           }
@@ -312,13 +341,16 @@ export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProp
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <TabsContent value="all" className="rounded-md border h-[65%] overflow-y-auto">
+      <TabsContent
+        value="all"
+        className="rounded-md border h-[65%] overflow-y-auto"
+      >
         <div>
           <Table>
             <TableHeader>
@@ -330,11 +362,11 @@ export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProp
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
-                    )
+                    );
                   })}
                 </TableRow>
               ))}
@@ -395,5 +427,5 @@ export function TaskTableDemo({ onTaskClick, onAddTaskClick }: DataTableDemoProp
         </div>
       </div>
     </Tabs>
-  )
+  );
 }

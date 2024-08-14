@@ -193,14 +193,14 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
             )
         },
         cell: ({ row }) => (
-            <div className="capitalize ml-4 cursor-pointer flex items-center hover:underline" onClick={() => {
+            <div className="capitalize ml-4 cursor-pointer flex items-center" onClick={() => {
                 onProjectClick(row.getValue("project_name"));
             }}>
                 <div className="bg-green-50 border-green-300 border-[1px] rounded-md p-2 mr-2">
                     <RiBuilding2Line className="text-4xl text-green-700 dark:text-white " />
                 </div>
                 <div>
-                    <p className="text-md font-semibold mb-1">{row.getValue("project_name")}</p>
+                    <p className="text-md font-semibold mb-1  hover:underline">{row.getValue("project_name")}</p>
                     <p className="text-sm text-slate-400">Calicut</p>
                 </div>
             </div>
