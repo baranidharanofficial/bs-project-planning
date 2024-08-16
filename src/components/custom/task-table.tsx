@@ -149,31 +149,32 @@ const tasks: Task[] = [
 const createColumns = (
   onTaskClick: (TaskName: string) => void
 ): ColumnDef<Task>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "id",
     header: "Task ID",
+    
     cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
   },
   {
@@ -194,12 +195,15 @@ const createColumns = (
         className="capitalize ml-4 cursor-pointer flex items-center "
         onClick={() => onTaskClick(row.getValue("task_name"))}
       >
-        <img src="https://cdn.cpdonline.co.uk/wp-content/uploads/2023/03/04151341/Everything-you-need-to-know-about-Construction-Site-Safety.jpg" className="h-[40px] w-[40px] object-cover rounded-md mr-2" />
+        <img
+          src="https://cdn.cpdonline.co.uk/wp-content/uploads/2023/03/04151341/Everything-you-need-to-know-about-Construction-Site-Safety.jpg"
+          className="h-[45px] w-[45px] object-cover rounded-md mr-2"
+        />
         <div>
-          <p className="text-md font-semibold mb-1 hover:underline">
+          <p className="text-[14px] font-semibold mb-1 hover:underline">
             {row.getValue("task_name")}
           </p>
-          <p className="text-sm text-slate-400">Calicut</p>
+          <p className="text-slate-400 text-xs">Calicut</p>
         </div>
       </div>
       // <div className="capitalize ml-4 cursor-pointer hover:underline" onClick={() => onTaskClick(row.getValue("task_name"))}>
@@ -211,7 +215,7 @@ const createColumns = (
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className={`capitalize w-max px-2 py-1 rounded-sm ${row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"}`} >{row.getValue("status")}</div>
     ),
   },
   {
@@ -252,6 +256,8 @@ export function TaskTableDemo({
   onTaskClick,
   onAddTaskClick,
 }: DataTableDemoProps) {
+
+  const [tab, setTab] = React.useState("all");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -298,11 +304,41 @@ export function TaskTableDemo({
     <Tabs defaultValue="all" className="w-full h-full">
       <div className="flex items-center justify-between pb-4 h-[10%]">
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger
+            onClick={() => {
+              setTab("All");
+              console.log("All");
+            }}
+            value="all"
+          >
+            All
+            <p className="px-1 ml-2 bg-slate-700 rounded-sm text-white">14</p>
+          </TabsTrigger>
           <TabsTrigger value="new">New</TabsTrigger>
-          <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-          <TabsTrigger value="delayed">Delayed</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger
+            onClick={() => {
+              setTab("Ongoing");
+              console.log("Ongoing");
+            }}
+            value="ongoing"
+          >
+            Ongoing
+            <p className="px-1 ml-2 bg-sky-500 rounded-sm text-white">11</p>
+          </TabsTrigger>
+          <TabsTrigger value="delayed">
+            Delayed
+            <p className="px-1 ml-2 bg-red-400 rounded-sm text-white">1</p>
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() => {
+              setTab("Completed");
+              console.log("Completed");
+            }}
+            value="completed"
+          >
+            Completed
+            <p className="px-1 ml-2 bg-green-500 rounded-sm text-white">2</p>
+          </TabsTrigger>
         </TabsList>
 
         <Button onClick={onAddTaskClick}>Add Task</Button>
@@ -349,7 +385,7 @@ export function TaskTableDemo({
 
       <TabsContent
         value="all"
-        className="rounded-md border h-[65%] overflow-y-auto"
+        className="rounded-md border h-[60%] overflow-y-auto"
       >
         <div>
           <Table>

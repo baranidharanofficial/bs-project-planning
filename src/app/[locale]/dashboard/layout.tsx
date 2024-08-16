@@ -25,10 +25,10 @@ export default function DashboardLayout({ children }: Props) {
   }
 
   return (
-    <main className="w-full h-[100vh] bg-[#f2f6f3] dark:bg-slate-800 flex justify-start box-border">
+    <main className="w-full h-[100vh] bg-neutral-100 dark:bg-slate-800 flex justify-start box-border">
       <div
         className={`h-[100vh] shadow-md bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
-          collapsed ? "w-[100px]" : "w-[280px]"
+          collapsed ? "w-[100px]" : "w-[300px]"
         }`}
       >
         {!collapsed ? (

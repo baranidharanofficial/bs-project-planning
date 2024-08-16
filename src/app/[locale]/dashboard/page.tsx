@@ -37,7 +37,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
 
     return (
-        <div className="relative h-[90vh] w-full overflow-y-auto px-8">
+        <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
             <DataTableDemo onProjectClick={handleProjectClick} onAddProjectClick={() => {
                 console.log("Add project clicked");
                 setAddProject(true);
