@@ -7,6 +7,8 @@ import Image from "next/image";
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import Navigation from "@/components/custom/navigation";
+import { Provider } from "react-redux";
+import { store } from "@/state/store";
 
 type Props = {
   children: ReactNode;
@@ -25,6 +27,7 @@ export default function DashboardLayout({ children }: Props) {
   }
 
   return (
+    <Provider store={store} >
     <main className="w-full h-[100vh] bg-neutral-100 dark:bg-slate-800 flex justify-start box-border">
       <div
         className={`h-[100vh] shadow-md bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
@@ -104,5 +107,6 @@ export default function DashboardLayout({ children }: Props) {
         {children}
       </div>
     </main>
+    </Provider>
   );
 }

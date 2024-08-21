@@ -75,3 +75,5 @@ export default function IndexPage({ params: { locale } }: Props) {
         </div>
     );
 }
+
+
