@@ -52,8 +52,7 @@ export default function LocaleSwitcherSelect({
                 disabled={isPending}
                 onChange={onSelectChange}
             >
-                {children}
-                <MdArrowDropDown />
+                    {children} 
             </select>
 
         </div>

@@ -9,6 +9,7 @@ thead{
 
 tr {
   border-bottom: 2px dashed rgb(232, 232, 232);
+  cursor: pointer;
 }
 
 @layer base {
@@ -98,3 +99,4 @@ tr {
 ::-webkit-scrollbar-thumb:hover {
   background: #909090; 
 }
+

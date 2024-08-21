@@ -1,7 +1,7 @@
 "use client";
 
 import Navigation from '@/components/custom/navigation';
-import { DataTableDemo, Project } from '@/components/custom/projects-table';
+import { Project, ProjectList } from '@/components/custom/projects-table';
 import { ThemeChanger } from '@/components/custom/theme-switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,12 +36,12 @@ export default function DashboardPage({ params: { locale } }: Props) {
         getProjects();
     }, []);
 
-    const handleProjectClick = useCallback((projectName: any) => {
+    const handleProjectClick = useCallback((projectName: string) => {
         console.log(`Project clicked: ${projectName}`);
         setProject(projectName);
-
-        router.replace('/dashboard/tasks');
-    }, []);
+    
+        router.replace(`/dashboard/tasks?projectName=${encodeURIComponent(projectName)}`);
+    }, [router]);
 
     const getProjects = async () => {
         setLoading(true);
@@ -78,7 +78,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
     return (
         <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
-            <DataTableDemo projects={data} onProjectClick={handleProjectClick} onAddProjectClick={() => {
+            <ProjectList projects={data} onProjectClick={handleProjectClick} onAddProjectClick={() => {
                 console.log("Add project clicked");
                 setAddProject(true);
             }} />

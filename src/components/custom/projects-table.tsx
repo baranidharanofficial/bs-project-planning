@@ -41,28 +41,7 @@ export type Project = {
 }
 
 const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef<Project>[] => [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
+
     {
         accessorKey: "project_name",
         header: ({ column }) => {
@@ -78,7 +57,7 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         },
         cell: ({ row }) => (
             <div className="capitalize ml-4 cursor-pointer flex items-center" onClick={() => {
-                onProjectClick(row.getValue("project_name"));
+                onProjectClick(row.original.id);
             }}>
                 <div className="bg-green-50 border-green-300 border-[1px] rounded-md p-2 mr-2">
                     <RiBuilding2Line className="text-4xl text-green-700 dark:text-white " />
@@ -94,7 +73,9 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-            <div className={`capitalize w-max px-2 py-1 rounded-sm ${row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"}`} >
+            <div onClick={() => {
+                onProjectClick(row.original.id);
+            }} className={`capitalize w-max px-2 py-1 rounded-sm ${row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"}`} >
                 {row.getValue("status")}
             </div>
         ),
@@ -103,7 +84,9 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         accessorKey: "percent_complete",
         header: "Progress",
         cell: ({ row }) => (
-            <div  >
+            <div  onClick={() => {
+                onProjectClick(row.original.id);
+            }} >
                 <Progress className="h-2 bg-green-100 w-[80%] mb-1" indicatorColor="bg-green-500" value={parseInt(row.getValue("percent_complete"), 10)} />
                 <p className="capitalize">{String(row.getValue("percent_complete")).split(".")[0]} %</p>
             </div>
@@ -111,16 +94,20 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
     },
     {
         accessorKey: "expected_end_date",
-        header: () => <div className="text-left">End Date</div>,
+        header: () => <div  className="text-left">End Date</div>,
         cell: ({ row }) => {
-            return <div className="text-left font-medium">{formatDate(row.getValue("expected_end_date"))}</div>
+            return <div  onClick={() => {
+                onProjectClick(row.original.id);
+            }} className="text-left font-medium">{formatDate(row.getValue("expected_end_date"))}</div>
         },
     },
     {
         accessorKey: "issues",
         header: () => <div className="text-left">Issues</div>,
         cell: ({ row }) => {
-            return <div className="text-left font-medium">2</div>
+            return <div onClick={() => {
+                onProjectClick(row.original.id);
+            }} className="text-left font-medium">2</div>
         },
     },
 ];
@@ -131,7 +118,7 @@ type DataTableDemoProps = {
     onAddProjectClick: () => void;
 };
 
-export function DataTableDemo({ onProjectClick, onAddProjectClick, projects }: DataTableDemoProps) {
+export function ProjectList({ onProjectClick, onAddProjectClick, projects }: DataTableDemoProps) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

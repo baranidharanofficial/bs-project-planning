@@ -1,32 +1,69 @@
 "use client";
-
-import { TaskTableDemo } from "@/components/custom/task-table";
+import { Task, TaskTable } from "@/components/custom/task-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState, useCallback } from "react";
 import { MdClose } from "react-icons/md";
 
 export default function TasksPage() {
   const t = useTranslations("PathnamesPage");
   const [addTask, setAddTask] = useState(false);
+  const [project, setProject] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Task[]>([]);
 
-  const router = useRouter();
+  // Fetch tasks when the project changes
+  useEffect(() => {
+      getTasks();
+  }, []);
+
+  const getTasks = useCallback(async () => {
+    setLoading(true);
+    try {
+      console.log("Project ID : ");
+      const apiKey = localStorage.getItem("api_key");
+      const apiSecret = localStorage.getItem("api_secret");
+
+      if (!apiKey || !apiSecret) {
+        throw new Error("Missing API credentials");
+      }
+
+      const response = await axios.get(
+        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_tasks_list?project_id=PROJ-0001`,
+        {
+          headers: {
+            Authorization: `token ${apiKey}:${apiSecret}`,
+          },
+        }
+      );
+
+      console.log("Get Tasks:", response.data);
+      setData(response.data.tasks);
+
+    } catch (error) {
+      console.error("Get Tasks failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic
+  };
 
   return (
-    <div  className="h-full w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8 shadow-sm">
+    <div className="h-full w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8 shadow-sm">
       <p className="text-[12px] text-slate-400 mb-4">Home / Projects / Tasks</p>
       <p className="text-lg font-semibold text-slate-900 mb-4">Tasks</p>
-      <TaskTableDemo
-        onTaskClick={() => {
-          router.replace("/dashboard/tasks/task-detail");
-        }}
-
-        onAddTaskClick={() => {
-            setAddTask(!addTask);
-        }}
+      <TaskTable
+        onTaskClick={() => {}}
+        onAddTaskClick={() => setAddTask(!addTask)}
+        tasks={data}
       />
 
       <div
@@ -42,12 +79,12 @@ export default function TasksPage() {
           />
         </div>
 
-        <form className="w-full" onSubmit={() => {}}>
+        <form className="w-full" onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="email">Task name</Label>
+            <Label htmlFor="task-name">Task name</Label>
             <Input
-              type="email"
-              id="email"
+              type="text"
+              id="task-name"
               className="mb-6 w-full"
               placeholder="Task name"
               onChange={(e) => {}}
@@ -55,10 +92,10 @@ export default function TasksPage() {
           </div>
 
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="password">Categories</Label>
+            <Label htmlFor="category">Categories</Label>
             <Input
-              type="password"
-              id="password"
+              type="text"
+              id="category"
               className="mb-8 w-full"
               placeholder="Select Category"
               onChange={(e) => {}}
@@ -69,7 +106,7 @@ export default function TasksPage() {
             type="submit"
             className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600"
           >
-            Add Project
+            Add Task
           </Button>
         </form>
       </div>
