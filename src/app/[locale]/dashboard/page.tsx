@@ -1,16 +1,18 @@
 "use client";
 
 import Navigation from '@/components/custom/navigation';
-import { DataTableDemo } from '@/components/custom/projects-table';
+import { DataTableDemo, Project } from '@/components/custom/projects-table';
 import { ThemeChanger } from '@/components/custom/theme-switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
 
 
@@ -25,8 +27,14 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
     const [project, setProject] = useState("");
     const [addProject, setAddProject] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = React.useState<Project[]>([])
 
     const router = useRouter();
+
+    useEffect( () => {
+        getProjects();
+    }, []);
 
     const handleProjectClick = useCallback((projectName: any) => {
         console.log(`Project clicked: ${projectName}`);
@@ -35,10 +43,42 @@ export default function DashboardPage({ params: { locale } }: Props) {
         router.replace('/dashboard/tasks');
     }, []);
 
+    const getProjects = async () => {
+        setLoading(true);
+        try {
+            // Retrieve the `apiKey` and `apiSecret` from localStorage
+            const apiKey = localStorage.getItem('api_key');
+            const apiSecret = localStorage.getItem('api_secret');
+
+            // Check if the apiKey and apiSecret exist
+            if (!apiKey || !apiSecret) {
+                throw new Error('Missing API credentials');
+            }
+
+            // Make the API request
+            const response = await axios.get('https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list', {
+                headers: {
+                    'Authorization': `token ${apiKey}:${apiSecret}`,
+                },
+            });
+
+            console.log('Get Projects:', response.data);
+
+            // Store the projects array from the API response in the state
+            setData(response.data.message.projects);
+
+            // Redirect to the dashboard
+            router.push('/dashboard');
+        } catch (error) {
+            console.error('Get Projects failed:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
-            <DataTableDemo onProjectClick={handleProjectClick} onAddProjectClick={() => {
+            <DataTableDemo projects={data} onProjectClick={handleProjectClick} onAddProjectClick={() => {
                 console.log("Add project clicked");
                 setAddProject(true);
             }} />

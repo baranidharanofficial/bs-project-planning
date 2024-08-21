@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import NavigationLink from '@/components/custom/navigation-link';
 import { Button } from '@/components/ui/button';
@@ -14,21 +14,26 @@ type Props = {
 };
 
 export default function IndexPage({ params: { locale } }: Props) {
-    const router = useRouter()
+    const router = useRouter();
     const [usr, setUsr] = useState('');
     const [pwd, setPwd] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-
     const login = async () => {
         setLoading(true);
         try {
             const response = await axios.post('https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.auth.user_login', { usr, pwd });
-            console.log('Login successful:', response.data);
+            const message = response.data.message;
+            
+            // Store necessary data in localStorage
+            localStorage.setItem('sid', message.sid);
+            localStorage.setItem('api_key', message.api_key);
+            localStorage.setItem('api_secret', message.api_secret);
+    
             alert('Login successful');
             router.push('/dashboard');
-
+    
         } catch (error) {
             console.error('Login failed:', error);
             alert('Login failed');
@@ -36,16 +41,14 @@ export default function IndexPage({ params: { locale } }: Props) {
             setLoading(false);
         }
     };
-
+    
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         login();
     };
 
     const t = useTranslations('IndexPage');
-
     const t2 = useTranslations('Navigation');
-
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-[100vh] bg-white dark:bg-slate-950">
@@ -64,11 +67,11 @@ export default function IndexPage({ params: { locale } }: Props) {
                         <Input type="password" id="password" className=" mb-8 w-full" placeholder="Password" onChange={(e) => setPwd(e.target.value)} />
                     </div>
 
-
-                    <Button type="submit" className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600">Login</Button>
+                    <Button type="submit" className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600">
+                        {loading ? 'Logging in...' : 'Login'}
+                    </Button>
                 </form>
             </div>
         </div>
-
     );
 }

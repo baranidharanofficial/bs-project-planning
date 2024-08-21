@@ -6,8 +6,6 @@ import { ThemeChanger } from './theme-switch';
 export default function Navigation() {
     const t = useTranslations('Navigation');
 
-
-
     return (
         <nav className="w-full flex justify-between text-white mb-4">
             <p className=' text-black dark:text-white font-semibold'>{t("home")}</p>

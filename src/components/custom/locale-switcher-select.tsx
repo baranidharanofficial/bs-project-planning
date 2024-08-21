@@ -24,6 +24,9 @@ export default function LocaleSwitcherSelect({
 
     function onSelectChange(event: ChangeEvent<HTMLSelectElement>) {
         const nextLocale = event.target.value;
+        console.log(pathname);
+        console.log(params);
+        console.log(nextLocale);
         startTransition(() => {
             router.replace(
                 // @ts-expect-error -- TypeScript will validate that only known `params`
