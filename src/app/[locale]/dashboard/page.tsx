@@ -6,6 +6,8 @@ import { ThemeChanger } from '@/components/custom/theme-switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AppDispatch } from '@/state/store';
+import { getTasks } from '@/state/task/taskSlice';
 import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
@@ -14,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
+import { useDispatch } from 'react-redux';
 
 
 
@@ -28,7 +31,8 @@ export default function DashboardPage({ params: { locale } }: Props) {
     const [project, setProject] = useState("");
     const [addProject, setAddProject] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [data, setData] = React.useState<Project[]>([])
+    const [data, setData] = React.useState<Project[]>([]);
+    const dispatch = useDispatch<AppDispatch>();
 
     const router = useRouter();
 
@@ -39,6 +43,8 @@ export default function DashboardPage({ params: { locale } }: Props) {
     const handleProjectClick = useCallback((projectName: string) => {
         console.log(`Project clicked: ${projectName}`);
         setProject(projectName);
+
+        dispatch(getTasks(projectName));
     
         router.replace(`/dashboard/tasks?projectName=${encodeURIComponent(projectName)}`);
     }, [router]);

@@ -26,9 +26,9 @@ export default function TasksPage() {
   const dispatch = useDispatch<AppDispatch>();
 
   // Fetch tasks when the project changes
-  useEffect(() => {
-      dispatch(getTasks([]));
-  }, []);
+  // useEffect(() => {
+     
+  // }, []);
 
   // const getTasks = useCallback(async () => {
   //   setLoading(true);

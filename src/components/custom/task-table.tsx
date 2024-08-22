@@ -135,6 +135,7 @@ export function TaskTable({ onTaskClick, onAddTaskClick, tasks }: DataTableDemoP
     const [error, setError] = React.useState<string | null>(null);
 
     const [tab, setTab] = React.useState("all");
+    const [category, setCategory] = React.useState("");
 
     const columns = React.useMemo(() => createColumns(onTaskClick), [onTaskClick]);
 
@@ -193,7 +194,7 @@ export function TaskTable({ onTaskClick, onAddTaskClick, tasks }: DataTableDemoP
                 <Button onClick={onAddTaskClick}>Add Task</Button>
             </div>
 
-            <div className="flex items-center pb-4 h-[10%]">
+            <div className="flex items-center justify-between pb-4 h-[10%]">
                 <Input
                     placeholder="Filter Task Name..."
                     value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -202,32 +203,65 @@ export function TaskTable({ onTaskClick, onAddTaskClick, tasks }: DataTableDemoP
                     }
                     className="max-w-sm"
                 />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value: Boolean) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                )
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                <div className="flex items-center justify-end">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value: Boolean) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    
+                    <div className="w-4"></div>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                {category} <ChevronDownIcon className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value: Boolean) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                
             </div>
 
             <div className="h-[80%]">
