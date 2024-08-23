@@ -373,7 +373,7 @@ export function TaskTable({
         </div>
       </div>
 
-      <div className="h-[80%]">
+      <div className="h-[72%]">
         <DataTable colLength={columns.length} tableData={table} />
       </div>
     </Tabs>
