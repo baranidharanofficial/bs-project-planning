@@ -103,6 +103,20 @@ const createColumns = (
   onTaskClick: (task: Task) => void
 ): ColumnDef<Task>[] => [
   {
+    accessorKey: "task_id",
+    header: "Task ID",
+    cell: ({ row }) => (
+      <div
+        onClick={() => {
+            onTaskClick(row.original);
+        }}
+        className={`capitalize w-max px-2 py-1 rounded-sm`}
+      >
+        {row.getValue("task_id")}
+      </div>
+    ),    
+  },
+  {
     accessorKey: "title",
     header: ({ column }) => {
       return (
@@ -216,7 +230,9 @@ export function TaskTable({
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  React.useState<VisibilityState>({
+    task_id: false, 
+  });
   const [rowSelection, setRowSelection] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -275,7 +291,7 @@ export function TaskTable({
   return (
     <Tabs defaultValue="all" className="w-full h-full ">
       <div className="flex items-center justify-between pb-4 h-[10%] ">
-        <TabsList className="font-semibold text-black text-xl">
+        <TabsList className="font-semibold text-black text-xl h-14 px-2">
           <TabsTrigger onClick={() => setTab("all")} value="all">
             All
             <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">{tasks.length}</p>
