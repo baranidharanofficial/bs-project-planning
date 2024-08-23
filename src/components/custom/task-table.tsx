@@ -274,26 +274,27 @@ export function TaskTable({
 
   return (
     <Tabs defaultValue="all" className="w-full h-full ">
-      <div className="flex items-center justify-between pb-4 h-[10%]">
-        <TabsList>
+      <div className="flex items-center justify-between pb-4 h-[10%] ">
+        <TabsList className="font-semibold text-black text-xl">
           <TabsTrigger onClick={() => setTab("all")} value="all">
             All
-            <p className="px-1 ml-2 bg-slate-700 rounded-sm text-white">14</p>
+            <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">{tasks.length}</p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("new")} value="new">
-            New
+            Yet to start
+            <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">{tasks.filter(task => task.status === "Not Started").length}</p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("ongoing")} value="ongoing">
-            Ongoing
-            <p className="px-1 ml-2 bg-sky-500 rounded-sm text-white">11</p>
+            In Progress
+            <p className="px-2 py-1  ml-2 bg-[#ADF3C9] rounded-sm ">{tasks.filter(task => task.status === "In Progress").length}</p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("delayed")} value="delayed">
-            Delayed
-            <p className="px-1 ml-2 bg-red-400 rounded-sm text-white">1</p>
+            In Delay
+            <p className="px-2 py-1 ml-2 bg-[#FAA0A0] rounded-sm ">{tasks.filter(task => task.status === "Pending").length}</p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("completed")} value="completed">
             Completed
-            <p className="px-1 ml-2 bg-green-500 rounded-sm text-white">2</p>
+            <p className="px-2 py-1 ml-2 bg-[#D0D0D0] rounded-sm ">{tasks.filter(task => task.status === "Completed").length}</p>
           </TabsTrigger>
         </TabsList>
         <Button onClick={onAddTaskClick}>Add Task</Button>
