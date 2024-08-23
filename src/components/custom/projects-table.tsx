@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 import {  RiBuilding2Line } from "react-icons/ri";
 import { Progress } from "../ui/progress";
-import { formatDate } from "./date-format";
+import { formatDate, getDaysLeft } from "./date-format";
 import DataTable from "./table";
 
 export type Project = {
@@ -64,7 +64,7 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
                 </div>
                 <div>
                     <p className="text-md font-semibold mb-1  hover:underline">{row.getValue("project_name")}</p>
-                    <p className="text-sm text-slate-400">Calicut</p>
+                    <p className="!text-sm text-slate-400">{row.original.status}</p>
                 </div>
             </div>
         ),
@@ -98,7 +98,10 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         cell: ({ row }) => {
             return <div  onClick={() => {
                 onProjectClick(row.original.id);
-            }} className="text-left font-medium">{formatDate(row.getValue("expected_end_date"))}</div>
+            }} className="text-left font-medium">
+                <p>{formatDate(row.getValue("expected_end_date"))}</p>
+                <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 ? "Delayed" : getDaysLeft(row.getValue("expected_end_date"))}</p>
+            </div>
         },
     },
     {

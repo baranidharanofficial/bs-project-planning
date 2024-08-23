@@ -1,4 +1,9 @@
-export function formatDate(dateString: string) {
+export function formatDate(dateString?: string) {
+
+    if(dateString == null) {
+      return "NA";
+    }
+
     const date = new Date(dateString);
   
     // Array of month names
@@ -14,4 +19,20 @@ export function formatDate(dateString: string) {
   
     // Return the formatted date
     return `${month} ${day}, ${year}`;
+  }
+
+  export function getDaysLeft(dateString?: string): number {
+    if (!dateString) return 0;
+  
+    const targetDate = new Date(dateString);
+    const today = new Date();
+  
+    // Set both dates to midnight to ignore the time part
+    targetDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+  
+    const timeDiff = targetDate.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  
+    return daysDiff > 0 ? daysDiff : 0;
   }

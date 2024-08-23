@@ -31,7 +31,6 @@ export default function IndexPage({ params: { locale } }: Props) {
             localStorage.setItem('api_key', message.api_key);
             localStorage.setItem('api_secret', message.api_secret);
     
-            alert('Login successful');
             router.push('/dashboard');
     
         } catch (error) {

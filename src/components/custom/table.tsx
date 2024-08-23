@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MdArrowDownward } from "react-icons/md";
+import { MdArrowBackIos, MdArrowDownward, MdArrowForwardIos } from "react-icons/md";
 
 interface TableProps {
   tableData: RTable<any>;
@@ -27,9 +27,15 @@ interface TableProps {
 export default function DataTable({ tableData, colLength }: TableProps) {
   const [pageSize, setPageSize] = React.useState(10);
 
+  // Calculate the current range
+  const pageIndex = tableData.getState().pagination.pageIndex;
+  const rowCount = tableData.getRowModel().rows.length;
+  const startRow = pageIndex * pageSize + 1;
+  const endRow = startRow + rowCount - 1;
+
   return (
     <div className="h-full">
-      <div className="h-[90%] overflow-y-auto shadow-md rounded-md border">
+      <div className="h-[90%] overflow-y-auto rounded-md border border-slate-100">
         <Table className="h-full">
           <TableHeader>
             {tableData.getHeaderGroups().map((headerGroup) => (
@@ -50,7 +56,7 @@ export default function DataTable({ tableData, colLength }: TableProps) {
             ))}
           </TableHeader>
           <TableBody>
-            {tableData.getRowModel().rows?.length ? (
+            {rowCount ? (
               tableData.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -79,24 +85,22 @@ export default function DataTable({ tableData, colLength }: TableProps) {
 
       <div className="h-[10%] flex items-center justify-end space-x-2 py-4">
         <div className="ml-4">
-          <label htmlFor="pageSize" className="mr-2">
+          <label htmlFor="pageSize" className="mr-2 text-sm text-slate-400">
             Rows per page:
           </label>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="ghost">
                 {pageSize} <MdArrowDownward className="ml-2" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-32">
               {[5, 10, 15, 20].map((size) => (
                 <DropdownMenuItem
-                  className={`px-2 cursor-pointer ${size == pageSize ? 'bg-slate-100' : ''}`}
+                  className={`px-2 cursor-pointer ${size === pageSize ? 'bg-slate-100' : ''}`}
                   key={size}
                   onClick={() => {
                     setPageSize(size);
-                    console.log(size);
                     tableData.setPageSize(size);
                   }}
                 >
@@ -106,13 +110,18 @@ export default function DataTable({ tableData, colLength }: TableProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        <p className="mr-2 text-sm text-slate-800">
+          {startRow}-{endRow} of {tableData.getCoreRowModel().rows.length}
+        </p>
+
         <Button
           variant="outline"
           size="sm"
           onClick={() => tableData.previousPage()}
           disabled={!tableData.getCanPreviousPage()}
         >
-          Previous
+          <MdArrowBackIos className="ml-2" />
         </Button>
         <Button
           variant="outline"
@@ -120,7 +129,7 @@ export default function DataTable({ tableData, colLength }: TableProps) {
           onClick={() => tableData.nextPage()}
           disabled={!tableData.getCanNextPage()}
         >
-          Next
+          <MdArrowForwardIos className="mx-1" />
         </Button>
       </div>
     </div>

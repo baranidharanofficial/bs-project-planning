@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AppDispatch } from '@/state/store';
-import { getTasks } from '@/state/task/taskSlice';
+import { getCategories, getTasks } from '@/state/task/taskSlice';
 import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
@@ -45,6 +45,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
         setProject(projectName);
 
         dispatch(getTasks(projectName));
+        dispatch(getCategories());
     
         router.replace(`/dashboard/tasks?projectName=${encodeURIComponent(projectName)}`);
     }, [router]);

@@ -4,14 +4,11 @@ import { Task, TaskTable } from "@/components/custom/task-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { locales } from "@/config";
 import { AppDispatch, RootState, store } from "@/state/store";
-import { addTask, getTasks } from "@/state/task/taskSlice";
-import axios from "axios";
+import { addTask, setTask, setTaskDetails } from "@/state/task/taskSlice";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import { useRouter } from "next/router";
-import React, { useEffect, useState, useCallback, ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import React, {useState } from "react";
 import { MdClose } from "react-icons/md";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
@@ -23,42 +20,10 @@ export default function TasksPage() {
   const [data, setData] = useState<Task[]>([]);
 
   const tasks = useSelector((state : RootState) => state.task.tasks);
+  const categories = useSelector((state : RootState) => state.task.categories);
   const dispatch = useDispatch<AppDispatch>();
 
-  // Fetch tasks when the project changes
-  // useEffect(() => {
-     
-  // }, []);
-
-  // const getTasks = useCallback(async () => {
-  //   setLoading(true);
-  //   try {
-  //     console.log("Project ID : ");
-  //     const apiKey = localStorage.getItem("api_key");
-  //     const apiSecret = localStorage.getItem("api_secret");
-
-  //     if (!apiKey || !apiSecret) {
-  //       throw new Error("Missing API credentials");
-  //     }
-
-  //     const response = await axios.get(
-  //       `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_tasks_list?project_id=PROJ-0001`,
-  //       {
-  //         headers: {
-  //           Authorization: `token ${apiKey}:${apiSecret}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log("Get Tasks:", response.data);
-  //     setData(response.data.tasks);
-
-  //   } catch (error) {
-  //     console.error("Get Tasks failed:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +36,14 @@ export default function TasksPage() {
       <p className="text-[12px] text-slate-400 mb-4">Home / Projects / Tasks</p>
       <p className="text-lg font-semibold text-slate-900 mb-4">Tasks</p>
       <TaskTable
-        onTaskClick={() => {}}
+        onTaskClick={(task: Task) => {
+          dispatch(setTask(task));
+          dispatch(setTaskDetails(task.task_id));
+          router.replace(`/dashboard/tasks/task-detail`);
+        }}
         onAddTaskClick={() => dispatch(addTask())}
         tasks={tasks}
+        categories={categories}
       />
 
       <div
