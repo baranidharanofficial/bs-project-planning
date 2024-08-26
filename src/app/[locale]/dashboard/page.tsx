@@ -12,7 +12,7 @@ import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
