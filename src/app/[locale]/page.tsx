@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import NavigationLink from '@/components/custom/navigation-link';
 import { Button } from '@/components/ui/button';

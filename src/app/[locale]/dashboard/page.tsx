@@ -56,6 +56,10 @@ export default function DashboardPage({ params: { locale } }: Props) {
             // Retrieve the `apiKey` and `apiSecret` from localStorage
             const apiKey = localStorage.getItem('api_key');
             const apiSecret = localStorage.getItem('api_secret');
+            const sid = localStorage.getItem('sid');
+
+
+            console.log(sid);
 
             // Check if the apiKey and apiSecret exist
             if (!apiKey || !apiSecret) {
@@ -65,8 +69,10 @@ export default function DashboardPage({ params: { locale } }: Props) {
             // Make the API request
             const response = await axios.get('https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list', {
                 headers: {
+                    'Cookie' : `sid=${sid};`,
                     'Authorization': `token ${apiKey}:${apiSecret}`,
                 },
+                withCredentials: true,
             });
 
             console.log('Get Projects:', response.data);
