@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 
 import NavigationLink from '@/components/custom/navigation-link';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export default function IndexPage({ params: { locale } }: Props) {
         <div className="flex flex-col items-center justify-center w-full h-[100vh] bg-white dark:bg-slate-950">
             <div className="shadow-xl p-8 w-[350px] bg-white dark:bg-slate-800 rounded-lg flex flex-col items-start justify-center">
                 <h1 className="mb-2 text-xl font-semibold">Login</h1>
-                <p className="mb-8 text-sm">Don&apos;t have an account? Get started</p>
+                <p className="mb-8 text-sm">Don&apos;t have an account? Get started {test}</p>
 
                 <form className="w-full" onSubmit={handleSubmit}>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
