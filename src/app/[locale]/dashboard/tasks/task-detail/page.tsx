@@ -46,7 +46,7 @@ import {
 import { PiCaretUpDownBold } from "react-icons/pi";
 import { useSelector } from "react-redux";
 
-export default function TaskDetails(selectedCategory: string) {
+export default function TaskDetails(selectedCategory: String) {
   const taskDetail = useSelector(
     (state: RootState) => state.task.currentTaskDetails
   );
@@ -55,7 +55,7 @@ export default function TaskDetails(selectedCategory: string) {
   const task = useSelector((state: RootState) => state.task.currentTask);
   const categories = useSelector((state: RootState) => state.task.categories);
 
-  const [category, setCategory] = React.useState("");
+  const [category, setCategory] = React.useState<String>("");
 
   useEffect(() => {
     setCategory(selectedCategory);
