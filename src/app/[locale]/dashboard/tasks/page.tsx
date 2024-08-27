@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppDispatch, RootState, store } from "@/state/store";
-import { addTask, setTask, setTaskDetails } from "@/state/task/taskSlice";
+import { addTask, getCategories, setTask, setTaskDetails, setTaskFiles } from "@/state/task/taskSlice";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, {useState } from "react";
@@ -39,6 +39,8 @@ export default function TasksPage() {
         onTaskClick={(task: Task) => {
           dispatch(setTask(task));
           dispatch(setTaskDetails(task.task_id));
+          dispatch(setTaskFiles(task.task_id));
+          dispatch(getCategories());
           router.replace(`/dashboard/tasks/task-detail`);
         }}
         onAddTaskClick={() => dispatch(addTask())}

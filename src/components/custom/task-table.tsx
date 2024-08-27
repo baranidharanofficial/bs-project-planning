@@ -39,6 +39,7 @@ export interface Task {
   estimated_work: number;
   unit: string;
   progress: number;
+  progress_percentageprogress: number
 }
 
 export interface TimelineEntry {
@@ -174,7 +175,7 @@ const createColumns = (
     ),
   },
   {
-    accessorKey: "progress",
+    accessorKey: "progress_percentageprogress",
     header: "Progress",
     cell: ({ row }) => (
       <div
@@ -185,10 +186,10 @@ const createColumns = (
         <Progress
           className="h-2 bg-green-100 w-[80%] mb-1"
           indicatorColor="bg-green-500"
-          value={parseInt(row.getValue("progress"), 10)}
+          value={parseInt(row.getValue("progress_percentageprogress"), 10)}
         />
         <p className="capitalize">
-          {String(row.getValue("progress")).split(".")[0]} %
+          {String(row.getValue("progress_percentageprogress")).split(".")[0]} %
         </p>
       </div>
     ),

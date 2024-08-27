@@ -74,13 +74,6 @@ const taskSlice = createSlice({
     }).addCase(setTaskDetails.fulfilled, (state, action: PayloadAction<TaskDetails>) => {
       state.currentTaskDetails = action.payload;
     })
-
-    builder.addCase(setTaskFiles.pending, () => {
-      console.log("Task Attachments Loading");
-    }).addCase(setTaskFiles.fulfilled, (state, action: PayloadAction<TaskDocument[]>) => {
-      state.documents = action.payload.filter((element) => !element.filetype!.includes("image"));
-      state.photos = action.payload.filter((element) => element.filetype!.includes("image"));
-    })
   }
 });
 
@@ -171,38 +164,3 @@ export const setTaskDetails = createAsyncThunk(
     }
   }
 );
-
-export const setTaskFiles = createAsyncThunk(
-  "task/setTaskFiles",
-  async (taskId: String) => {
-    try {
-      const apiKey = localStorage.getItem("api_key");
-      const apiSecret = localStorage.getItem("api_secret");
-
-      if (!apiKey || !apiSecret) {
-        throw new Error("Missing API credentials");
-      }
-
-      const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_task_attachments?task_id=${taskId}`,
-        {
-          headers: {
-            Authorization: `token ${apiKey}:${apiSecret}`,
-          },
-        }
-      );
-
-      console.log("Get Task Attachemnts:", response.data);
-      return response.data.data;
-    } catch (error) {
-      console.error("Get Task Attachemnts failed:", error);
-      return [];
-    }
-  }
-);
-
-
-
-export const { addTask, clearTasks, setTask } = taskSlice.actions;
-
-export default taskSlice.reducer;
