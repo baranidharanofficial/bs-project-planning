@@ -18,7 +18,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -46,7 +45,7 @@ import {
 import { PiCaretUpDownBold } from "react-icons/pi";
 import { useSelector } from "react-redux";
 
-export default function TaskDetails(selectedCategory: String) {
+export default function TaskDetails() {
   const taskDetail = useSelector(
     (state: RootState) => state.task.currentTaskDetails
   );
@@ -55,10 +54,10 @@ export default function TaskDetails(selectedCategory: String) {
   const task = useSelector((state: RootState) => state.task.currentTask);
   const categories = useSelector((state: RootState) => state.task.categories);
 
-  const [category, setCategory] = React.useState<String>("");
+  const [category, setCategory] = React.useState<String | undefined>();
 
   useEffect(() => {
-    setCategory(selectedCategory);
+    setCategory(taskDetail?.category);
   }, [])
 
   return (
@@ -88,8 +87,34 @@ export default function TaskDetails(selectedCategory: String) {
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle>Update Category</SheetTitle>
-                  <SheetClose></SheetClose>
                 </SheetHeader>
+                
+                <div className="flex flex-col items-center justify-start">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="ml-auto capitalize w-full mt-4">
+                        {category} <ChevronDownIcon className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {categories.map((ccategory) => {
+                        return (
+                          <DropdownMenuItem
+                            key={ccategory}
+                            className={`px-2 cursor-pointer capitalize w-full ${category == ccategory ? "bg-slate-100" : ""
+                              }`}
+                            onClick={() => setCategory(ccategory)}
+                          >
+                            {ccategory}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+
+                  <Button className="bg-green-600 mt-4 w-full">Update</Button>
+                </div>
               </SheetContent>
             </Sheet>
           </div>
