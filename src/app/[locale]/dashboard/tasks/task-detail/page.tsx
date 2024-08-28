@@ -459,27 +459,28 @@ export default function TaskDetails() {
             })}
           </div>
         </div>
+        
+        <div className="w-full">
+          <Dialog>
+            <DialogTrigger className="w-full">
+              <Button className="w-full bg-green-600 hover:bg-green-500">
+                Update Progress
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Progress</DialogTitle>
 
-        <Dialog>
-          <DialogTrigger>
-            <Button className="mx-2 w-[400px] bg-green-600 hover:bg-green-500">
-              Update Progress
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Update Progress</DialogTitle>
-
-              <div >
-                <p  className="mt-4">Progress : {progress} %</p>
-              <Slider color="#37AD4A" className="mt-4" onValueChange={handleSliderChange} defaultValue={[task?.progress_percentageprogress ?? 0]} min={0} max={100} step={1} />
-              <Button className="w-full bg-green-600 my-6">Update</Button>
-              </div>
-
-              
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+                <div >
+                  <p  className="mt-4">Progress : {progress} %</p>
+                <Slider color="#37AD4A" className="mt-4" onValueChange={handleSliderChange} defaultValue={[task?.progress_percentageprogress ?? 0]} min={0} max={100} step={1} />
+                <Button className="w-full bg-green-600 my-6">Update</Button>
+                </div>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
+        
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ export interface Task {
   task_id: string;
   title: string;
   category: string;
-  status: "In Progress" | "Completed" | "Pending" | "Not Started";
+  status: "In Progress" | "Completed" | "In Delay" | "Yet To Start";
   expected_end_date: string | null;
   estimated_work: number;
   unit: string;
@@ -260,8 +260,8 @@ export function TaskTable({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const [tab, setTab] = React.useState("all");
-  const [category, setCategory] = React.useState("all");
+  const [tab, setTab] = React.useState("All");
+  const [category, setCategory] = React.useState("All");
 
   const columns = React.useMemo(
     () => createColumns(onTaskClick),
@@ -289,7 +289,7 @@ export function TaskTable({
 
   React.useEffect(() => {
     const statusFilter =
-      tab === "all" ? undefined : tab.charAt(0).toUpperCase() + tab.slice(1);
+      tab === "All" ? undefined : tab.charAt(0).toUpperCase() + tab.slice(1);
     setColumnFilters((filters) => {
       const newFilters = filters.filter((filter) => filter.id !== "status");
       return statusFilter
@@ -299,7 +299,7 @@ export function TaskTable({
   }, [tab]);
 
   React.useEffect(() => {
-    const categoryFilter = category === "all" ? undefined : category;
+    const categoryFilter = category === "All" ? undefined : category;
     setColumnFilters((filters) => {
       const newFilters = filters.filter((filter) => filter.id !== "category");
       return categoryFilter
@@ -312,26 +312,26 @@ export function TaskTable({
   if (error) return <p>{error}</p>;
 
   return (
-    <Tabs defaultValue="all" className="w-full h-full ">
+    <Tabs defaultValue="All" className="w-full h-full ">
       <div className="flex items-center justify-between pb-4 h-[10%] ">
         <TabsList className="font-semibold text-black text-xl h-14 px-2">
-          <TabsTrigger onClick={() => setTab("all")} value="all">
+          <TabsTrigger onClick={() => setTab("All")} value="All">
             All
             <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">{tasks.length}</p>
           </TabsTrigger>
-          <TabsTrigger onClick={() => setTab("new")} value="new">
+          <TabsTrigger onClick={() => setTab("New")} value="New">
             Yet to start
-            <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">{tasks.filter(task => task.status === "Not Started").length}</p>
+            <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">{tasks.filter(task => task.status === "Yet To Start").length}</p>
           </TabsTrigger>
-          <TabsTrigger onClick={() => setTab("ongoing")} value="ongoing">
+          <TabsTrigger onClick={() => setTab("In Progress")} value="In Progress">
             In Progress
             <p className="px-2 py-1  ml-2 bg-[#ADF3C9] rounded-sm ">{tasks.filter(task => task.status === "In Progress").length}</p>
           </TabsTrigger>
-          <TabsTrigger onClick={() => setTab("delayed")} value="delayed">
+          <TabsTrigger onClick={() => setTab("In Delay")} value="In Delay">
             In Delay
-            <p className="px-2 py-1 ml-2 bg-[#FAA0A0] rounded-sm ">{tasks.filter(task => task.status === "Pending").length}</p>
+            <p className="px-2 py-1 ml-2 bg-[#FAA0A0] rounded-sm ">{tasks.filter(task => task.status === "In Delay").length}</p>
           </TabsTrigger>
-          <TabsTrigger onClick={() => setTab("completed")} value="completed">
+          <TabsTrigger onClick={() => setTab("Completed")} value="Completed">
             Completed
             <p className="px-2 py-1 ml-2 bg-[#D0D0D0] rounded-sm ">{tasks.filter(task => task.status === "Completed").length}</p>
           </TabsTrigger>
@@ -387,13 +387,13 @@ export function TaskTable({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                key={"all"}
+                key={"All"}
                 className={`px-2 cursor-pointer capitalize ${
-                  category == "all" ? "bg-slate-100" : ""
+                  category == "All" ? "bg-slate-100" : ""
                 }`}
-                onClick={() => setCategory("all")}
+                onClick={() => setCategory("All")}
               >
-                All
+                All ({tasks.length})
               </DropdownMenuItem>
               {categories.map((ccategory) => {
                 return (
@@ -404,7 +404,7 @@ export function TaskTable({
                     }`}
                     onClick={() => setCategory(ccategory.name)}
                   >
-                    {ccategory.name}
+                    {ccategory.name} ({tasks.filter(task => task.category == ccategory.name).length})
                   </DropdownMenuItem>
                 );
               })}
