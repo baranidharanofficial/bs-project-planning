@@ -1,4 +1,4 @@
-import { Task, TaskDetails } from "@/components/custom/task-table";
+import { Assignee, Task, TaskDetails } from "@/components/custom/task-table";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -11,6 +11,13 @@ export interface TaskDocument {
   timestamp_of_upload: string;
 }
 
+export interface User {
+  id: string;
+  full_name: string;
+  is_active: number;
+  roles: string[];
+}
+
 export interface TaskCategory {
   name: string;
   image_url: string;
@@ -19,6 +26,7 @@ export interface TaskCategory {
 
 interface TaskState {
   tasks: Task[];
+  assignees: User[];
   documents: TaskDocument[];
   photos: TaskDocument[];
   categories: TaskCategory[];
@@ -28,6 +36,7 @@ interface TaskState {
 
 const initialState: TaskState = {
   tasks: [],
+  assignees: [],
   documents: [],
   photos: [],
   categories: [],
@@ -67,17 +76,18 @@ const taskSlice = createSlice({
       })
       .addCase(getTasks.fulfilled, (state, action: PayloadAction<Task[]>) => {
         state.tasks = action.payload;
-      }),
-      builder
-        .addCase(getCategories.pending, () => {
-          console.log("Categories Loading");
-        })
-        .addCase(
-          getCategories.fulfilled,
-          (state, action: PayloadAction<TaskCategory[]>) => {
-            state.categories = action.payload;
-          }
-        );
+      });
+
+    builder
+      .addCase(getCategories.pending, () => {
+        console.log("Categories Loading");
+      })
+      .addCase(
+        getCategories.fulfilled,
+        (state, action: PayloadAction<TaskCategory[]>) => {
+          state.categories = action.payload;
+        }
+      );
 
     builder
       .addCase(setTaskDetails.pending, () => {
@@ -133,14 +143,38 @@ const taskSlice = createSlice({
         }
       );
 
-      builder
+    builder
       .addCase(addAttachments.pending, () => {
         console.log("Adding Attachments");
       })
       .addCase(
         addAttachments.fulfilled,
         (state, action: PayloadAction<TaskDocument[]>) => {
-            state.documents = [...state.documents, ...action.payload]
+          state.documents = [...state.documents, ...action.payload];
+        }
+      );
+
+    builder
+      .addCase(getAssignees.pending, () => {
+        console.log("Assignees Loading");
+      })
+      .addCase(
+        getAssignees.fulfilled,
+        (state, action: PayloadAction<User[]>) => {
+          state.assignees = action.payload;
+        }
+      );
+
+      builder
+      .addCase(addAssigneeToTask.pending, () => {
+        console.log("Adding Assignees");
+      })
+      .addCase(
+        addAssigneeToTask.fulfilled,
+        (state, action: PayloadAction<Assignee[]>) => {
+          if (state.currentTaskDetails) {
+           state.currentTaskDetails.assignee = [...state.currentTaskDetails?.assignee, ...action.payload];
+          }
         }
       );
   },
@@ -358,7 +392,6 @@ export const addAttachments = createAsyncThunk(
   }
 );
 
-
 export const updateTaskProgress = createAsyncThunk(
   "task/updateTaskProgress",
   async (payload: any) => {
@@ -379,6 +412,71 @@ export const updateTaskProgress = createAsyncThunk(
       return response.data; // Return the response data
     } catch (error) {
       return null;
+    }
+  }
+);
+
+export const getAssignees = createAsyncThunk("task/getAssignees", async () => {
+  try {
+    const apiKey = localStorage.getItem("api_key");
+    const apiSecret = localStorage.getItem("api_secret");
+
+    if (!apiKey || !apiSecret) {
+      throw new Error("Missing API credentials");
+    }
+
+    const response = await axios.get(
+      `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_core_team`,
+      {
+        headers: {
+          Authorization: `token ${apiKey}:${apiSecret}`,
+        },
+      }
+    );
+
+    console.log("Get Users:", response.data);
+    return response.data.user_list;
+  } catch (error) {
+    console.error("Get Users failed:", error);
+    return [];
+  }
+});
+
+export const addAssigneeToTask = createAsyncThunk(
+  "task/addAssigneeToTask",
+  async (assigneeData: any) => {
+    try {
+      const apiKey = localStorage.getItem("api_key");
+      const apiSecret = localStorage.getItem("api_secret");
+
+      if (!apiKey || !apiSecret) {
+        throw new Error("Missing API credentials");
+      }
+
+      const response = await axios.post(
+        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.assign_users_to_task`,
+        assigneeData,
+        {
+          headers: {
+            Authorization: `token ${apiKey}:${apiSecret}`,
+          },
+        }
+      );
+
+      console.log("Add Assignee:", response.data);
+
+      if (response.status == 200) {
+        let user: Assignee = {
+          user_name: assigneeData["user_id"][0],
+          user_email: assigneeData["user_id"][0],
+        }
+        return [user];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Add Assignee failed:", error);
+      return [];
     }
   }
 );

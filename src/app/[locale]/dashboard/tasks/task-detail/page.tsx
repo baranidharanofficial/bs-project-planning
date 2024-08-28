@@ -5,6 +5,7 @@ import { RadialChart } from "@/components/custom/gauge-chart";
 import { TaskCarousel } from "@/components/custom/task-carousel";
 import { Assignee } from "@/components/custom/task-table";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { DatePickerWithRange } from "@/components/ui/daterangepicker";
 import {
   Dialog,
@@ -35,7 +36,9 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { AppDispatch, RootState, store } from "@/state/store";
 import {
+  addAssigneeToTask,
   addAttachments,
+  getAssignees,
   removeAssignee,
   setTaskDetails,
   updateTask,
@@ -46,6 +49,7 @@ import React, { useEffect, useState } from "react";
 import {
   MdAdd,
   MdArrowBackIos,
+  MdCheckCircle,
   MdClose,
   MdDescription,
   MdEdit,
@@ -67,6 +71,7 @@ export default function TaskDetails() {
   const taskImages = useSelector((state: RootState) => state.task.photos);
   const task = useSelector((state: RootState) => state.task.currentTask);
   const categories = useSelector((state: RootState) => state.task.categories);
+  const assignees = useSelector((state: RootState) => state.task.assignees);
 
   
 
@@ -87,6 +92,7 @@ export default function TaskDetails() {
   useEffect(() => {
     setCategory(taskDetail?.category);
     setDesc(taskDetail?.description ?? "");
+    dispatch(getAssignees());
   }, []);
 
   function openPdfFromUrl(url: string): void {
@@ -219,6 +225,30 @@ export default function TaskDetails() {
                 <SheetContent>
                   <SheetHeader>
                     <SheetTitle>Update Assignees</SheetTitle>
+
+                    <div className="h-[90vh] w-full pr-2 overflow-y-auto">
+                      {
+                        assignees.map((assignee) => {
+                          return <Card onClick={() => {
+                            var assigneeData = {
+                              "task_id": taskDetail?.id,
+                              "user_id": [assignee.id],
+                            };
+                            
+                            console.log(assigneeData);
+
+                            dispatch(addAssigneeToTask(assigneeData));
+
+                          }} key={assignee.id} className="w-full px-2 py-2 mb-2 cursor-pointer">
+                            
+                            <div className="w-full flex items-center justify-between">
+                            {assignee.full_name}
+                            <MdCheckCircle className="text-2xl text-slate-200"/>
+                            </div>
+                          </Card>
+                        })
+                      }
+                    </div>
                   </SheetHeader>
                 </SheetContent>
               </Sheet>

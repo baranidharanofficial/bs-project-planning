@@ -25,8 +25,13 @@ export function DatePickerWithRange({
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
 
-  const taskDetail = useSelector(
+  const
+   taskDetail = useSelector(
     (state: RootState) => state.task.currentTaskDetails
+  );
+
+  const project = useSelector(
+    (state: RootState) => state.project.currentProject
   );
 
   const dispatch = useDispatch<AppDispatch>();
@@ -42,6 +47,21 @@ export function DatePickerWithRange({
       });
     }
   }, [taskDetail]);
+
+  
+
+  const isDateDisabled = (date: Date) => {
+    if(project && project?.expected_end_date){
+      const cutoffDate = new Date(project?.expected_end_date);
+      console.log(taskDetail?.end_date);
+    return date > cutoffDate; 
+    }
+    else{
+      console.log(false);
+      return false;
+    }
+  };
+
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -65,6 +85,7 @@ export function DatePickerWithRange({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
+            
             onSelect={(date) => {
               setDate(date);
               if (date && date?.from && date?.to && taskDetail) {
@@ -81,6 +102,7 @@ export function DatePickerWithRange({
               }
             }}
             numberOfMonths={1}
+            disabled={isDateDisabled}
           />
         </PopoverContent>
       </Popover>
