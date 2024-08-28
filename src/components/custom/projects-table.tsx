@@ -40,7 +40,29 @@ export type Project = {
     percent_complete: number
 }
 
-const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef<Project>[] => [
+
+function getColor(status : string) {
+    if(status == "New") {
+        return "bg-[#BAF8F1]"
+    }
+
+
+    if(status == "Delayed") {
+        return "bg-[#FAA0A0]"
+    }
+
+    if(status == "Ongoing") {
+        return "bg-[#ADF3C9]"
+    }
+
+    if(status == "Completed") {
+        return "bg-[#D0D0D0]"
+    }
+
+    
+}
+
+const createColumns = (onProjectClick: (project: Project) => void): ColumnDef<Project>[] => [
 
     {
         accessorKey: "project_name",
@@ -57,14 +79,14 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         },
         cell: ({ row }) => (
             <div className="capitalize ml-4 cursor-pointer flex items-center" onClick={() => {
-                onProjectClick(row.original.id);
+                onProjectClick(row.original);
             }}>
-                <div className="bg-green-50 border-green-300 border-[1px] rounded-md p-2 mr-2">
+                <div className="bg-green-50  border-green-300 border-[1px] rounded-md p-2 mr-2">
                     <RiBuilding2Line className="text-4xl text-green-700 dark:text-white " />
                 </div>
                 <div>
                     <p className="text-md font-semibold mb-1  hover:underline">{row.getValue("project_name")}</p>
-                    <p className="!text-sm text-slate-400">{row.original.status}</p>
+                    <p className="!text-sm text-slate-400">{row.original.id}</p>
                 </div>
             </div>
         ),
@@ -74,8 +96,8 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         header: "Status",
         cell: ({ row }) => (
             <div onClick={() => {
-                onProjectClick(row.original.id);
-            }} className={`capitalize w-max px-2 py-1 rounded-sm ${row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"}`} >
+                onProjectClick(row.original);
+            }} className={`capitalize w-max px-2 py-1 rounded-sm ${getColor(row.getValue("status"))}`} >
                 {row.getValue("status")}
             </div>
         ),
@@ -85,7 +107,7 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         header: "Progress",
         cell: ({ row }) => (
             <div  onClick={() => {
-                onProjectClick(row.original.id);
+                onProjectClick(row.original);
             }} >
                 <Progress className="h-2 bg-green-100 w-[80%] mb-1" indicatorColor="bg-green-500" value={parseInt(row.getValue("percent_complete"), 10)} />
                 <p className="capitalize">{String(row.getValue("percent_complete")).split(".")[0]} %</p>
@@ -97,27 +119,27 @@ const createColumns = (onProjectClick: (projectName: string) => void): ColumnDef
         header: () => <div  className="text-left">End Date</div>,
         cell: ({ row }) => {
             return <div  onClick={() => {
-                onProjectClick(row.original.id);
+                onProjectClick(row.original);
             }} className="text-left font-medium">
                 <p>{formatDate(row.getValue("expected_end_date"))}</p>
-                <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 ? "Delayed" : getDaysLeft(row.getValue("expected_end_date"))}</p>
+                <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 && row.getValue("status") != "Completed" ? "Delayed" : row.getValue("status") == "Completed" ? "Completed" : ` ${getDaysLeft(row.getValue("expected_end_date"))}`}</p>
             </div>
         },
     },
-    {
-        accessorKey: "issues",
-        header: () => <div className="text-left">Issues</div>,
-        cell: ({ row }) => {
-            return <div onClick={() => {
-                onProjectClick(row.original.id);
-            }} className="text-left font-medium">2</div>
-        },
-    },
+    // {
+    //     accessorKey: "issues",
+    //     header: () => <div className="text-left">Issues</div>,
+    //     cell: ({ row }) => {
+    //         return <div onClick={() => {
+    //             onProjectClick(row.original);
+    //         }} className="text-left font-medium">2</div>
+    //     },
+    // },
 ];
 
 type DataTableDemoProps = {
     projects: Project[],
-    onProjectClick: (projectName: string) => void;
+    onProjectClick: (projectName: Project) => void;
     onAddProjectClick: () => void;
 };
 
@@ -166,23 +188,26 @@ export function ProjectList({ onProjectClick, onAddProjectClick, projects }: Dat
     return (
         <Tabs defaultValue="all" className="w-full h-full ">
             <div className="flex items-center justify-between pb-4 h-[10%]">
-                <TabsList>
+                <TabsList className="font-semibold text-black text-xl h-14 px-2">
                     <TabsTrigger onClick={() => setTab("all")} value="all">
                         All
-                        <p className="px-1 ml-2 bg-slate-700 rounded-sm text-white" >14</p>
+                        <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">{projects.length}</p>
                     </TabsTrigger>
-                    <TabsTrigger onClick={() => setTab("new")} value="new">New</TabsTrigger>
+                    <TabsTrigger onClick={() => setTab("new")} value="new">
+                        New
+                        <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">{projects.filter(project => project.status === "New").length}</p>
+                    </TabsTrigger>
                     <TabsTrigger onClick={() => setTab("ongoing")} value="ongoing">
                         Ongoing
-                        <p className="px-1 ml-2 bg-sky-500 rounded-sm text-white" >11</p>
+                        <p className="px-2 py-1  ml-2 bg-[#ADF3C9] rounded-sm ">{projects.filter(project => project.status === "Ongoing").length}</p>
                     </TabsTrigger>
                     <TabsTrigger onClick={() => setTab("delayed")} value="delayed">
                         Delayed
-                        <p className="px-1 ml-2 bg-red-400 rounded-sm text-white" >1</p>
+                        <p className="px-2 py-1  ml-2 bg-[#FAA0A0] rounded-sm ">{projects.filter(project => project.status === "Delayed").length}</p>
                     </TabsTrigger>
                     <TabsTrigger onClick={() => setTab("completed")} value="completed">
                         Completed
-                        <p className="px-1 ml-2 bg-green-500 rounded-sm text-white" >2</p>
+                        <p className="px-2 py-1  ml-2 bg-[#D0D0D0] rounded-sm ">{projects.filter(project => project.status === "Completed").length}</p>
                     </TabsTrigger>
                 </TabsList>
                 <Button onClick={onAddProjectClick}>Add Project</Button>

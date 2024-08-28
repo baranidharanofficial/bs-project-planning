@@ -58,7 +58,7 @@ export function RadialChart({progress}: RadialChartProps) {
                     y={(viewBox.cy || 0) - 32}
                     className="fill-foreground text-2xl font-bold"
                   >
-                    {progress.completed}%
+                    {progress.completed.toFixed()}%
                   </tspan>
                   <tspan
                     x={viewBox.cx}
@@ -77,13 +77,13 @@ export function RadialChart({progress}: RadialChartProps) {
         dataKey="remaining"
         fill="#F6F6F6"
         stackId="a"
-        cornerRadius={0}
+        cornerRadius={8}
         className="stroke-transparent stroke-2"
       />
       <RadialBar
         dataKey="completed"
         stackId="a"
-        cornerRadius={0}
+        cornerRadius={8}
         fill="#37AD4A"
         className="stroke-transparent stroke-2"
       />

@@ -6,6 +6,7 @@ import { ThemeChanger } from '@/components/custom/theme-switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { setProject } from '@/state/project/projectSlice';
 import { AppDispatch } from '@/state/store';
 import { getCategories, getTasks } from '@/state/task/taskSlice';
 import axios from 'axios';
@@ -28,7 +29,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
     const t = useTranslations('PathnamesPage');
 
-    const [project, setProject] = useState("");
+    const [projectName, setProjectName] = useState("");
     const [addProject, setAddProject] = useState(false);
     const [loading, setLoading] = useState(false);
     const [data, setData] = React.useState<Project[]>([]);
@@ -40,14 +41,17 @@ export default function DashboardPage({ params: { locale } }: Props) {
         getProjects();
     }, []);
 
-    const handleProjectClick = useCallback((projectName: string) => {
-        console.log(`Project clicked: ${projectName}`);
-        setProject(projectName);
+    const handleProjectClick = useCallback((project: Project) => {
+        console.log(`Project clicked: ${project.project_name}`);
+        setProjectName(project.project_name);
 
-        dispatch(getTasks(projectName));
+
+        dispatch(setProject(project));
+
+        dispatch(getTasks(project.id));
         dispatch(getCategories());
     
-        router.replace(`/dashboard/tasks?projectName=${encodeURIComponent(projectName)}`);
+        router.replace(`/dashboard/tasks`);
     }, [router]);
 
     const getProjects = async () => {

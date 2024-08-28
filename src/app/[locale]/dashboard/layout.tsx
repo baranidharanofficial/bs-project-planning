@@ -28,10 +28,12 @@ export default function DashboardLayout({ children }: Props) {
 
   return (
     <Provider store={store} >
-    <main className="w-full h-[100vh] bg-neutral-100 dark:bg-slate-800 flex justify-start box-border">
+    <main className="w-full h-[100vh] overflow-x-hidden bg-neutral-100 dark:bg-slate-800 flex justify-start box-border">
+
+
       <div
         className={`h-[100vh] shadow-md bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
-          collapsed ? "w-[100px]" : "w-[300px]"
+          collapsed ? "w-[5%]" : "w-[300px]"
         }`}
       >
         {!collapsed ? (
@@ -102,7 +104,7 @@ export default function DashboardLayout({ children }: Props) {
                     {!collapsed ? <IoIosArrowBack className="text-xl transition-all transform duration-800 rotate-0" /> : <IoIosArrowBack className="text-xl transition-all transform duration-800 rotate-180" />}
                 </div> */}
       </div>
-      <div className="w-full h-[100vh] p-6">
+      <div className="w-[95%] h-[100vh] p-6">
         <Navigation />
         {children}
       </div>

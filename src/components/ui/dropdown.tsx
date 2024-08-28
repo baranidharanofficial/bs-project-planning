@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from "react"
 import { MdArrowDownward } from "react-icons/md"
+import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch, RootState } from "@/state/store"
+import { updateTask } from "@/state/task/taskSlice"
 
 
 interface ProgressProps {
@@ -19,10 +22,21 @@ interface ProgressProps {
 
 export function PogressDropdown({selected}: ProgressProps) {
   const [selectedValue, setSelectedValue] = useState<String>("");
-
+  const dispatch = useDispatch<AppDispatch>();
+  const taskDetail = useSelector(
+    (state: RootState) => state.task.currentTaskDetails
+  );
+  
   useEffect(() => {
     setSelectedValue(selected);
   }, []);
+
+  let values:String[] = [
+    "Yet To Start",
+    "In Progress",
+    "In Delay",
+    "Completed"
+  ]
 
   return (
     <DropdownMenu>
@@ -30,18 +44,24 @@ export function PogressDropdown({selected}: ProgressProps) {
         <Button variant="outline">{selectedValue} <MdArrowDownward className="ml-2"/></Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-32">
-        <DropdownMenuItem className="p-2" onClick={() => setSelectedValue("In progress")}>
-            In progress
-        </DropdownMenuItem>
-        <DropdownMenuItem className="p-2" onClick={() => setSelectedValue("Ongoing")}>
-            Ongoing
-        </DropdownMenuItem>
-        <DropdownMenuItem className="p-2" onClick={() => setSelectedValue("Delayed")}>
-            Delayed
-        </DropdownMenuItem>
-        <DropdownMenuItem className="p-2" onClick={() => setSelectedValue("Completed")}>
-            Completed
-        </DropdownMenuItem>
+       
+       {
+        values.map((value) => {
+          return  <DropdownMenuItem className="p-2 cursor-pointer hover:bg-slate-100" onClick={() => {
+            setSelectedValue(value);
+            dispatch(
+              updateTask({
+                "task_id": taskDetail?.id,
+                "data": {
+                  "status": value,
+                }
+              })
+            )
+          }}>
+              {value}
+          </DropdownMenuItem>
+        })
+       }
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -29,6 +29,7 @@ import { RiBuilding2Line } from "react-icons/ri";
 import { Progress } from "../ui/progress";
 import { formatDate, getDaysLeft } from "./date-format";
 import DataTable from "./table";
+import { TaskCategory } from "@/state/task/taskSlice";
 
 export interface Task {
   task_id: string;
@@ -100,6 +101,27 @@ export interface Photo {
   timestamp_of_upload: string;
 }
 
+function getColor(status : string) {
+  if(status == "Yet To Start") {
+      return "bg-[#BAF8F1]"
+  }
+
+
+  if(status == "In Delay") {
+      return "bg-[#FAA0A0]"
+  }
+
+  if(status == "In Progress") {
+      return "bg-[#ADF3C9]"
+  }
+
+  if(status == "Completed") {
+      return "bg-[#D0D0D0]"
+  }
+
+  
+}
+
 const createColumns = (
   onTaskClick: (task: Task) => void
 ): ColumnDef<Task>[] => [
@@ -167,7 +189,7 @@ const createColumns = (
             onTaskClick(row.original);
         }}
         className={`capitalize w-max px-2 py-1 rounded-sm ${
-          row.getValue("status") !== "Delayed" ? "bg-green-200" : "bg-red-200"
+          getColor(row.getValue("status")) 
         }`}
       >
         {row.getValue("status")}
@@ -206,7 +228,7 @@ const createColumns = (
           className="text-left font-medium"
         >
           <p>{formatDate(row.getValue("expected_end_date"))}</p>
-          <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 ? "Delayed" : getDaysLeft(row.getValue("expected_end_date"))}</p>
+          <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 && row.getValue("status") != "Completed" ? "Delayed" : row.getValue("status") == "Completed" ? "Completed" : ` ${getDaysLeft(row.getValue("expected_end_date"))}`}</p>
         </div>
       );
     },
@@ -215,7 +237,7 @@ const createColumns = (
 
 type DataTableDemoProps = {
   tasks: Task[];
-  categories: string[];
+  categories: TaskCategory[];
   onTaskClick: (task: Task) => void;
   onAddTaskClick: () => void;
 };
@@ -376,13 +398,13 @@ export function TaskTable({
               {categories.map((ccategory) => {
                 return (
                   <DropdownMenuItem
-                    key={ccategory}
+                    key={ccategory.name}
                     className={`px-2 cursor-pointer capitalize ${
-                      category == ccategory ? "bg-slate-100" : ""
+                      category == ccategory.name ? "bg-slate-100" : ""
                     }`}
-                    onClick={() => setCategory(ccategory)}
+                    onClick={() => setCategory(ccategory.name)}
                   >
-                    {ccategory}
+                    {ccategory.name}
                   </DropdownMenuItem>
                 );
               })}

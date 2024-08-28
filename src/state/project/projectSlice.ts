@@ -1,84 +1,42 @@
-import { Task, TaskDetails } from "@/components/custom/task-table";
+import { Project } from "@/components/custom/projects-table";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
-interface TaskDocument {
-  id: string;
-  filename: string;
-  file_url: string;
-  file_url_with_protocol: string;
-  filetype: string;
-  timestamp_of_upload: string;
+interface ProjectState {
+  projects: Project[];
+  currentProject: Project | null,
 }
 
-interface TaskState {
-  tasks: Task[];
-  documents: TaskDocument[],
-  photos: TaskDocument[],
-  categories: string[];
-  currentTask: Task | null,
-  currentTaskDetails: TaskDetails | null,
-}
-
-const initialState: TaskState = {
-  tasks: [],
-  documents: [],
-  photos: [],
-  categories: [],
-  currentTask: null,
-  currentTaskDetails: null,
+const initialState: ProjectState = {
+  projects: [],
+  currentProject: null
 };
 
-const taskSlice = createSlice({
-  name: "task",
+const projectSlice = createSlice({
+  name: "project",
   initialState,
   reducers: {
-    addTask: (state) => {
-      let newtask: Task = {
-        task_id: "",
-        title: "test",
-        category: "Test",
-        status: "In Progress",
-        expected_end_date: null,
-        estimated_work: 100,
-        unit: "",
-        progress: 10,
-        progress_percentageprogress: 0,
-      };
-      state.tasks.push(newtask);
+    addProject: (state) => {
+     
     },
-    clearTasks: (state) => {
-      state.tasks = [];
+    clearProjects: (state) => {
+      state.projects = [];
     },
-    setTask: (state, action : PayloadAction<Task>) => {
-      state.currentTask = action.payload;
+    setProject: (state, action : PayloadAction<Project>) => {
+      state.currentProject = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getTasks.pending, () => {
-      console.log("Tasks Loading");
-    }).addCase(getTasks.fulfilled, (state, action: PayloadAction<Task[]>) => {
-      state.tasks = action.payload;
-    }),
-
-    builder.addCase(getCategories.pending, () => {
-      console.log("Categories Loading");
-    }).addCase(getCategories.fulfilled, (state, action: PayloadAction<string[]>) => {
-      state.categories = action.payload;
-    })
-
-    builder
-    .addCase(setTaskDetails.pending, () => {
-      console.log("Task Details Loading");
-    }).addCase(setTaskDetails.fulfilled, (state, action: PayloadAction<TaskDetails>) => {
-      state.currentTaskDetails = action.payload;
+    builder.addCase(getProjects.pending, () => {
+      console.log("Projects Loading");
+    }).addCase(getProjects.fulfilled, (state, action: PayloadAction<Project[]>) => {
+      state.projects = action.payload;
     })
   }
 });
 
-export const getTasks = createAsyncThunk(
-  "task/getTasks",
+export const getProjects = createAsyncThunk(
+  "project/getProjects",
   async (projectId: String) => {
     try {
       const apiKey = localStorage.getItem("api_key");
@@ -89,7 +47,7 @@ export const getTasks = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_tasks_list?project_id=${projectId}`,
+        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -98,7 +56,7 @@ export const getTasks = createAsyncThunk(
       );
 
       console.log("Get Tasks:", response.data);
-      return response.data.tasks;
+      return response.data.projects;
     } catch (error) {
       console.error("Get Tasks failed:", error);
       return [];
@@ -106,61 +64,9 @@ export const getTasks = createAsyncThunk(
   }
 );
 
+export const {addProject , clearProjects, setProject } = projectSlice.actions;
 
-export const getCategories = createAsyncThunk(
-  "task/getCategories",
-  async () => {
-    try {
-      const apiKey = localStorage.getItem("api_key");
-      const apiSecret = localStorage.getItem("api_secret");
+export default projectSlice.reducer;
 
-      if (!apiKey || !apiSecret) {
-        throw new Error("Missing API credentials");
-      }
 
-      const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_category_list`,
-        {
-          headers: {
-            Authorization: `token ${apiKey}:${apiSecret}`,
-          },
-        }
-      );
 
-      console.log("Get Categories:", response.data);
-      return response.data.category_options;
-    } catch (error) {
-      console.error("Get Categories failed:", error);
-      return [];
-    }
-  }
-);
-
-export const setTaskDetails = createAsyncThunk(
-  "task/setTask",
-  async (taskId: String) => {
-    try {
-      const apiKey = localStorage.getItem("api_key");
-      const apiSecret = localStorage.getItem("api_secret");
-
-      if (!apiKey || !apiSecret) {
-        throw new Error("Missing API credentials");
-      }
-
-      const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.task_detail_view?task_id=${taskId}`,
-        {
-          headers: {
-            Authorization: `token ${apiKey}:${apiSecret}`,
-          },
-        }
-      );
-
-      console.log("Get Task Detail:", response.data);
-      return response.data.task_details;
-    } catch (error) {
-      console.error("Get Task Detail failed:", error);
-      return [];
-    }
-  }
-);
