@@ -42,6 +42,7 @@ import {
   removeAssignee,
   setTaskDetails,
   updateTask,
+  updateTaskProgress,
 } from "@/state/task/taskSlice";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -73,11 +74,15 @@ export default function TaskDetails() {
   const categories = useSelector((state: RootState) => state.task.categories);
   const assignees = useSelector((state: RootState) => state.task.assignees);
 
+  const [remark, setRemark] = useState<string>("");
+
   
 
   const [category, setCategory] = useState<String | undefined>();
   const [desc, setDesc] = useState<string>("");
   const [open, setOpen] = useState(false);
+
+  const [progressOpen, setProgressOpen] = useState(false);
 
   const [progress, setProgress] = useState(0);
 
@@ -92,6 +97,7 @@ export default function TaskDetails() {
   useEffect(() => {
     setCategory(taskDetail?.category);
     setDesc(taskDetail?.description ?? "");
+    setProgress(task?.progress_percentageprogress ?? 0);
     dispatch(getAssignees());
   }, []);
 
@@ -461,20 +467,51 @@ export default function TaskDetails() {
         </div>
         
         <div className="w-full">
-          <Dialog>
+          <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
             <DialogTrigger className="w-full">
               <Button className="w-full bg-green-600 hover:bg-green-500">
-                Update Progress
+                Update Task Progress
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Update Progress</DialogTitle>
+                <DialogTitle className="mb-6">Update Task Progress</DialogTitle>
 
-                <div >
-                  <p  className="mt-4">Progress : {progress} %</p>
-                <Slider color="#37AD4A" className="mt-4" onValueChange={handleSliderChange} defaultValue={[task?.progress_percentageprogress ?? 0]} min={0} max={100} step={1} />
-                <Button className="w-full bg-green-600 my-6">Update</Button>
+                <div>
+                  <div className="flex items-center justify-between w-max border-2 rounded-sm border-green-600">
+                    <p className="px-4 py-2 cursor-pointer bg-green-600 text-white">Update Progress</p>
+                    <p className="px-4 py-2 cursor-pointer">No Progress Today</p>
+                  </div>
+                 
+
+                  <div className="flex items-center justify-between my-4">
+                    <p  className="mt-3 text-sm w-[25%]">Work Progress</p>
+                    <Slider color="#37AD4A" className="mt-4 w-[60%]" onValueChange={handleSliderChange} defaultValue={[task?.progress_percentageprogress ?? 0]} min={0} max={100} step={1} />
+                    <p className="mt-3 text-sm">{progress}/100%</p>
+                  </div>
+
+                  <div className="flex items-start justify-between my-8">
+                    <p  className="mt-1 text-sm w-[25%]">Remarks</p>
+                   
+                    <Textarea
+                      placeholder="Add Remarks here"
+                      rows={3}
+                      value={remark}
+                      onChange={(e) => setRemark(e.target.value)}
+                      className="w-[75%] mb-6"
+                    />
+                  </div>
+                
+                <Button onClick={() => {
+                  var taskData = {
+                    "task_id": taskDetail?.id,
+                    "progress": progress,
+                    "remarks": remark,
+                  };
+
+                  dispatch(updateTaskProgress(taskData));
+                  setOpen(false);
+                }} className="w-full bg-green-600 my-6">Update</Button>
                 </div>
               </DialogHeader>
             </DialogContent>

@@ -409,6 +409,8 @@ export const updateTaskProgress = createAsyncThunk(
         }
       );
 
+      console.log("Task Progress Updated", response.data);
+
       return response.data; // Return the response data
     } catch (error) {
       return null;

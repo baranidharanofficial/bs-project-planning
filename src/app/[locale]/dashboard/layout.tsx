@@ -2,7 +2,7 @@
 
 import { IoIosArrowBack } from "react-icons/io";
 import { MdOutlineBook, MdOutlineGroup } from "react-icons/md";
-import { RiBuilding2Fill } from "react-icons/ri";
+import { RiBuilding2Fill, RiBuilding2Line } from "react-icons/ri";
 import Image from "next/image";
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
@@ -17,6 +17,8 @@ type Props = {
 export default function DashboardLayout({ children }: Props) {
   const [collapsed, setCollapsed] = useState(true);
   const [hydrated, setHydrated] = useState(false);
+
+  const [navItem, setNavItem] = useState("dashboard");
 
   useEffect(() => {
     setHydrated(true);
@@ -58,43 +60,43 @@ export default function DashboardLayout({ children }: Props) {
         {!collapsed && (
           <p className="text-sm text-slate-400 mb-2 ml-2">Overview</p>
         )}
-        <Link href="/dashboard">
+        <Link onClick={() => setNavItem('dashboard')} href="/dashboard">
           <div className="flex flex-col items-center justify-center mb-4">
-            <div className="text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
-              <RiBuilding2Fill className="text-xl text-green-700 dark:text-white" />
+            <div className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "dashboard" ? 'bg-green-50' : 'bg-slate-50'}`}>
+              <RiBuilding2Line className={`text-xl  dark:text-white ${navItem == "dashboard" ? 'text-green-700' : 'text-slate-950'}`} />
               {!collapsed && (
                 <p className="ml-2 text-green-700 dark:text-white">Projects</p>
               )}
             </div>
             {collapsed && (
-              <p className="ml-2 text-sm text-green-700 dark:text-white">Projects</p>
+              <p className={`ml-2 text-sm dark:text-white ${navItem == "dashboard" ? 'text-green-700' : 'text-slate-950'}`}>Projects</p>
             )}
           </div>
         </Link>
-        <Link href="/dashboard/book">
+        <Link onClick={() => setNavItem('book')} href="/dashboard/book">
         <div className="flex flex-col items-center justify-center mb-4">
-            <div className="text-md px-4 py-2 mb-1 flex items-center bg-slate-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
-              <MdOutlineBook className="text-xl  dark:text-white" />
+            <div className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "book" ? 'bg-green-50' : 'bg-slate-50'}`}>
+              <MdOutlineBook className={`text-xl  dark:text-white ${navItem == "book" ? 'text-green-700' : 'text-slate-950'}`} />
               {!collapsed && (
                 <p className="ml-2  dark:text-white">Book</p>
               )}
             </div>
             {collapsed && (
-              <p className="ml-2 text-sm  dark:text-white">Book</p>
+              <p className={`ml-2 text-sm dark:text-white ${navItem == "book" ? 'text-green-700' : 'text-slate-950'}`}>Book</p>
             )}
           </div>
         </Link>
 
-        <Link href="/dashboard/teams">
+        <Link onClick={() => setNavItem('teams')} href="/dashboard/teams">
         <div className="flex flex-col items-center justify-center mb-4">
-            <div className="text-md px-4 py-2 mb-1 flex items-center bg-slate-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer">
-              <MdOutlineGroup className="text-xl  dark:text-white" />
+            <div className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "teams" ? 'bg-green-50' : 'bg-slate-50'}`}>
+              <MdOutlineGroup className={`text-xl  dark:text-white ${navItem == "teams" ? 'text-green-700' : 'text-slate-950'}`} />
               {!collapsed && (
                 <p className="ml-2  dark:text-white">Team</p>
               )}
             </div>
             {collapsed && (
-              <p className="ml-2 text-sm  dark:text-white">Team</p>
+              <p className={`ml-2 text-sm dark:text-white ${navItem == "teams" ? 'text-green-700' : 'text-slate-950'}`}>Team</p>
             )}
           </div>
         </Link>

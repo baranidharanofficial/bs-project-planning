@@ -16,6 +16,8 @@ export default function TaskLayout({ children }: Props) {
   const t = useTranslations("PathnamesPage");
   const [addTask, setAddTask] = useState(false);
 
+  const [navItem, setNavItem] = useState("tasks");
+
   const project = useSelector((state: RootState) => state.project.currentProject);
 
   const router = useRouter();
@@ -34,26 +36,26 @@ export default function TaskLayout({ children }: Props) {
           <p className="text-lg font-semibold text-slate-900 dark:text-white  mt-2 mb-6">{project?.project_name}</p>
         </div>
 
-        <Link href="/dashboard/tasks/">
-            <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
+        <Link onClick={() => setNavItem("dashboard")} href="/dashboard/tasks/project-dashboard">
+            <div className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == 'dashboard' ? 'bg-[#37AD4A]  text-white' : 'text-slate-950'}`}>
                 <p className="ml-2">Dashboard</p>
             </div>
         </Link>
         
-        <Link href="/dashboard/tasks">
-            <div className="text-md px-4 py-2 mb-1 flex items-center bg-[#37AD4A] rounded-sm dark:bg-slate-800 text-sm cursor-pointer">
-                <p className="ml-2 text-white">Tasks</p>
+        <Link onClick={() => setNavItem("tasks")} href="/dashboard/tasks">
+            <div className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == 'tasks' ? 'bg-[#37AD4A]  text-white' : 'text-slate-950'}`}>
+                <p className="ml-2">Tasks</p>
             </div>  
         </Link>
 
-        <Link href="/dashboard/tasks/attendance">
-            <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
+        <Link onClick={() => setNavItem("attendance")} href="/dashboard/tasks/attendance">
+            <div className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == 'attendance' ? 'bg-[#37AD4A]  text-white' : 'text-slate-950'}`}>
                 <p className="ml-2">Attendance</p>
             </div>
         </Link>
         
-        <Link href="/dashboard/tasks/files">
-            <div className="text-md px-4 py-2 mb-1 flex items-center hover:bg-slate-50 dark:hover:bg-slate-800 text-sm rounded-md cursor-pointer">
+        <Link onClick={() => setNavItem("files")} href="/dashboard/tasks/files">
+            <div className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == 'files' ? 'bg-[#37AD4A]  text-white' : 'text-slate-950'}`}>
                 <p className="ml-2">Files</p>
             </div>
         </Link>
