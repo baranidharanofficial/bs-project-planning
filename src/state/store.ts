@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import taskReducer from '../state/task/taskSlice';
 import projectReducer from '../state/project/projectSlice';
 import {
@@ -13,21 +13,24 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
+// Combine the reducers
+const rootReducer = combineReducers({
+    task: taskReducer,
+    project: projectReducer,
+});
+
 // Persist configuration
 const persistConfig = {
     key: 'root',
     storage,
+    whitelist: ['task', 'project'], // Optionally, you can specify which reducers to persist
 };
 
-// Create persisted reducers
-const persistedTaskReducer = persistReducer(persistConfig, taskReducer);
-const persistedProjectReducer = persistReducer(persistConfig, projectReducer);
+// Apply persistReducer to the combined rootReducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: {
-        task: persistedTaskReducer,
-        project: persistedProjectReducer,
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {

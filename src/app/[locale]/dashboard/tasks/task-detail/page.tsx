@@ -44,7 +44,6 @@ import {
   updateTask,
   updateTaskProgress,
 } from "@/state/task/taskSlice";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
@@ -62,6 +61,7 @@ import {
   MdOutlineFolder,
   MdOutlinePerson,
   MdOutlinePictureAsPdf,
+  MdSearch,
   MdUploadFile,
 } from "react-icons/md";
 import { PiCaretUpDownBold } from "react-icons/pi";
@@ -69,6 +69,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { useToast } from "@/components/ui/use-toast";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -89,12 +90,15 @@ export default function TaskDetails() {
   const [descEdit, setDescEdit] = useState<boolean>(false);
 
   const [category, setCategory] = useState<String | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [desc, setDesc] = useState<string>("");
   const [open, setOpen] = useState(false);
 
   const [progressOpen, setProgressOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [noProgress, setNoProgress] = useState(false);
+  const [image, setImage] = useState(false);
 
   const { toast } = useToast();
 
@@ -156,6 +160,14 @@ export default function TaskDetails() {
     }
   };
 
+  const filteredCategories = categories.filter((ccategory) =>
+    ccategory.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredAssignees = assignees.filter((assignee) =>
+    assignee.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   useEffect(() => {
     setCategory(taskDetail?.category);
     setDesc(taskDetail?.description ?? "");
@@ -187,6 +199,8 @@ export default function TaskDetails() {
 
       dispatch(addAttachments(formData));
 
+      setRawFiles([]);
+      setFiles([]);
       setOpen(false);
     }
   };
@@ -202,7 +216,7 @@ export default function TaskDetails() {
             <MdArrowBackIos className="mr-2" />
           </Link>
           <p className="mr-2">{task?.title}</p>
-          <PiCaretUpDownBold />
+          {/* <PiCaretUpDownBold /> */}
         </div>
 
         <div className="">
@@ -213,8 +227,8 @@ export default function TaskDetails() {
                   <Image
                     src="/images/category.png"
                     alt="category"
-                    width={24}
-                    height={15}
+                    width={16}
+                    height={16}
                     className="mr-3 w-6 h-5 text-slate-600 "
                   />
                   <div className="flex flex-col items-start justify-center">
@@ -230,9 +244,18 @@ export default function TaskDetails() {
                   <DialogTitle>Update Category</DialogTitle>
                 </DialogHeader>
 
-                <div className="w-full h-[30vh] overflow-y-auto">
-                  <div>
-                    {categories.map((ccategory) => {
+                <div className="w-full h-[400px] ">
+                  <div className="h-[52px] my-2 px-3 border-2 border-neutral-200 w-full rounded-md flex items-center justify-start">
+                    <MdSearch className="text-2xl text-neutral-400 mr-3" />
+                    <input
+                      placeholder="Search Category"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="border-none outline-none w-[90%]"
+                    />
+                  </div>
+                  <div className="h-[330px] pr-2 overflow-y-auto">
+                    {filteredCategories.map((ccategory) => {
                       return (
                         <Card
                           className={`w-full cursor-pointer px-3 py-2 mb-2 ${
@@ -248,7 +271,7 @@ export default function TaskDetails() {
                           <div className="w-full flex items-center justify-between capitalize">
                             <p>{ccategory.name}</p>
                             <MdCheckCircle
-                              className={`px-2 text-4xl ${
+                              className={`px-2 text-[42px] ${
                                 category == ccategory.name
                                   ? "text-green-600 "
                                   : "text-slate-300"
@@ -260,7 +283,7 @@ export default function TaskDetails() {
                     })}
                   </div>
                 </div>
-                <SheetClose className="w-full">
+                <DialogClose className="w-full">
                   <Button
                     onClick={() => {
                       dispatch(
@@ -276,11 +299,11 @@ export default function TaskDetails() {
                         description: `for task ${taskDetail?.id}`,
                       });
                     }}
-                    className="bg-green-600 mt-4 w-full"
+                    className="bg-green-600 mt-2 w-full"
                   >
                     Update
                   </Button>
-                </SheetClose>
+                </DialogClose>
               </DialogContent>
             </Dialog>
             <div className="flex-1"></div>
@@ -304,77 +327,88 @@ export default function TaskDetails() {
             <Image
               src="/images/assignee.png"
               alt="category"
-              width={24}
-              height={15}
+              width={16}
+              height={16}
               className="mr-3 w-6 h-6 text-slate-600 m-2"
             />
-            <p className="mr-8 text-[12px] text-neutral-400">Assignee</p>
+            <div className="flex flex-col items-start justify-start ">
+              <p className="mr-8 text-sm text-neutral-400 mb-2">Assignee</p>
 
-            <div className="flex items-center justify-start flex-wrap gap-2">
-              {taskDetail &&
-                taskDetail.assignee.map((user: Assignee) => {
-                  return (
-                    <div
-                      key={user.user_email}
-                      className="mr-2 p-1 bg-neutral-100 rounded-sm flex items-center"
-                    >
-                      <img
-                        src="https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-                        className="h-6 w-6 rounded-full"
-                      />
-                      <p className="text-black text-sm mx-2">
-                        {user.user_name}
-                      </p>
-                      <MdClose
-                        onClick={() => {
-                          var assigneeData = {
-                            task_id: taskDetail?.id,
-                            user_id: [user.user_email],
-                          };
+              <div className="flex items-center justify-start flex-wrap gap-2">
+                {taskDetail &&
+                  taskDetail.assignee.map((user: Assignee) => {
+                    return (
+                      <div
+                        key={user.user_email}
+                        className="mr-2 p-1 bg-neutral-100 rounded-sm flex items-center"
+                      >
+                        <div className="text-sm bg-white h-6 w-6 rounded-full flex items-center justify-center">
+                          {user.user_name.charAt(0).toUpperCase()}
+                        </div>
+                        <p className="text-black text-sm mx-2">
+                          {user.user_name}
+                        </p>
+                        <MdClose
+                          onClick={() => {
+                            var assigneeData = {
+                              task_id: taskDetail?.id,
+                              user_id: [user.user_email],
+                            };
 
-                          dispatch(removeAssignee(assigneeData));
-                        }}
-                        className="text-red-500 text-xl cursor-pointer"
-                      />
+                            dispatch(removeAssignee(assigneeData));
+                          }}
+                          className="text-neutral-500 font-semibold text-xl cursor-pointer"
+                        />
+                      </div>
+                    );
+                  })}
+                <Dialog>
+                  <DialogTrigger>
+                    <MdAdd className="text-green-600 bg-neutral-100 text-3xl p-1 rounded-full" />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Task Assignee</DialogTitle>
+                    </DialogHeader>
+                    <div className="h-[400px]">
+                      <div className="h-[52px] my-2 px-3 border-2 border-neutral-200 w-full rounded-md flex items-center justify-start">
+                        <MdSearch className="text-2xl text-neutral-400 mr-3" />
+                        <input
+                          placeholder="Search Assignee"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="border-none outline-none w-[90%]"
+                        />
+                      </div>
+                      <div className="h-[300px] w-full pr-2 overflow-y-auto">
+                        {filteredAssignees.map((assignee) => {
+                          return (
+                            <Card
+                              onClick={() => {
+                                var assigneeData = {
+                                  task_id: taskDetail?.id,
+                                  user_id: [assignee.id],
+                                };
+
+                                console.log(assigneeData);
+
+                                dispatch(addAssigneeToTask(assigneeData));
+                              }}
+                              key={assignee.id}
+                              className="w-full px-2 py-4 mb-2 cursor-pointer"
+                            >
+                              <div className="w-full flex items-center justify-between">
+                                {assignee.full_name}
+                                <MdCheckCircle className="text-2xl text-slate-200" />
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
                     </div>
-                  );
-                })}
-              <Dialog>
-                <DialogTrigger>
-                  <MdAdd className="text-green-600 bg-neutral-100 text-3xl p-1 rounded-full" />
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Update Assignees</DialogTitle>
-
-                    <div className="h-[30vh] w-full pr-2 overflow-y-auto">
-                      {assignees.map((assignee) => {
-                        return (
-                          <Card
-                            onClick={() => {
-                              var assigneeData = {
-                                task_id: taskDetail?.id,
-                                user_id: [assignee.id],
-                              };
-
-                              console.log(assigneeData);
-
-                              dispatch(addAssigneeToTask(assigneeData));
-                            }}
-                            key={assignee.id}
-                            className="w-full px-2 py-2 mb-2 cursor-pointer"
-                          >
-                            <div className="w-full flex items-center justify-between">
-                              {assignee.full_name}
-                              <MdCheckCircle className="text-2xl text-slate-200" />
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
 
@@ -439,12 +473,86 @@ export default function TaskDetails() {
           )}
 
           <div className="flex items-center justify-between w-[70%]">
-            <div className=" flex items-center justify-start my-4">
-              <MdOutlineAttachment className="mr-2" />
-              <p className="mr-8">Attachments</p>
+            <div className="flex items-center justify-start my-4">
+              <MdOutlineAttachment className="mx-2" />
+              <p className="ml-1 text-neutral-400 text-[12px]">Attachments</p>
             </div>
 
-            <p className="text-[#5A74B8] text-sm font-semibold">View All</p>
+            <Sheet>
+              <SheetTrigger>
+                <p
+                  onClick={() => setImage(false)}
+                  className="text-[#5A74B8] text-sm font-semibold cursor-pointer"
+                >
+                  View All
+                </p>
+              </SheetTrigger>
+              <SheetContent className="w-[50vw] min-w-[50vw]">
+                <SheetHeader className="w-full">
+                  <SheetTitle>Attachments</SheetTitle>
+                </SheetHeader>
+                <div className="w-full bg-white mt-4">
+                  <div className="flex items-center justify-between mb-6 w-max border-2 rounded-sm border-green-600">
+                    <p
+                      onClick={() => setImage(true)}
+                      className={`px-4 py-2 cursor-pointer ${
+                        image ? "bg-green-600 text-white" : "text-black"
+                      } `}
+                    >
+                      Images
+                    </p>
+                    <p
+                      onClick={() => setImage(false)}
+                      className={`px-4 py-2 cursor-pointer ${
+                        !image ? "bg-green-600 text-white" : "text-black"
+                      } `}
+                    >
+                      Documents
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-sm ">
+                      {image ? taskImages.length : taskDocs.length} items
+                    </p>
+
+                    <Button>+ Add Items</Button>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-4 overflow-x-auto">
+                    {image &&
+                      taskImages.map((taskImage) => {
+                        return (
+                          <div className="aspect-square bg-slate-200">
+                            <Image
+                              alt="Task Image"
+                              width={100}
+                              height={100}
+                              src={taskImage.file_url_with_protocol}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        );
+                      })}
+
+                    {!image &&
+                      taskDocs.map((taskDoc) => {
+                        return (
+                          <div className="aspect-square bg-slate-200">
+                            <Image
+                              alt="Task Image"
+                              width={100}
+                              height={100}
+                              src={taskDoc.file_url_with_protocol}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
 
           <div className="flex items-center justify-start w-[70%] flex-wrap gap-2 overflow-x-auto">
@@ -525,7 +633,7 @@ export default function TaskDetails() {
 
                   <div className="w-[90%]">
                     <p className="text-black text-sm mx-2 whitespace-nowrap overflow-hidden">
-                      {doc.filename ?? 1}.pdf
+                      {doc.filename ?? 1}
                     </p>
                     <p className="text-neutral-400 text-sm mx-2">PDF</p>
                   </div>
@@ -535,90 +643,181 @@ export default function TaskDetails() {
           </div>
         </div>
       </div>
-      <div className="bg-white h-full w-[34%] p-3">
-        <div className="w-full h-[220px] border-solid border-2 border-neutral-100 rounded-md p-4">
-          <div className="mb-3 px-1">
-            <div className="flex items-center justify-between border-b-2 border-solid border-neutral-100 pb-4 mb-4">
-              <p>Status</p>
-              <PogressDropdown selected={task?.status || "In Progress"} />
-            </div>
 
-            <div className="">
-              <RadialChart
-                progress={{
-                  completed: task?.progress_percentageprogress ?? 0,
-                  remaining: task?.progress_percentageprogress
-                    ? 100 - task?.progress_percentageprogress
-                    : 100,
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="py-4 w-full">
-          <div className="flex items-center justify-between mb-2 px-2 w-full">
-            <p>Images</p>
-            <p className="text-sm text-blue-700 font-semibold">View All</p>
-          </div>
-          {taskImages.length > 0 && (
-            <div className="flex items-center justify-start gap-3 w-[90%] overflow-y-hidden overflow-x-auto h-[110px] pb-4 mx-2">
-              <Dialog>
-                {taskImages.map((doc) => {
-                  return (
-                    <DialogTrigger>
-                      <Image
-                        alt="photo"
-                        width={100}
-                        height={100}
-                        key={doc.id}
-                        src={doc.file_url_with_protocol}
-                        className="h-[100px] min-w-[100px] object-cover cursor-pointer"
-                      />
-                    </DialogTrigger>
-                  );
-                })}
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Task Images</DialogTitle>
-                    <TaskCarousel images={taskImages} />
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-            </div>
-          )}
+      <div className="bg-white h-full w-[34%] flex flex-col justify-between p-3">
+        <div className="h-[90%] overflow-y-auto mb-4">
+          <div className="w-full h-[240px] border-solid border-2 border-neutral-100 rounded-md p-4">
+            <div className="mb-3 px-1 pb-3">
+              <div className="flex items-center justify-between border-b-2 border-solid border-neutral-100 pb-4 mb-4">
+                <p>Status</p>
+                <PogressDropdown selected={task?.status || "In Progress"} />
+              </div>
 
-          {taskImages.length == 0 && (
-            <div className="w-full h-[100px] flex text-neutral-300 items-center justify-center">
-              <p>No Images uploaded yet</p>
+              <div className="mb-3">
+                <RadialChart
+                  progress={{
+                    completed: task?.progress_percentageprogress ?? 0,
+                    remaining: task?.progress_percentageprogress
+                      ? 100 - task?.progress_percentageprogress
+                      : 100,
+                  }}
+                />
+              </div>
             </div>
-          )}
-        </div>
-        <div className="py-4">
-          <div className="flex items-center justify-between my-2 mx-2">
-            <p>Timeline</p>
-            <p className="text-sm text-blue-700 font-semibold">View All</p>
           </div>
-          <div className="h-[300px] pt-2 overflow-y-auto ">
-            {taskDetail?.timeline?.map((doc) => {
-              return (
-                <div className="flex items-center justify-start shadow-lg rounded-md p-4 mx-2 mb-3">
-                  <Image
-                    src="/images/timeline.png"
-                    alt="category"
-                    width={24}
-                    height={15}
-                    className="mr-3 w-7 h-7 text-slate-600 "
-                  />
-                  <div key={doc.task_update_id} className="">
-                    <p className="text-sm">{doc.title}</p>
-                    <div className="text-sm text-neutral-300 flex items-center justify-between">
-                      <p>{formatDate(doc.date)}</p>
-                      <p>{doc.updated_by}</p>
+          <div className="py-4 w-full">
+            <div className="flex items-center justify-between mb-2 px-2 w-full">
+              <p>Images</p>
+              <Sheet>
+                <SheetTrigger>
+                  <p
+                    onClick={() => setImage(true)}
+                    className="text-[#5A74B8] text-sm font-semibold cursor-pointer"
+                  >
+                    View All
+                  </p>
+                </SheetTrigger>
+                <SheetContent className="w-[50vw] min-w-[50vw]">
+                  <SheetHeader className="w-full">
+                    <SheetTitle>Attachments</SheetTitle>
+                  </SheetHeader>
+                  <div className="w-full bg-white mt-4">
+                    <div className="flex items-center justify-between mb-6 w-max border-2 rounded-sm border-green-600">
+                      <p
+                        onClick={() => setImage(true)}
+                        className={`px-4 py-2 cursor-pointer ${
+                          image ? "bg-green-600 text-white" : "text-black"
+                        } `}
+                      >
+                        Images
+                      </p>
+                      <p
+                        onClick={() => setImage(false)}
+                        className={`px-4 py-2 cursor-pointer ${
+                          !image ? "bg-green-600 text-white" : "text-black"
+                        } `}
+                      >
+                        Documents
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-6">
+                      <p className="text-sm ">
+                        {image ? taskImages.length : taskDocs.length} items
+                      </p>
+
+                      <Button>+ Add Items</Button>
+                    </div>
+
+                    <div
+                      className={`grid gap-4 overflow-x-auto ${
+                        image ? "grid-cols-5" : "grid-cols-4"
+                      }`}
+                    >
+                      {image &&
+                        taskImages.map((taskImage) => {
+                          return (
+                            <div className="aspect-square bg-slate-200">
+                              <Image
+                                alt="Task Image"
+                                width={100}
+                                height={100}
+                                src={taskImage.file_url_with_protocol}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                          );
+                        })}
+
+                      {!image &&
+                        taskDocs.map((taskDoc) => {
+                          return (
+                            <div
+                              onClick={() => {
+                                openPdfFromUrl(taskDoc.file_url_with_protocol);
+                              }}
+                              className="aspect-square bg-white border-[1px]  flex flex-col items-center justify-center overflow-hidden border-neutral-200"
+                            >
+                              <Image
+                                alt="photo"
+                                width={100}
+                                height={100}
+                                key={taskDoc.id}
+                                src="/images/file.png"
+                                className="h-[100px] min-w-[100px] object-cover cursor-pointer"
+                              />
+                              <p className="text-sm text-center mt-2">
+                                {taskDoc.filename}
+                              </p>
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                </SheetContent>
+              </Sheet>
+            </div>
+            {taskImages.length > 0 && (
+              <div className="flex items-center justify-start gap-3 w-[90%] overflow-y-hidden overflow-x-auto h-[105px] pb-4 mx-2">
+                <Dialog>
+                  {taskImages.map((doc) => {
+                    return (
+                      <DialogTrigger>
+                        <Image
+                          alt="photo"
+                          width={100}
+                          height={100}
+                          key={doc.id}
+                          src={doc.file_url_with_protocol}
+                          className="h-[100px] min-w-[100px] object-cover cursor-pointer"
+                        />
+                      </DialogTrigger>
+                    );
+                  })}
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Task Images</DialogTitle>
+                      <TaskCarousel images={taskImages} />
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+
+            {taskImages.length == 0 && (
+              <div className="w-full h-[100px] flex text-neutral-300 items-center justify-center">
+                <p>No Images uploaded yet</p>
+              </div>
+            )}
+          </div>
+
+          <div className="pb-4">
+            <div className="flex items-center justify-between my-2 mx-2">
+              <p>Timeline</p>
+              <p className="text-sm text-blue-700 font-semibold">View All</p>
+            </div>
+            <div className="pt-2">
+              {taskDetail?.timeline?.map((doc) => {
+                return (
+                  <div className="flex items-center justify-start border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
+                    <Image
+                      src="/images/timeline.png"
+                      alt="category"
+                      width={24}
+                      height={15}
+                      className="mr-4 w-7 h-7 text-slate-600 "
+                    />
+                    <div key={doc.task_update_id} className="">
+                      <p className="text-sm">{doc.title}</p>
+                      <div className="text-sm text-neutral-300 flex items-center justify-between">
+                        <p>{formatDate(doc.date)}</p>
+                        <p>{doc.updated_by}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

@@ -78,8 +78,8 @@ export function DatePickerWithRange({
             <Image
               src="/images/date.png"
               alt="category"
-              width={24}
-              height={15}
+              width={16}
+              height={16}
               className="mr-3 w-6 h-6 text-slate-600 "
             />
             <div>

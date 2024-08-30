@@ -16,9 +16,7 @@ const projectSlice = createSlice({
   name: "project",
   initialState,
   reducers: {
-    addProject: (state) => {
-     
-    },
+    addProject: (state) => {},
     clearProjects: (state) => {
       state.projects = [];
     },
@@ -37,7 +35,7 @@ const projectSlice = createSlice({
 
 export const getProjects = createAsyncThunk(
   "project/getProjects",
-  async (projectId: String) => {
+  async () => {
     try {
       const apiKey = localStorage.getItem("api_key");
       const apiSecret = localStorage.getItem("api_secret");

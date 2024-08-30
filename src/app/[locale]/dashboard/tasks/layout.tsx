@@ -43,7 +43,7 @@ export default function TaskLayout({ children }: Props) {
             className="h-[150px] w-[150px] object-cover rounded-full"
           />
           <p className="text-lg font-semibold text-slate-900 dark:text-white  mt-2 mb-6">
-            {project?.project_name}
+            {project ? project?.project_name : "NA"}
           </p>
         </div>
 
