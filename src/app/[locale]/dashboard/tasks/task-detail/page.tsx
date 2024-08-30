@@ -45,13 +45,15 @@ import {
   updateTaskProgress,
 } from "@/state/task/taskSlice";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   MdAdd,
   MdArrowBackIos,
   MdCheckCircle,
   MdClose,
+  MdCloudUpload,
   MdDescription,
   MdEdit,
   MdOutlineAttachment,
@@ -60,9 +62,17 @@ import {
   MdOutlineFolder,
   MdOutlinePerson,
   MdOutlinePictureAsPdf,
+  MdUploadFile,
 } from "react-icons/md";
 import { PiCaretUpDownBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
+import { useDropzone } from "react-dropzone";
+import { IoMdCloseCircle } from "react-icons/io";
+
+interface FileWithPreview extends File {
+  preview: string;
+  progress: number;
+}
 
 export default function TaskDetails() {
   const taskDetail = useSelector(
@@ -75,23 +85,66 @@ export default function TaskDetails() {
   const assignees = useSelector((state: RootState) => state.task.assignees);
 
   const [remark, setRemark] = useState<string>("");
-
-  
+  const [descEdit, setDescEdit] = useState<boolean>(false);
 
   const [category, setCategory] = useState<String | undefined>();
   const [desc, setDesc] = useState<string>("");
   const [open, setOpen] = useState(false);
 
   const [progressOpen, setProgressOpen] = useState(false);
-
   const [progress, setProgress] = useState(0);
+  const [noProgress, setNoProgress] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map((file) => ({
+      ...file,
+      preview: URL.createObjectURL(file),
+      progress: 0,
+      name: file.name, // Explicitly set the file name
+    }));
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+    // Simulate file upload progress
+    newFiles.forEach((file, index) => {
+      const interval = setInterval(() => {
+        setFiles((prevFiles) => {
+          const updatedFiles = [...prevFiles];
+          const currentFile =
+            updatedFiles[prevFiles.length - newFiles.length + index];
+
+          if (currentFile.progress >= 100) {
+            clearInterval(interval);
+          } else {
+            currentFile.progress += 10;
+          }
+          return updatedFiles;
+        });
+      }, 500);
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [], // Accept all image types
+      "application/pdf": [], // Accept PDF files
+    },
+    multiple: true,
+  });
+
+  const removeFile = (fileName: string) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+  };
 
   const handleSliderChange = (value: number[]) => {
-    setProgress(value[0]);
-    console.log(value);
+    if (task && value[0] >= task?.progress_percentageprogress) {
+      setProgress(value[0]);
+      console.log(value);
+    }
   };
 
   useEffect(() => {
@@ -140,20 +193,30 @@ export default function TaskDetails() {
           <PiCaretUpDownBold />
         </div>
 
-        <div className="ml-8">
-          <div className="text-slate-400 flex items-center justify-start my-6">
-            <MdOutlineFolder className="mr-2" />
-            <p className="mr-8 text-[12px]">Category</p>
-            <p className="text-black font-medium">{taskDetail?.category}</p>
-
-            <Sheet>
-              <SheetTrigger>
-                <MdEdit />
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Update Category</SheetTitle>
-                </SheetHeader>
+        <div className="">
+          <div className="w-[80%] text-slate-400 flex items-center justify-start my-6 ">
+            <Dialog>
+              <DialogTrigger className="w-[50%]">
+                <div className="flex items-center justify-start p-2 flex-1 cursor-pointer transition-all duration-300 rounded-sm hover:bg-neutral-100">
+                  <Image
+                    src="/images/category.png"
+                    alt="category"
+                    width={24}
+                    height={15}
+                    className="mr-3 w-6 h-5 text-slate-600 "
+                  />
+                  <div className="flex flex-col items-start justify-center">
+                    <p className="text-[12px] text-neutral-500">Category</p>
+                    <p className="text-[#5A74B8] font-medium">
+                      {taskDetail?.category}
+                    </p>
+                  </div>
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Update Category</DialogTitle>
+                </DialogHeader>
 
                 <div className="flex flex-col items-center justify-start">
                   <DropdownMenu>
@@ -200,77 +263,50 @@ export default function TaskDetails() {
                     </Button>
                   </SheetClose>
                 </div>
-              </SheetContent>
-            </Sheet>
+              </DialogContent>
+            </Dialog>
+            <div className="flex-1"></div>
           </div>
-          <div className="text-slate-400 flex items-center justify-start my-6">
-            <MdOutlineCalendarMonth className="mr-2" />
-            <p className="mr-6 text-[12px]">Start Date</p>
-            <p className="text-black font-medium">
-              {formatDate(taskDetail?.start_date)}
-            </p>
-            <DatePickerWithRange />
+
+          <div className="w-[80%] flex items-center justify-start my-6">
+            <DatePickerWithRange
+              className="flex-1 mr-4"
+              title={"Start Date"}
+              selectedDate={taskDetail?.start_date ?? ""}
+            />
+
+            <DatePickerWithRange
+              className="flex-1 mr-4"
+              title={"End Date"}
+              selectedDate={taskDetail?.end_date ?? ""}
+            />
           </div>
-          <div className="text-slate-400 flex items-center justify-start my-6">
-            <MdOutlineCalendarMonth className="mr-2" />
-            <p className="mr-8 text-[12px]">End Date</p>
-            <p className="text-black font-medium">
-              {formatDate(taskDetail?.end_date)}
-            </p>
-            <DatePickerWithRange />
-          </div>
-          <div className="text-slate-400 flex items-center justify-start my-6">
-            <MdOutlinePerson className="mr-2" />
-            <p className="mr-8 text-[12px]">Assignee</p>
 
-            <div className="flex items-center justify-start overflow-x-auto">
-              <Sheet>
-                <SheetTrigger>
-                  <MdAdd className="text-green-600 bg-neutral-100 text-4xl p-1 rounded-full" />
-                </SheetTrigger>
-                <SheetContent>
-                  <SheetHeader>
-                    <SheetTitle>Update Assignees</SheetTitle>
+          <div className="w-[90%] flex items-center justify-start my-8">
+            <Image
+              src="/images/assignee.png"
+              alt="category"
+              width={24}
+              height={15}
+              className="mr-3 w-6 h-6 text-slate-600 m-2"
+            />
+            <p className="mr-8 text-[12px] text-neutral-400">Assignee</p>
 
-                    <div className="h-[90vh] w-full pr-2 overflow-y-auto">
-                      {
-                        assignees.map((assignee) => {
-                          return <Card onClick={() => {
-                            var assigneeData = {
-                              "task_id": taskDetail?.id,
-                              "user_id": [assignee.id],
-                            };
-                            
-                            console.log(assigneeData);
-
-                            dispatch(addAssigneeToTask(assigneeData));
-
-                          }} key={assignee.id} className="w-full px-2 py-2 mb-2 cursor-pointer">
-                            
-                            <div className="w-full flex items-center justify-between">
-                            {assignee.full_name}
-                            <MdCheckCircle className="text-2xl text-slate-200"/>
-                            </div>
-                          </Card>
-                        })
-                      }
-                    </div>
-                  </SheetHeader>
-                </SheetContent>
-              </Sheet>
-
+            <div className="flex items-center justify-start flex-wrap gap-2">
               {taskDetail &&
                 taskDetail.assignee.map((user: Assignee) => {
                   return (
                     <div
                       key={user.user_email}
-                      className="ml-4 p-2 bg-neutral-100 rounded-sm flex items-center"
+                      className="mr-2 p-1 bg-neutral-100 rounded-sm flex items-center"
                     >
                       <img
                         src="https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
                         className="h-6 w-6 rounded-full"
                       />
-                      <p className="text-black mx-2">{user.user_name}</p>
+                      <p className="text-black text-sm mx-2">
+                        {user.user_name}
+                      </p>
                       <MdClose
                         onClick={() => {
                           var assigneeData = {
@@ -280,73 +316,120 @@ export default function TaskDetails() {
 
                           dispatch(removeAssignee(assigneeData));
                         }}
-                        className="text-red-500 text-2xl cursor-pointer"
+                        className="text-red-500 text-xl cursor-pointer"
                       />
                     </div>
                   );
                 })}
+              <Dialog>
+                <DialogTrigger>
+                  <MdAdd className="text-green-600 bg-neutral-100 text-3xl p-1 rounded-full" />
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Update Assignees</DialogTitle>
+
+                    <div className="h-[30vh] w-full pr-2 overflow-y-auto">
+                      {assignees.map((assignee) => {
+                        return (
+                          <Card
+                            onClick={() => {
+                              var assigneeData = {
+                                task_id: taskDetail?.id,
+                                user_id: [assignee.id],
+                              };
+
+                              console.log(assigneeData);
+
+                              dispatch(addAssigneeToTask(assigneeData));
+                            }}
+                            key={assignee.id}
+                            className="w-full px-2 py-2 mb-2 cursor-pointer"
+                          >
+                            <div className="w-full flex items-center justify-between">
+                              {assignee.full_name}
+                              <MdCheckCircle className="text-2xl text-slate-200" />
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
-          <div className="text-slate-400 flex items-center justify-start my-4">
-            <MdOutlineDescription className="mr-2" />
-            <p className="mr-8 text-[12px]">Description</p>
+          <div className="flex items-center justify-start my-4 m-2">
+            <Image
+              src="/images/desc.png"
+              alt="category"
+              width={24}
+              height={15}
+              className="mr-3 w-5 h-3 text-slate-600 "
+            />
 
-            <Sheet>
-              <SheetTrigger>
-                <MdEdit />
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Update Description</SheetTitle>
-                </SheetHeader>
-
-                <div className="flex flex-col items-center justify-start">
-                  <Input
-                    value={desc}
-                    onChange={(e) => setDesc(e.target.value)}
-                    type="text"
-                    placeholder="Description"
-                  />
-
-                  <Button
-                    onClick={() =>
-                      dispatch(
-                        updateTask({
-                          task_id: taskDetail?.id,
-                          data: {
-                            description: desc,
-                          },
-                        })
-                      )
-                    }
-                    className="bg-green-600 mt-4 w-full"
-                  >
-                    <SheetClose>Update</SheetClose>
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <p className="mr-8 text-neutral-400 text-[12px]">Description</p>
           </div>
 
-          <Textarea
-            placeholder="Add Description here"
-            rows={6}
-            value={taskDetail?.description}
-            readOnly={true}
-            className="w-[500px] mb-6"
-          />
+          {descEdit && (
+            <div className="flex flex-col items-start justify-start w-[70%] mb-6">
+              <Textarea
+                placeholder="Add Description here"
+                rows={3}
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                className="w-full mb-3"
+              />
 
-          <div className="flex items-center justify-between w-[500px]">
+              <div className="flex items-center justify-start w-[50%]">
+                <Button
+                  onClick={() => {
+                    dispatch(
+                      updateTask({
+                        task_id: taskDetail?.id,
+                        data: {
+                          description: desc,
+                        },
+                      })
+                    );
+                    setDescEdit(false);
+                  }}
+                  className="bg-green-600 px-8 mr-3 transition-all duration-300 hover:bg-green-500 w-[50%]"
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={() => setDescEdit(false)}
+                  className="border-[#143F8C] border-2 transition-all duration-300 bg-transparent hover:bg-transparent text-[#143F8C] px-8 w-[50%]"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!descEdit && (
+            <p
+              onClick={() => setDescEdit(true)}
+              className={`w-[70%] text-sm mb-6 ml-2 ${
+                desc.length > 0 ? "text-slate-800" : "text-neutral-400"
+              }`}
+            >
+              {desc.length > 0 ? desc : "Add Description here"}
+            </p>
+          )}
+
+          <div className="flex items-center justify-between w-[70%]">
             <div className=" flex items-center justify-start my-4">
               <MdOutlineAttachment className="mr-2" />
               <p className="mr-8">Attachments</p>
             </div>
 
-            <p className="text-blue-700 text-sm font-semibold">View All</p>
+            <p className="text-[#5A74B8] text-sm font-semibold">View All</p>
           </div>
 
-          <div className="flex items-center justify-start w-[500px] overflow-x-auto">
+          <div className="flex items-center justify-start w-[70%] flex-wrap gap-2 overflow-x-auto">
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger>
                 <MdAdd className="text-green-600 bg-neutral-100 text-[60px] p-2 rounded-md" />
@@ -354,14 +437,60 @@ export default function TaskDetails() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Upload File</DialogTitle>
+                </DialogHeader>
+                <div className="my-4">
                   <form onSubmit={uploadFiles}>
-                    <Input type="file" id="fileInput" accept=".pdf" multiple />
+                    <div
+                      {...getRootProps()}
+                      className="border-2 border-dashed bg-slate-50 border-slate-500 text-center rounded-md cursor-pointer h-40 flex items-center justify-center"
+                    >
+                      <input {...getInputProps()} />
+                      {isDragActive ? (
+                        <p>Drop the files here ...</p>
+                      ) : (
+                        <div className="flex items-center justify-center flex-col">
+                          <MdCloudUpload className="text-[80px] mb-2 text-slate-300" />
+                          <p>Drag & drop files or Browse</p>
+                        </div>
+                      )}
+                    </div>
 
-                    <Button type="submit" className="w-full bg-green-600">
+                    <div className="mt-5">
+                      {files.map((file, index) => (
+                        <div key={index} className="mb-8">
+                          <div className="flex items-center justify-between">
+                            <div className="w-[90%]">
+                              <strong>{file.name}</strong>
+                              <div className="h-[6px] w-full bg-gray-300 rounded mt-1">
+                                <div
+                                  className={`h-full mt-2 rounded ${
+                                    file.progress === 100
+                                      ? "bg-green-600"
+                                      : "bg-[#143F8C]"
+                                  }`}
+                                  style={{ width: `${file.progress}%` }}
+                                />
+                              </div>
+                            </div>
+
+                            <IoMdCloseCircle
+                              onClick={() => removeFile(file.name)}
+                              className="text-2xl cursor-pointer text-neutral-500"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      disabled={files.length == 0}
+                      type="submit"
+                      className="w-full bg-green-600 hover:bg-green-500"
+                    >
                       Upload File
                     </Button>
                   </form>
-                </DialogHeader>
+                </div>
               </DialogContent>
             </Dialog>
 
@@ -372,7 +501,7 @@ export default function TaskDetails() {
                     openPdfFromUrl(doc.file_url_with_protocol);
                   }}
                   key={doc.id}
-                  className="ml-4 py-2 px-3 min-w-[280px] h-[60px] bg-neutral-100 rounded-sm cursor-pointer flex items-center my-2"
+                  className="py-2 px-3 w-max h-[60px] bg-neutral-100 rounded-sm cursor-pointer flex items-center"
                 >
                   <MdOutlinePictureAsPdf className="text-red-500 text-4xl w-[10%]" />
 
@@ -448,24 +577,30 @@ export default function TaskDetails() {
             <p>Timeline</p>
             <p className="text-sm text-blue-700 font-semibold">View All</p>
           </div>
-          <div className="h-[300px] pt-2 overflow-y-auto">
+          <div className="h-[300px] pt-2 overflow-y-auto ">
             {taskDetail?.timeline?.map((doc) => {
               return (
-                <div
-                  key={doc.task_update_id}
-                  className="shadow-lg rounded-md p-4 mx-2 mb-3"
-                >
-                  <p className="text-sm">{doc.title}</p>
-                  <div className="text-sm text-neutral-300 flex items-center justify-between">
-                    <p>{formatDate(doc.date)}</p>
-                    <p>{doc.updated_by}</p>
+                <div className="flex items-center justify-start shadow-lg rounded-md p-4 mx-2 mb-3">
+                  <Image
+                    src="/images/timeline.png"
+                    alt="category"
+                    width={24}
+                    height={15}
+                    className="mr-3 w-7 h-7 text-slate-600 "
+                  />
+                  <div key={doc.task_update_id} className="">
+                    <p className="text-sm">{doc.title}</p>
+                    <div className="text-sm text-neutral-300 flex items-center justify-between">
+                      <p>{formatDate(doc.date)}</p>
+                      <p>{doc.updated_by}</p>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-        
+
         <div className="w-full">
           <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
             <DialogTrigger className="w-full">
@@ -479,20 +614,71 @@ export default function TaskDetails() {
 
                 <div>
                   <div className="flex items-center justify-between w-max border-2 rounded-sm border-green-600">
-                    <p className="px-4 py-2 cursor-pointer bg-green-600 text-white">Update Progress</p>
-                    <p className="px-4 py-2 cursor-pointer">No Progress Today</p>
+                    <p
+                      onClick={() => setNoProgress(false)}
+                      className={`px-4 py-2 cursor-pointer ${
+                        !noProgress ? "bg-green-600 text-white" : "text-black"
+                      } `}
+                    >
+                      Update Progress
+                    </p>
+                    <p
+                      onClick={() => setNoProgress(true)}
+                      className={`px-4 py-2 cursor-pointer ${
+                        noProgress ? "bg-green-600 text-white" : "text-black"
+                      } `}
+                    >
+                      No Progress Today
+                    </p>
                   </div>
-                 
 
-                  <div className="flex items-center justify-between my-4">
-                    <p  className="mt-3 text-sm w-[25%]">Work Progress</p>
-                    <Slider color="#37AD4A" className="mt-4 w-[60%]" onValueChange={handleSliderChange} defaultValue={[task?.progress_percentageprogress ?? 0]} min={0} max={100} step={1} />
-                    <p className="mt-3 text-sm">{progress}/100%</p>
+                  <div className="flex items-start justify-start my-4">
+                    <p className="mt-3 text-sm w-[25%]">Estimated</p>
+                    <p className="mt-3 text-sm">
+                      {taskDetail?.task_progress}/{taskDetail?.estimated_work}{" "}
+                      {taskDetail?.unit}
+                    </p>
                   </div>
+
+                  {!noProgress && (
+                    <div className="flex items-start justify-start my-4">
+                      <p className="mt-3 text-sm w-[25%]">Work Progress</p>
+
+                      {taskDetail?.unit === "Percentage" ? (
+                        <Slider
+                          color="#37AD4A"
+                          className="mt-4 w-[60%]"
+                          onValueChange={handleSliderChange}
+                          value={[progress]}
+                          min={0}
+                          max={100}
+                          step={1}
+                        />
+                      ) : (
+                        <div className="w-[75%] flex flex-col items-start justify-between">
+                          <div className="flex items-center justify-start mt-3 border-b-2 border-neutral-400 w-[60%] pb-1">
+                            <input
+                              placeholder="Ex. 100"
+                              type="number"
+                              max={taskDetail?.estimated_work}
+                              min={0}
+                              onChange={(e) => {}}
+                              className="text-sm  w-[60%] border-none outline-none"
+                            />
+                            <p className="text-sm">{taskDetail?.unit}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {taskDetail?.unit === "Percentage" && (
+                        <p className="mt-3 text-sm">{progress}/100%</p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex items-start justify-between my-8">
-                    <p  className="mt-1 text-sm w-[25%]">Remarks</p>
-                   
+                    <p className="mt-1 text-sm w-[25%]">Remarks</p>
+
                     <Textarea
                       placeholder="Add Remarks here"
                       rows={3}
@@ -501,23 +687,27 @@ export default function TaskDetails() {
                       className="w-[75%] mb-6"
                     />
                   </div>
-                
-                <Button onClick={() => {
-                  var taskData = {
-                    "task_id": taskDetail?.id,
-                    "progress": progress,
-                    "remarks": remark,
-                  };
 
-                  dispatch(updateTaskProgress(taskData));
-                  setOpen(false);
-                }} className="w-full bg-green-600 my-6">Update</Button>
+                  <Button
+                    onClick={() => {
+                      var taskData = {
+                        task_id: taskDetail?.id,
+                        progress: progress,
+                        remarks: remark,
+                      };
+
+                      dispatch(updateTaskProgress(taskData));
+                      setOpen(false);
+                    }}
+                    className="w-full bg-green-600 my-6"
+                  >
+                    Update
+                  </Button>
                 </div>
               </DialogHeader>
             </DialogContent>
           </Dialog>
         </div>
-        
       </div>
     </div>
   );

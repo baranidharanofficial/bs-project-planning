@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: Props) {
 
 
       <div
-        className={`h-[100vh] shadow-md bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
+        className={`h-[100vh] bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
           collapsed ? "w-[5%]" : "w-[300px]"
         }`}
       >
@@ -74,7 +74,7 @@ export default function DashboardLayout({ children }: Props) {
           </div>
         </Link>
         <Link onClick={() => setNavItem('book')} href="/dashboard/book">
-        <div className="flex flex-col items-center justify-center mb-4">
+          <div className="flex flex-col items-center justify-center mb-4">
             <div className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "book" ? 'bg-green-50' : 'bg-slate-50'}`}>
               <MdOutlineBook className={`text-xl  dark:text-white ${navItem == "book" ? 'text-green-700' : 'text-slate-950'}`} />
               {!collapsed && (

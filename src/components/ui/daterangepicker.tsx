@@ -13,20 +13,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdOutlineCalendarMonth } from "react-icons/md";
 import { AppDispatch, RootState } from "@/state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTask } from "@/state/task/taskSlice";
-import { formatDate2 } from "../custom/date-format";
+import { formatDate, formatDate2 } from "../custom/date-format";
+import Image from "next/image";
+
+interface DatePickerProps {
+  className: string;
+  title: string;
+  selectedDate: string;
+}
 
 export function DatePickerWithRange({
   className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+  title,
+  selectedDate,
+}: DatePickerProps) {
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [popoverOpen, setPopoverOpen] = React.useState(false);
 
-  const
-   taskDetail = useSelector(
+  const taskDetail = useSelector(
     (state: RootState) => state.task.currentTaskDetails
   );
 
@@ -48,36 +56,39 @@ export function DatePickerWithRange({
     }
   }, [taskDetail]);
 
-  
-
   const isDateDisabled = (date: Date) => {
-    if(project && project?.expected_end_date){
+    if (project && project?.expected_end_date) {
       const cutoffDate = new Date(project?.expected_end_date);
       console.log(taskDetail?.end_date);
-    return date > cutoffDate; 
-    }
-    else{
+      return date > cutoffDate;
+    } else {
       console.log(false);
       return false;
     }
   };
 
-
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={"ghost"}
-            className={cn(
-              "w-max justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
+          <div
             onClick={() => setPopoverOpen(!popoverOpen)}
+            className="flex flex-1 p-2 items-center justify-start cursor-pointer transition-all duration-500 rounded-sm hover:bg-neutral-100"
           >
-            <MdEdit />
-          </Button>
+            <Image
+              src="/images/date.png"
+              alt="category"
+              width={24}
+              height={15}
+              className="mr-3 w-6 h-6 text-slate-600 "
+            />
+            <div>
+              <p className="mr-6 text-[12px] text-neutral-500">{title}</p>
+              <p className="font-medium text-[#5A74B8]">
+                {formatDate(selectedDate)}
+              </p>
+            </div>
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
@@ -85,7 +96,6 @@ export function DatePickerWithRange({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            
             onSelect={(date) => {
               setDate(date);
               if (date && date?.from && date?.to && taskDetail) {

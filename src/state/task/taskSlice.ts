@@ -123,7 +123,9 @@ const taskSlice = createSlice({
       .addCase(
         updateTask.fulfilled,
         (state, action: PayloadAction<TaskDetails>) => {
-          state.currentTaskDetails = action.payload;
+          if(action.payload != null){
+            state.currentTaskDetails = action.payload;
+          }
         }
       );
 
@@ -321,7 +323,7 @@ export const updateTask = createAsyncThunk(
       return response.data.details;
     } catch (error) {
       console.error("Task Update failed:", error);
-      return [];
+      return null;
     }
   }
 );

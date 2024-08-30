@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from "axios";
 
 type Props = {
@@ -19,6 +19,17 @@ export default function IndexPage({ params: { locale } }: Props) {
     const [pwd, setPwd] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        // Check if api_key and api_secret exist in localStorage
+        const apiKey = localStorage.getItem('api_key');
+        const apiSecret = localStorage.getItem('api_secret');
+
+        if (apiKey && apiSecret) {
+            // Redirect to the dashboard if they exist
+            router.push('/dashboard');
+        }
+    }, [router]);
 
     const login = async () => {
         setLoading(true);

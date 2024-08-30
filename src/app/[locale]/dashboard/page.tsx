@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { setProject } from '@/state/project/projectSlice';
 import { AppDispatch } from '@/state/store';
 import { getCategories, getTasks } from '@/state/task/taskSlice';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import Image from "next/image";
@@ -57,41 +57,43 @@ export default function DashboardPage({ params: { locale } }: Props) {
     const getProjects = async () => {
         setLoading(true);
         try {
-            // Retrieve the `apiKey` and `apiSecret` from localStorage
             const apiKey = localStorage.getItem('api_key');
             const apiSecret = localStorage.getItem('api_secret');
             const sid = localStorage.getItem('sid');
 
 
-            console.log(sid);
-
-            // Check if the apiKey and apiSecret exist
             if (!apiKey || !apiSecret) {
                 throw new Error('Missing API credentials');
             }
 
-            // Make the API request
+
             const response = await axios.get('https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list', {
                 headers: {
-                    'Cookie' : `sid=${sid};`,
                     'Authorization': `token ${apiKey}:${apiSecret}`,
                 },
                 withCredentials: true,
             });
 
             console.log('Get Projects:', response.data);
-
-            // Store the projects array from the API response in the state
             setData(response.data.message.projects);
-
-            // Redirect to the dashboard
             router.push('/dashboard');
-        } catch (error) {
-            console.error('Get Projects failed:', error);
+        } catch (error: any) {
+            console.error('Get Projects failed:', error.response.status);
+            if(error.response.status == 401){
+                logout();
+                return;
+            }
         } finally {
             setLoading(false);
         }
     };
+
+    const logout = () => {
+        localStorage.setItem('sid', "");
+        localStorage.setItem('api_key', "");
+        localStorage.setItem('api_secret', "");
+        router.push('/');
+    }
 
     return (
         <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
@@ -124,3 +126,5 @@ export default function DashboardPage({ params: { locale } }: Props) {
         </div>
     );
 }
+
+
