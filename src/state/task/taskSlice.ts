@@ -128,7 +128,7 @@ const taskSlice = createSlice({
             
           }
 
-          if(state.currentTask != null) {
+          if(state.currentTask != null && action.payload != null) {
             state.currentTask = {
               ...state.currentTask,
               category: action.payload.category,
