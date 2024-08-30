@@ -125,8 +125,21 @@ const taskSlice = createSlice({
         (state, action: PayloadAction<TaskDetails>) => {
           if(action.payload != null){
             state.currentTaskDetails = action.payload;
+            
+          }
+
+          if(state.currentTask != null) {
+            state.currentTask = {
+              ...state.currentTask,
+              category: action.payload.category,
+              status: action.payload.status,
+            };
+            state.tasks = state.tasks.filter((task ) => task.task_id != action.payload.id);
+            state.tasks = [state.currentTask, ...state.tasks]
+            console.log("SLICE TEST");
           }
         }
+
       );
 
     builder

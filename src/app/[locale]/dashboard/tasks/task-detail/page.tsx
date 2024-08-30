@@ -68,6 +68,7 @@ import { PiCaretUpDownBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
+import { useToast } from "@/components/ui/use-toast";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -95,11 +96,19 @@ export default function TaskDetails() {
   const [progress, setProgress] = useState(0);
   const [noProgress, setNoProgress] = useState(false);
 
+  const { toast } = useToast();
+
   const dispatch = useDispatch<AppDispatch>();
 
   const [files, setFiles] = useState<FileWithPreview[]>([]);
 
+  const [rawfiles, setRawFiles] = useState<File[]>([]);
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    acceptedFiles.forEach((file) => {
+      setRawFiles([...rawfiles, file]);
+    });
+
     const newFiles = acceptedFiles.map((file) => ({
       ...file,
       preview: URL.createObjectURL(file),
@@ -152,7 +161,8 @@ export default function TaskDetails() {
     setDesc(taskDetail?.description ?? "");
     setProgress(task?.progress_percentageprogress ?? 0);
     dispatch(getAssignees());
-  }, []);
+    console.log("RERENDER TEST");
+  }, [taskDetail]);
 
   function openPdfFromUrl(url: string): void {
     if (url) {
@@ -170,8 +180,10 @@ export default function TaskDetails() {
     if (fileInput && fileInput.files) {
       formData.append("documenttype", "Task");
       formData.append("docname", taskDetail?.id ?? "");
-      formData.append("file1", fileInput.files[0]);
-      formData.append("file2", fileInput.files[0]);
+
+      rawfiles.forEach((file, index) => {
+        formData.append(`file${index + 1}`, file);
+      });
 
       dispatch(addAttachments(formData));
 
@@ -218,51 +230,57 @@ export default function TaskDetails() {
                   <DialogTitle>Update Category</DialogTitle>
                 </DialogHeader>
 
-                <div className="flex flex-col items-center justify-start">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="ml-auto capitalize w-full mt-4"
-                      >
-                        {category} <ChevronDownIcon className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {categories.map((ccategory) => {
-                        return (
-                          <DropdownMenuItem
-                            key={ccategory.name}
-                            className={`px-2 cursor-pointer capitalize w-full ${
-                              category == ccategory.name ? "bg-slate-100" : ""
-                            }`}
-                            onClick={() => setCategory(ccategory.name)}
-                          >
-                            {ccategory.name}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <SheetClose>
-                    <Button
-                      onClick={() =>
-                        dispatch(
-                          updateTask({
-                            task_id: "TASK-2024-00004",
-                            data: {
-                              category: category,
-                            },
-                          })
-                        )
-                      }
-                      className="bg-green-600 mt-4 w-full"
-                    >
-                      Update
-                    </Button>
-                  </SheetClose>
+                <div className="w-full h-[30vh] overflow-y-auto">
+                  <div>
+                    {categories.map((ccategory) => {
+                      return (
+                        <Card
+                          className={`w-full cursor-pointer px-3 py-2 mb-2 ${
+                            category == ccategory.name
+                              ? "border-green-600 "
+                              : ""
+                          }`}
+                          key={ccategory.name}
+                          onClick={() => {
+                            setCategory(ccategory.name);
+                          }}
+                        >
+                          <div className="w-full flex items-center justify-between capitalize">
+                            <p>{ccategory.name}</p>
+                            <MdCheckCircle
+                              className={`px-2 text-4xl ${
+                                category == ccategory.name
+                                  ? "text-green-600 "
+                                  : "text-slate-300"
+                              }`}
+                            />
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
+                <SheetClose className="w-full">
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        updateTask({
+                          task_id: taskDetail?.id,
+                          data: {
+                            category: category,
+                          },
+                        })
+                      );
+                      toast({
+                        title: "Category Updated",
+                        description: `for task ${taskDetail?.id}`,
+                      });
+                    }}
+                    className="bg-green-600 mt-4 w-full"
+                  >
+                    Update
+                  </Button>
+                </SheetClose>
               </DialogContent>
             </Dialog>
             <div className="flex-1"></div>
@@ -444,7 +462,7 @@ export default function TaskDetails() {
                       {...getRootProps()}
                       className="border-2 border-dashed bg-slate-50 border-slate-500 text-center rounded-md cursor-pointer h-40 flex items-center justify-center"
                     >
-                      <input {...getInputProps()} />
+                      <input {...getInputProps()} id="fileInput" />
                       {isDragActive ? (
                         <p>Drop the files here ...</p>
                       ) : (
@@ -537,32 +555,35 @@ export default function TaskDetails() {
             </div>
           </div>
         </div>
-        <div className="py-4">
-          <div className="flex items-center justify-between mb-2 mx-2">
+        <div className="py-4 w-full">
+          <div className="flex items-center justify-between mb-2 px-2 w-full">
             <p>Images</p>
             <p className="text-sm text-blue-700 font-semibold">View All</p>
           </div>
           {taskImages.length > 0 && (
-            <div className="flex items-center justify-start gap-3 w-full overflow-x-auto h-[100px] mx-2">
-              {taskImages.map((doc) => {
-                return (
-                  <Dialog>
+            <div className="flex items-center justify-start gap-3 w-[90%] overflow-y-hidden overflow-x-auto h-[110px] pb-4 mx-2">
+              <Dialog>
+                {taskImages.map((doc) => {
+                  return (
                     <DialogTrigger>
-                      <img
+                      <Image
+                        alt="photo"
+                        width={100}
+                        height={100}
                         key={doc.id}
                         src={doc.file_url_with_protocol}
-                        className="h-[100px] w-[100px] object-cover"
+                        className="h-[100px] min-w-[100px] object-cover cursor-pointer"
                       />
                     </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Task Images</DialogTitle>
-                        <TaskCarousel images={taskImages} />
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog>
-                );
-              })}
+                  );
+                })}
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Task Images</DialogTitle>
+                    <TaskCarousel images={taskImages} />
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </div>
           )}
 

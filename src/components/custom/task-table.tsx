@@ -30,6 +30,8 @@ import { Progress } from "../ui/progress";
 import { formatDate, getDaysLeft } from "./date-format";
 import DataTable from "./table";
 import { TaskCategory } from "@/state/task/taskSlice";
+import { RootState } from "@/state/store";
+import { useSelector } from "react-redux";
 
 export interface Task {
   task_id: string;
@@ -40,19 +42,19 @@ export interface Task {
   estimated_work: number;
   unit: string;
   progress: number;
-  progress_percentageprogress: number
+  progress_percentageprogress: number;
 }
 
 export interface TimelineEntry {
-    title: string;
-    photo: string[];
-    status_update: string;
-    date: string;
-    task_update_id: string;
-    task_progress: number;
-    unit: string;
-    remark: string;
-    updated_by: string;
+  title: string;
+  photo: string[];
+  status_update: string;
+  date: string;
+  task_update_id: string;
+  task_progress: number;
+  unit: string;
+  remark: string;
+  updated_by: string;
 }
 
 export interface TaskDetails {
@@ -60,7 +62,7 @@ export interface TaskDetails {
   task_name: string;
   priority: string;
   category: string;
-  status: string;
+  status: "In Progress" | "Completed" | "In Delay" | "Yet To Start";
   task_progress: number;
   project_id: string;
   unit: string;
@@ -101,25 +103,22 @@ export interface Photo {
   timestamp_of_upload: string;
 }
 
-function getColor(status : string) {
-  if(status == "Yet To Start") {
-      return "bg-[#BAF8F1]"
+function getColor(status: string) {
+  if (status == "Yet To Start") {
+    return "bg-[#BAF8F1]";
   }
 
-
-  if(status == "In Delay") {
-      return "bg-[#FAA0A0]"
+  if (status == "In Delay") {
+    return "bg-[#FAA0A0]";
   }
 
-  if(status == "In Progress") {
-      return "bg-[#ADF3C9]"
+  if (status == "In Progress") {
+    return "bg-[#ADF3C9]";
   }
 
-  if(status == "Completed") {
-      return "bg-[#D0D0D0]"
+  if (status == "Completed") {
+    return "bg-[#D0D0D0]";
   }
-
-  
 }
 
 const createColumns = (
@@ -131,13 +130,13 @@ const createColumns = (
     cell: ({ row }) => (
       <div
         onClick={() => {
-            onTaskClick(row.original);
+          onTaskClick(row.original);
         }}
         className={`capitalize w-max px-2 py-1 rounded-sm`}
       >
         {row.getValue("task_id")}
       </div>
-    ),    
+    ),
   },
   {
     accessorKey: "title",
@@ -186,11 +185,11 @@ const createColumns = (
     cell: ({ row }) => (
       <div
         onClick={() => {
-            onTaskClick(row.original);
+          onTaskClick(row.original);
         }}
-        className={`capitalize w-max px-2 py-1 rounded-sm ${
-          getColor(row.getValue("status")) 
-        }`}
+        className={`capitalize w-max px-2 py-1 rounded-sm ${getColor(
+          row.getValue("status")
+        )}`}
       >
         {row.getValue("status")}
       </div>
@@ -228,7 +227,14 @@ const createColumns = (
           className="text-left font-medium"
         >
           <p>{formatDate(row.getValue("expected_end_date"))}</p>
-          <p className="text-sm text-slate-400">{getDaysLeft(row.getValue("expected_end_date")) == 0 && row.getValue("status") != "Completed" ? "Delayed" : row.getValue("status") == "Completed" ? "Completed" : ` ${getDaysLeft(row.getValue("expected_end_date"))}`}</p>
+          <p className="text-sm text-slate-400">
+            {getDaysLeft(row.getValue("expected_end_date")) == 0 &&
+            row.getValue("status") != "Completed"
+              ? "Delayed"
+              : row.getValue("status") == "Completed"
+              ? "Completed"
+              : ` ${getDaysLeft(row.getValue("expected_end_date"))}`}
+          </p>
         </div>
       );
     },
@@ -245,17 +251,17 @@ type DataTableDemoProps = {
 export function TaskTable({
   onTaskClick,
   onAddTaskClick,
-  tasks,
   categories,
 }: DataTableDemoProps) {
+  const tasks = useSelector((state: RootState) => state.task.tasks);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
-  React.useState<VisibilityState>({
-    task_id: false, 
-  });
+    React.useState<VisibilityState>({
+      task_id: false,
+    });
   const [rowSelection, setRowSelection] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -268,7 +274,11 @@ export function TaskTable({
     [onTaskClick]
   );
 
-  const table = useReactTable({
+  React.useEffect(() => {
+    createColumns(onTaskClick);
+  }, [tasks]);
+
+  let table = useReactTable({
     data: tasks,
     columns,
     onSortingChange: setSorting,
@@ -317,23 +327,36 @@ export function TaskTable({
         <TabsList className="font-semibold text-black text-xl h-14 px-2">
           <TabsTrigger onClick={() => setTab("All")} value="All">
             All
-            <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">{tasks.length}</p>
+            <p className="px-2 py-1 ml-2 bg-[#FFF1BF] rounded-sm ">
+              {tasks.length}
+            </p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("New")} value="New">
             Yet to start
-            <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">{tasks.filter(task => task.status === "Yet To Start").length}</p>
+            <p className="px-2 py-1  ml-2 bg-[#BAF8F1] rounded-sm ">
+              {tasks.filter((task) => task.status === "Yet To Start").length}
+            </p>
           </TabsTrigger>
-          <TabsTrigger onClick={() => setTab("In Progress")} value="In Progress">
+          <TabsTrigger
+            onClick={() => setTab("In Progress")}
+            value="In Progress"
+          >
             In Progress
-            <p className="px-2 py-1  ml-2 bg-[#ADF3C9] rounded-sm ">{tasks.filter(task => task.status === "In Progress").length}</p>
+            <p className="px-2 py-1  ml-2 bg-[#ADF3C9] rounded-sm ">
+              {tasks.filter((task) => task.status === "In Progress").length}
+            </p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("In Delay")} value="In Delay">
             In Delay
-            <p className="px-2 py-1 ml-2 bg-[#FAA0A0] rounded-sm ">{tasks.filter(task => task.status === "In Delay").length}</p>
+            <p className="px-2 py-1 ml-2 bg-[#FAA0A0] rounded-sm ">
+              {tasks.filter((task) => task.status === "In Delay").length}
+            </p>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("Completed")} value="Completed">
             Completed
-            <p className="px-2 py-1 ml-2 bg-[#D0D0D0] rounded-sm ">{tasks.filter(task => task.status === "Completed").length}</p>
+            <p className="px-2 py-1 ml-2 bg-[#D0D0D0] rounded-sm ">
+              {tasks.filter((task) => task.status === "Completed").length}
+            </p>
           </TabsTrigger>
         </TabsList>
         <Button onClick={onAddTaskClick}>Add Task</Button>
@@ -404,7 +427,12 @@ export function TaskTable({
                     }`}
                     onClick={() => setCategory(ccategory.name)}
                   >
-                    {ccategory.name} ({tasks.filter(task => task.category == ccategory.name).length})
+                    {ccategory.name} (
+                    {
+                      tasks.filter((task) => task.category == ccategory.name)
+                        .length
+                    }
+                    )
                   </DropdownMenuItem>
                 );
               })}

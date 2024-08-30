@@ -5,10 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppDispatch, RootState, store } from "@/state/store";
-import { addTask, getCategories, setTask, setTaskDetails, setTaskFiles } from "@/state/task/taskSlice";
+import {
+  addTask,
+  getCategories,
+  setTask,
+  setTaskDetails,
+  setTaskFiles,
+} from "@/state/task/taskSlice";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
@@ -19,8 +25,8 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Task[]>([]);
 
-  const tasks = useSelector((state : RootState) => state.task.tasks);
-  const categories = useSelector((state : RootState) => state.task.categories);
+  const tasks = useSelector((state: RootState) => state.task.tasks);
+  const categories = useSelector((state: RootState) => state.task.categories);
   const dispatch = useDispatch<AppDispatch>();
 
   const router = useRouter();
@@ -32,70 +38,69 @@ export default function TasksPage() {
 
   return (
     <Provider store={store}>
-    <div className="h-full w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8 shadow-sm">
-      <p className="text-[12px] text-slate-400 mb-4">Home / Projects / Tasks</p>
-      <p className="text-lg font-semibold text-slate-900 mb-4">Tasks</p>
-      <TaskTable
-        onTaskClick={(task: Task) => {
-          dispatch(setTask(task));
-          dispatch(setTaskDetails(task.task_id));
-          dispatch(setTaskFiles(task.task_id));
-          dispatch(getCategories());
-          router.replace(`/dashboard/tasks/task-detail`);
-        }}
-        onAddTaskClick={() => dispatch(addTask())}
-        tasks={tasks}
-        categories={categories}
-      />
+      <div className="h-full w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8 shadow-sm">
+        <p className="text-[12px] text-slate-400 mb-4">
+          Home / Projects / Tasks
+        </p>
+        <p className="text-lg font-semibold text-slate-900 mb-4">Tasks</p>
+        <TaskTable
+          onTaskClick={(task: Task) => {
+            dispatch(setTask(task));
+            dispatch(setTaskDetails(task.task_id));
+            dispatch(setTaskFiles(task.task_id));
+            dispatch(getCategories());
+            router.replace(`/dashboard/tasks/task-detail`);
+          }}
+          onAddTaskClick={() => dispatch(addTask())}
+          tasks={tasks}
+          categories={categories}
+        />
 
-      <div
-        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
-          showAddTask ? "block" : "hidden"
-        }`}
-      >
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="font-semibold">Add New Task</h1>
-          <MdClose
-            onClick={() => setShowAddTask(false)}
-            className="cursor-pointer border-2 border-gray-200 text-3xl p-1 rounded-3xl"
-          />
+        <div
+          className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
+            showAddTask ? "block" : "hidden"
+          }`}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="font-semibold">Add New Task</h1>
+            <MdClose
+              onClick={() => setShowAddTask(false)}
+              className="cursor-pointer border-2 border-gray-200 text-3xl p-1 rounded-3xl"
+            />
+          </div>
+
+          <form className="w-full" onSubmit={handleSubmit}>
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="task-name">Task name</Label>
+              <Input
+                type="text"
+                id="task-name"
+                className="mb-6 w-full"
+                placeholder="Task name"
+                onChange={(e) => {}}
+              />
+            </div>
+
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="category">Categories</Label>
+              <Input
+                type="text"
+                id="category"
+                className="mb-8 w-full"
+                placeholder="Select Category"
+                onChange={(e) => {}}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600"
+            >
+              Add Task
+            </Button>
+          </form>
         </div>
-
-        <form className="w-full" onSubmit={handleSubmit}>
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="task-name">Task name</Label>
-            <Input
-              type="text"
-              id="task-name"
-              className="mb-6 w-full"
-              placeholder="Task name"
-              onChange={(e) => {}}
-            />
-          </div>
-
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="category">Categories</Label>
-            <Input
-              type="text"
-              id="category"
-              className="mb-8 w-full"
-              placeholder="Select Category"
-              onChange={(e) => {}}
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600"
-          >
-            Add Task
-          </Button>
-        </form>
       </div>
-    </div>
     </Provider>
   );
 }
-
-
-
