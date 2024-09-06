@@ -9,9 +9,9 @@ export const pathnames: Pathnames<typeof locales> = {
         en: '/pathnames',
         de: '/pfadnamen'
     },
-    '/dashboard': {
-        en: '/dashboard',
-        de: '/dashboard-de'
+    '/projects': {
+        en: '/projects',
+        de: '/projects-de'
     }
 };
 

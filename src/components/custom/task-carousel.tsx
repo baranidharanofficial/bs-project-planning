@@ -34,17 +34,17 @@ export function TaskCarousel({ images }: TaskCarouselProps) {
   }, [api]);
 
   return (
-    <div className="mx-auto max-w-xs">
-      <Carousel setApi={setApi} className="w-full max-w-xs">
+    <div className="mx-auto w-[600px] flex flex-col items-center justify-center">
+      <Carousel setApi={setApi} className="w-[500px]">
         <CarouselContent>
           {images.map((image, index) => (
             <CarouselItem key={index}>
               <Card>
-                <CardContent className="flex aspect-video items-center justify-center p-2">
+                <CardContent className="flex items-center justify-center p-2">
                   <img
                     key={image.id}
                     src={image.file_url_with_protocol}
-                    className="h-[50vh] w-[50vh] object-cover"
+                    className="h-[500px] w-[500px] object-cover"
                   />
                 </CardContent>
               </Card>

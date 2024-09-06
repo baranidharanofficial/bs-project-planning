@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: Props) {
               alt={""}
             />
           ) : (
-            <Link href={"/dashboard"}>
+            <Link href={"/projects"}>
               <Image
                 priority={true}
                 className="w-[80%] ml-[10%] scale-60 rounded-md mb-8"
@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: Props) {
           {!collapsed && (
             <p className="text-sm text-slate-400 mb-2 ml-2">Overview</p>
           )}
-          <Link onClick={() => setNavItem("dashboard")} href="/dashboard">
+          <Link onClick={() => setNavItem("dashboard")} href="/projects">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
                 className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${
@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }: Props) {
               )}
             </div>
           </Link>
-          <Link onClick={() => setNavItem("book")} href="/dashboard/book">
+          <Link onClick={() => setNavItem("book")} href="/projects/book">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
                 className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${
@@ -116,7 +116,7 @@ export default function DashboardLayout({ children }: Props) {
             </div>
           </Link>
 
-          <Link onClick={() => setNavItem("teams")} href="/dashboard/teams">
+          <Link onClick={() => setNavItem("teams")} href="/projects/teams">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
                 className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${

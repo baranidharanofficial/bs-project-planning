@@ -28,7 +28,7 @@ export default function TaskLayout({ children }: Props) {
     <main className="relative w-full h-[90vh] flex items-center justify-between box-border">
       <div className="!w-[15%] h-full bg-white dark:bg-slate-900 p-4 rounded-sm">
         <Link
-          href={"/dashboard"}
+          href={"/projects"}
           className="w-[100%] flex items-center justify-start cursor-pointer mb-6"
         >
           <MdArrowBackIos />
@@ -49,7 +49,7 @@ export default function TaskLayout({ children }: Props) {
 
         <Link
           onClick={() => setNavItem("dashboard")}
-          href="/dashboard/tasks/project-dashboard"
+          href="/projects/tasks/project-dashboard"
         >
           <div
             className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
@@ -62,7 +62,7 @@ export default function TaskLayout({ children }: Props) {
           </div>
         </Link>
 
-        <Link onClick={() => setNavItem("tasks")} href="/dashboard/tasks">
+        <Link onClick={() => setNavItem("tasks")} href="/projects/tasks">
           <div
             className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
               navItem == "tasks" ? "bg-[#37AD4A]  text-white" : "text-slate-950"
@@ -74,7 +74,7 @@ export default function TaskLayout({ children }: Props) {
 
         <Link
           onClick={() => setNavItem("attendance")}
-          href="/dashboard/tasks/attendance"
+          href="/projects/tasks/attendance"
         >
           <div
             className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
@@ -87,7 +87,7 @@ export default function TaskLayout({ children }: Props) {
           </div>
         </Link>
 
-        <Link onClick={() => setNavItem("files")} href="/dashboard/tasks/files">
+        <Link onClick={() => setNavItem("files")} href="/projects/tasks/files">
           <div
             className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
               navItem == "files" ? "bg-[#37AD4A]  text-white" : "text-slate-950"

@@ -90,7 +90,7 @@ export default function TasksPage() {
             dispatch(setTaskDetails(task.task_id));
             dispatch(setTaskFiles(task.task_id));
             dispatch(getCategories());
-            router.replace(`/dashboard/tasks/task-detail`);
+            router.replace(`/projects/tasks/task-detail`);
           }}
           onAddTaskClick={() => dispatch(addTask())}
           tasks={tasks}

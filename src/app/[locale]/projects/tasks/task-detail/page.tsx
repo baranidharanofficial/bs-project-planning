@@ -42,6 +42,7 @@ import {
   removeAssignee,
   setTaskDetails,
   setUnits,
+  TaskCategory,
   TaskUnit,
   updateTask,
   updateTaskProgress,
@@ -73,6 +74,21 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { useToast } from "@/components/ui/use-toast";
 import { DialogClose } from "@radix-ui/react-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -93,13 +109,18 @@ export default function TaskDetails() {
   const [remark, setRemark] = useState<string>("");
   const [descEdit, setDescEdit] = useState<boolean>(false);
 
-  const [category, setCategory] = useState<String | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState<
+    TaskCategory | undefined
+  >();
   const [selectedUnit, setSelectedUnit] = useState<TaskUnit | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
   const [estimatedWork, setEstimatedWork] = useState(0);
 
   const [desc, setDesc] = useState<string>("");
   const [open, setOpen] = useState(false);
+
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [assigneeOpen, setAssigneeOpen] = useState(false);
 
   const [progressOpen, setProgressOpen] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -179,7 +200,9 @@ export default function TaskDetails() {
   );
 
   useEffect(() => {
-    setCategory(taskDetail?.category);
+    setSelectedCategory(
+      categories.find((category) => category.name === taskDetail?.category)
+    );
     setDesc(taskDetail?.description ?? "");
     setProgress(task?.progress_percentage ?? 0);
     dispatch(getAssignees());
@@ -222,7 +245,7 @@ export default function TaskDetails() {
           Home / Projects / Tasks / {task?.title}
         </p>
         <div className="flex items-center justify-start text-xl font-semibold mb-4">
-          <Link href="/dashboard/tasks">
+          <Link href="/projects/tasks">
             <MdArrowBackIos className="mr-2" />
           </Link>
           <p className="mr-2">{task?.title}</p>
@@ -231,8 +254,8 @@ export default function TaskDetails() {
 
         <div className="">
           <div className="w-[80%] text-slate-400 flex items-center justify-start my-6 ">
-            <Dialog>
-              <DialogTrigger className="w-[50%]">
+            <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+              <PopoverTrigger asChild>
                 <div className="flex items-center justify-start p-2 flex-1 cursor-pointer transition-all duration-300 rounded-sm hover:bg-neutral-100">
                   <Image
                     src="/images/category.png"
@@ -244,78 +267,62 @@ export default function TaskDetails() {
                   <div className="flex flex-col items-start justify-center">
                     <p className="text-[12px] text-neutral-500">Category</p>
                     <p className="text-[#5A74B8] font-medium">
-                      {taskDetail?.category}
+                      {selectedCategory
+                        ? categories.find(
+                            (category) =>
+                              category.name === selectedCategory.name
+                          )?.name
+                        : "Select Category..."}
                     </p>
                   </div>
                 </div>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Update Category</DialogTitle>
-                </DialogHeader>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search Category..." />
+                  <CommandList>
+                    <CommandEmpty>No Category found.</CommandEmpty>
+                    <CommandGroup>
+                      {categories.map((category) => (
+                        <CommandItem
+                          key={category.name}
+                          value={category.name}
+                          onSelect={(currentValue) => {
+                            setSelectedCategory(category);
+                            setCategoryOpen(false);
 
-                <div className="w-full h-[400px] ">
-                  <div className="h-[52px] my-2 px-3 border-2 border-neutral-200 w-full rounded-md flex items-center justify-start">
-                    <MdSearch className="text-2xl text-neutral-400 mr-3" />
-                    <input
-                      placeholder="Search Category"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="border-none outline-none w-[90%]"
-                    />
-                  </div>
-                  <div className="h-[330px] pr-2 overflow-y-auto">
-                    {filteredCategories.map((ccategory) => {
-                      return (
-                        <Card
-                          className={`w-full cursor-pointer px-3 py-2 mb-2 ${
-                            category == ccategory.name
-                              ? "border-green-600 "
-                              : ""
-                          }`}
-                          key={ccategory.name}
-                          onClick={() => {
-                            setCategory(ccategory.name);
+                            dispatch(
+                              updateTask({
+                                task_id: taskDetail?.id,
+                                data: {
+                                  category: category.name,
+                                },
+                              })
+                            );
+
+                            toast({
+                              title: "Category Updated",
+                              description: `for task ${taskDetail?.id}`,
+                            });
                           }}
                         >
-                          <div className="w-full flex items-center justify-between capitalize">
-                            <p>{ccategory.name}</p>
-                            <MdCheckCircle
-                              className={`px-2 text-[42px] ${
-                                category == ccategory.name
-                                  ? "text-green-600 "
-                                  : "text-slate-300"
-                              }`}
-                            />
-                          </div>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
-                <DialogClose className="w-full">
-                  <Button
-                    onClick={() => {
-                      dispatch(
-                        updateTask({
-                          task_id: taskDetail?.id,
-                          data: {
-                            category: category,
-                          },
-                        })
-                      );
-                      toast({
-                        title: "Category Updated",
-                        description: `for task ${taskDetail?.id}`,
-                      });
-                    }}
-                    className="bg-green-600 mt-2 w-full"
-                  >
-                    Update
-                  </Button>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedCategory?.name === category.name
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {category.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
             <Dialog>
               <DialogTrigger className="w-[50%]">
                 <div className="flex items-center justify-start p-2 flex-1 cursor-pointer transition-all duration-300 rounded-sm hover:bg-neutral-100">
@@ -491,7 +498,61 @@ export default function TaskDetails() {
                       </div>
                     );
                   })}
-                <Dialog>
+
+                <Popover open={assigneeOpen} onOpenChange={setAssigneeOpen}>
+                  <PopoverTrigger asChild>
+                    <div className=" bg-neutral-100  p-1 cursor-pointer rounded-full">
+                      <MdAdd className="text-green-600 bg-neutral-100 text-3xl" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] h-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search Assignee..." />
+                      <CommandList>
+                        <CommandEmpty>No Assignee found.</CommandEmpty>
+                        <CommandGroup>
+                          {assignees.map((assignee) => (
+                            <CommandItem
+                              key={assignee.id}
+                              value={assignee.full_name}
+                              onSelect={(currentValue) => {
+                                var assigneeData = {
+                                  task_id: taskDetail?.id,
+                                  user_id: [assignee.id],
+                                };
+
+                                console.log(assigneeData);
+
+                                dispatch(addAssigneeToTask(assigneeData));
+
+                                setAssigneeOpen(false);
+
+                                toast({
+                                  title: "Assignee Updated",
+                                  description: `for task ${taskDetail?.id}`,
+                                });
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  taskDetail?.assignee.find(
+                                    (taskassignee) =>
+                                      taskassignee.user_email === assignee.id
+                                  )
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {assignee.full_name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {/* <Dialog>
                   <DialogTrigger>
                     <MdAdd className="text-green-600 bg-neutral-100 text-3xl p-1 rounded-full" />
                   </DialogTrigger>
@@ -536,7 +597,7 @@ export default function TaskDetails() {
                       </div>
                     </div>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
               </div>
             </div>
           </div>
@@ -843,20 +904,31 @@ export default function TaskDetails() {
                         image ? "grid-cols-5" : "grid-cols-4"
                       }`}
                     >
-                      {image &&
-                        taskImages.map((taskImage) => {
-                          return (
-                            <div className="aspect-square bg-slate-200">
-                              <Image
-                                alt="Task Image"
-                                width={100}
-                                height={100}
-                                src={taskImage.file_url_with_protocol}
-                                className="object-cover w-full h-full"
-                              />
-                            </div>
-                          );
-                        })}
+                      {image && (
+                        <Dialog>
+                          {taskImages.map((doc) => {
+                            return (
+                              <DialogTrigger>
+                                <div className="aspect-square bg-slate-200">
+                                  <Image
+                                    alt="Task Image"
+                                    width={100}
+                                    height={100}
+                                    src={doc.file_url_with_protocol}
+                                    className="object-cover w-full h-full"
+                                  />
+                                </div>
+                              </DialogTrigger>
+                            );
+                          })}
+                          <DialogContent className="min-w-[700px]">
+                            <DialogHeader className="mb-4">
+                              <DialogTitle>Task Images</DialogTitle>
+                            </DialogHeader>
+                            <TaskCarousel images={taskImages} />
+                          </DialogContent>
+                        </Dialog>
+                      )}
 
                       {!image &&
                         taskDocs.map((taskDoc) => {
@@ -903,11 +975,11 @@ export default function TaskDetails() {
                       </DialogTrigger>
                     );
                   })}
-                  <DialogContent>
-                    <DialogHeader>
+                  <DialogContent className="min-w-[700px]">
+                    <DialogHeader className="mb-4">
                       <DialogTitle>Task Images</DialogTitle>
-                      <TaskCarousel images={taskImages} />
                     </DialogHeader>
+                    <TaskCarousel images={taskImages} />
                   </DialogContent>
                 </Dialog>
               </div>

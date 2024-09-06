@@ -48,7 +48,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
       dispatch(getTasks(project.id));
       dispatch(getCategories());
 
-      router.replace(`/dashboard/tasks`);
+      router.replace(`/projects/tasks`);
     },
     [router]
   );
@@ -76,7 +76,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
       console.log("Get Projects:", response.data);
       setData(response.data.message.projects);
-      router.push("/dashboard");
+      router.push("/projects");
     } catch (error: any) {
       console.error("Get Projects failed:", error.response.status);
       if (error.response.status == 401) {
