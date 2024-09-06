@@ -24,6 +24,11 @@ export interface TaskCategory {
   img_url_with_protocol: string;
 }
 
+export interface TaskUnit {
+  name: string;
+  symbol: string;
+}
+
 interface TaskState {
   tasks: Task[];
   assignees: User[];
@@ -31,6 +36,7 @@ interface TaskState {
   photos: TaskDocument[];
   categories: TaskCategory[];
   currentTask: Task | null;
+  units: TaskUnit[],
   currentTaskDetails: TaskDetails | null;
 }
 
@@ -40,6 +46,7 @@ const initialState: TaskState = {
   documents: [],
   photos: [],
   categories: [],
+  units: [],
   currentTask: null,
   currentTaskDetails: null,
 };
@@ -58,7 +65,7 @@ const taskSlice = createSlice({
         estimated_work: 100,
         unit: "",
         progress: 10,
-        progress_percentageprogress: 0,
+        progress_percentage: 0,
       };
       state.tasks.push(newtask);
     },
@@ -67,6 +74,11 @@ const taskSlice = createSlice({
     },
     setTask: (state, action: PayloadAction<Task>) => {
       state.currentTask = action.payload;
+    },
+    setUnits: (state, action: PayloadAction<TaskUnit[]>) => {
+      state.units = action.payload;
+      console.log("Set Task Units");
+      console.log(state.units);
     },
   },
   extraReducers: (builder) => {
@@ -498,6 +510,6 @@ export const addAssigneeToTask = createAsyncThunk(
   }
 );
 
-export const { addTask, clearTasks, setTask } = taskSlice.actions;
+export const { addTask, clearTasks, setTask, setUnits } = taskSlice.actions;
 
 export default taskSlice.reducer;

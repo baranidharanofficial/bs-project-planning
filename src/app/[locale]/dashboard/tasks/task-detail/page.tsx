@@ -41,6 +41,8 @@ import {
   getAssignees,
   removeAssignee,
   setTaskDetails,
+  setUnits,
+  TaskUnit,
   updateTask,
   updateTaskProgress,
 } from "@/state/task/taskSlice";
@@ -61,6 +63,7 @@ import {
   MdOutlineFolder,
   MdOutlinePerson,
   MdOutlinePictureAsPdf,
+  MdScale,
   MdSearch,
   MdUploadFile,
 } from "react-icons/md";
@@ -84,13 +87,16 @@ export default function TaskDetails() {
   const taskImages = useSelector((state: RootState) => state.task.photos);
   const task = useSelector((state: RootState) => state.task.currentTask);
   const categories = useSelector((state: RootState) => state.task.categories);
+  const units = useSelector((state: RootState) => state.task.units);
   const assignees = useSelector((state: RootState) => state.task.assignees);
 
   const [remark, setRemark] = useState<string>("");
   const [descEdit, setDescEdit] = useState<boolean>(false);
 
   const [category, setCategory] = useState<String | undefined>();
+  const [selectedUnit, setSelectedUnit] = useState<TaskUnit | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
+  const [estimatedWork, setEstimatedWork] = useState(0);
 
   const [desc, setDesc] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -154,7 +160,7 @@ export default function TaskDetails() {
   };
 
   const handleSliderChange = (value: number[]) => {
-    if (task && value[0] >= task?.progress_percentageprogress) {
+    if (task && value[0] >= task?.progress_percentage) {
       setProgress(value[0]);
       console.log(value);
     }
@@ -164,6 +170,10 @@ export default function TaskDetails() {
     ccategory.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredUnits = units.filter((unit) =>
+    unit.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const filteredAssignees = assignees.filter((assignee) =>
     assignee.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -171,7 +181,7 @@ export default function TaskDetails() {
   useEffect(() => {
     setCategory(taskDetail?.category);
     setDesc(taskDetail?.description ?? "");
-    setProgress(task?.progress_percentageprogress ?? 0);
+    setProgress(task?.progress_percentage ?? 0);
     dispatch(getAssignees());
     console.log("RERENDER TEST");
   }, [taskDetail]);
@@ -306,7 +316,126 @@ export default function TaskDetails() {
                 </DialogClose>
               </DialogContent>
             </Dialog>
-            <div className="flex-1"></div>
+            <Dialog>
+              <DialogTrigger className="w-[50%]">
+                <div className="flex items-center justify-start p-2 flex-1 cursor-pointer transition-all duration-300 rounded-sm hover:bg-neutral-100">
+                  <MdScale className="mr-3 w-6 h-5 text-slate-600 " />
+                  <div className="flex flex-col items-start justify-center">
+                    <p className="text-[12px] text-neutral-500">Unit</p>
+                    <p className="text-[#5A74B8] font-medium">
+                      {selectedUnit != null
+                        ? selectedUnit?.name
+                        : taskDetail?.unit}
+                    </p>
+                  </div>
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Update Unit</DialogTitle>
+                </DialogHeader>
+
+                {taskDetail?.unit_change_limit_reached ? (
+                  <div>
+                    <p>Unit Change Limit is Reached</p>
+                  </div>
+                ) : (
+                  <div className="w-full h-[400px] ">
+                    <div className="h-[52px] my-2 px-3 border-2 border-neutral-200 w-full rounded-md flex items-center justify-start">
+                      <MdSearch className="text-2xl text-neutral-400 mr-3" />
+                      <input
+                        placeholder="Search Unit"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="border-none outline-none w-[90%]"
+                      />
+                    </div>
+                    <div className="h-[280px] pr-2 overflow-y-auto">
+                      {filteredUnits.map((unit: TaskUnit) => {
+                        return (
+                          <Card
+                            className={`w-full cursor-pointer px-3 py-2 mb-2 ${
+                              selectedUnit != null &&
+                              selectedUnit.name == unit.name
+                                ? "border-green-600 "
+                                : ""
+                            }`}
+                            key={unit.name}
+                            onClick={() => {
+                              setSelectedUnit(unit);
+                            }}
+                          >
+                            <div className="w-full flex items-center justify-between">
+                              <p>
+                                {unit.name} ( {unit.symbol} )
+                              </p>
+                              <MdCheckCircle
+                                className={`px-2 text-[42px] ${
+                                  selectedUnit != null &&
+                                  selectedUnit.name == unit.name
+                                    ? "text-green-600 "
+                                    : "text-slate-300"
+                                }`}
+                              />
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                    {selectedUnit != null &&
+                      selectedUnit.name != "Percentage" && (
+                        <div className="h-[52px] my-2 px-3 border-2 border-neutral-200 w-full rounded-md flex items-center justify-start">
+                          <input
+                            placeholder="Estimated Work"
+                            value={estimatedWork}
+                            type="number"
+                            onChange={(e) =>
+                              setEstimatedWork(parseInt(e.target.value))
+                            }
+                            className="border-none outline-none w-full"
+                          />
+                        </div>
+                      )}
+                  </div>
+                )}
+                <DialogClose className="w-full">
+                  <Button
+                    onClick={() => {
+                      if (!taskDetail?.unit_change_limit_reached) {
+                        if (estimatedWork > 0) {
+                          dispatch(
+                            updateTask({
+                              task_id: taskDetail?.id,
+                              data: {
+                                unit: selectedUnit?.name,
+                                estimated_work: estimatedWork,
+                              },
+                            })
+                          );
+                        } else {
+                          dispatch(
+                            updateTask({
+                              task_id: taskDetail?.id,
+                              data: {
+                                unit: selectedUnit?.name,
+                              },
+                            })
+                          );
+                        }
+
+                        toast({
+                          title: "Unit Updated",
+                          description: `for task ${taskDetail?.id}`,
+                        });
+                      }
+                    }}
+                    className="bg-green-600 mt-2 w-full"
+                  >
+                    {taskDetail?.unit_change_limit_reached ? "Close" : "Update"}
+                  </Button>
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="w-[80%] flex items-center justify-start my-6">
@@ -656,9 +785,9 @@ export default function TaskDetails() {
               <div className="mb-3">
                 <RadialChart
                   progress={{
-                    completed: task?.progress_percentageprogress ?? 0,
-                    remaining: task?.progress_percentageprogress
-                      ? 100 - task?.progress_percentageprogress
+                    completed: task?.progress_percentage ?? 0,
+                    remaining: task?.progress_percentage
+                      ? 100 - task?.progress_percentage
                       : 100,
                   }}
                 />

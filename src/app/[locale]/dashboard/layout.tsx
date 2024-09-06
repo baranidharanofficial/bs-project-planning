@@ -47,14 +47,16 @@ export default function DashboardLayout({ children }: Props) {
               alt={""}
             />
           ) : (
-            <Image
-              priority={true}
-              className="w-[80%] ml-[10%] scale-60 rounded-md mb-8"
-              src="/images/logo2.png"
-              width={50}
-              height={50}
-              alt={""}
-            />
+            <Link href={"/dashboard"}>
+              <Image
+                priority={true}
+                className="w-[80%] ml-[10%] scale-60 rounded-md mb-8"
+                src="/images/logo2.png"
+                width={50}
+                height={50}
+                alt={""}
+              />
+            </Link>
           )}
           {!collapsed && (
             <p className="text-sm text-slate-400 mb-2 ml-2">Overview</p>

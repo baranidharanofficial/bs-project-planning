@@ -11,6 +11,7 @@ import {
   setTask,
   setTaskDetails,
   setTaskFiles,
+  setUnits,
 } from "@/state/task/taskSlice";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -46,6 +47,46 @@ export default function TasksPage() {
         <TaskTable
           onTaskClick={(task: Task) => {
             dispatch(setTask(task));
+            dispatch(
+              setUnits([
+                {
+                  name: "Percentage",
+                  symbol: "%",
+                },
+                {
+                  name: "Feet",
+                  symbol: "ft",
+                },
+                {
+                  name: "Meter",
+                  symbol: "m",
+                },
+                {
+                  name: "Inch",
+                  symbol: "in",
+                },
+                {
+                  name: "Square feet",
+                  symbol: "sq ft",
+                },
+                {
+                  name: "Square meter",
+                  symbol: "sq m",
+                },
+                {
+                  name: "Cubic Feet",
+                  symbol: "cu ft",
+                },
+                {
+                  name: "Cubic Meter",
+                  symbol: "cu m",
+                },
+                {
+                  name: "Number",
+                  symbol: "nos",
+                },
+              ])
+            );
             dispatch(setTaskDetails(task.task_id));
             dispatch(setTaskFiles(task.task_id));
             dispatch(getCategories());
