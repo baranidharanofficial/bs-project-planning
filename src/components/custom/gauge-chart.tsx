@@ -21,8 +21,8 @@ const chartConfig = {
 
 interface RadialChartProps {
   progress: {
-    completed: number;
-    remaining: number;
+    Remaining: number;
+    Completed: number;
   };
   estimated: any;
   finished: any;
@@ -42,6 +42,7 @@ export function RadialChart({
     >
       <RadialBarChart
         data={[progress]}
+        startAngle={0}
         endAngle={180}
         innerRadius={110}
         outerRadius={160}
@@ -77,14 +78,14 @@ export function RadialChart({
           />
         </PolarRadiusAxis>
         <RadialBar
-          dataKey="remaining"
+          dataKey="Remaining"
           fill="#F6F6F6"
           stackId="a"
           cornerRadius={8}
           className="stroke-transparent stroke-2"
         />
         <RadialBar
-          dataKey="completed"
+          dataKey="Completed"
           stackId="a"
           cornerRadius={8}
           fill="#37AD4A"

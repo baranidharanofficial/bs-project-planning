@@ -168,7 +168,7 @@ const createColumns = (
             <p className="text-md font-semibold mb-1  hover:underline">
               {row.getValue("title")}
             </p>
-            <p className="!text-[8px] text-slate-400">{category}</p>
+            <p className="text-slate-400">{category}</p>
           </div>
         </div>
       );

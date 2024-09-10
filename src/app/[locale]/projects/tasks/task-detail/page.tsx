@@ -135,6 +135,9 @@ export default function TaskDetails() {
   const [noProgress, setNoProgress] = useState(false);
   const [image, setImage] = useState(false);
 
+  const [imageIndex, setImageIndex] = useState(0);
+  const [timelineImageIndex, setTimelineImageIndex] = useState(0);
+
   const { toast } = useToast();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -247,7 +250,7 @@ export default function TaskDetails() {
   };
 
   return (
-    <div className="bg-neutral-100 h-full w-full flex items-center rounded-sm justify-between">
+    <div className="bg-neutral-100 h-full w-full flex items-center rounded-sm justify-between relative">
       <div className="bg-white h-full w-[65%] p-6">
         <Breadcrumb className="text-[12px] mb-6">
           <BreadcrumbList>
@@ -866,8 +869,8 @@ export default function TaskDetails() {
       </div>
 
       <div className="bg-white h-full w-[34%] flex flex-col justify-between p-3">
-        <div className="h-[90%] overflow-y-auto mb-4">
-          <div className="w-full h-[240px] border-solid border-2 border-neutral-100 rounded-md p-4">
+        <div className="h-full mb-4">
+          <div className="w-full h-[30%] border-solid border-2 border-neutral-100 rounded-md p-4 overflow-hidden">
             <div className="mb-3 px-1 pb-3">
               <div className="flex items-center justify-between border-b-2 border-solid border-neutral-100 pb-4 mb-4">
                 <p>Status</p>
@@ -880,16 +883,17 @@ export default function TaskDetails() {
                   finished={task?.progress}
                   unit={task?.unit ?? "Percentage"}
                   progress={{
-                    completed: task?.progress_percentage ?? 0,
-                    remaining: task?.progress_percentage
+                    Remaining: task?.progress_percentage
                       ? 100 - task?.progress_percentage
                       : 100,
+                    Completed: task?.progress_percentage ?? 0,
                   }}
                 />
               </div>
             </div>
           </div>
-          <div className="py-4 w-full">
+
+          <div className="py-4 h-[20%] w-full">
             <div className="flex items-center justify-between mb-2 px-2 w-full">
               <p>Images</p>
               <Sheet>
@@ -1004,7 +1008,7 @@ export default function TaskDetails() {
                     >
                       {image && (
                         <Dialog>
-                          {taskImages.map((doc) => {
+                          {taskImages.map((doc, index) => {
                             return (
                               <DialogTrigger>
                                 <div className="aspect-square bg-slate-200">
@@ -1013,6 +1017,7 @@ export default function TaskDetails() {
                                     width={100}
                                     height={100}
                                     src={doc.file_url_with_protocol}
+                                    onClick={() => setImageIndex(index)}
                                     className="object-cover w-full h-full"
                                   />
                                 </div>
@@ -1023,7 +1028,10 @@ export default function TaskDetails() {
                             <DialogHeader className="mb-4 text-white">
                               <DialogTitle>Task Images</DialogTitle>
                             </DialogHeader>
-                            <TaskCarousel images={taskImages} />
+                            <TaskCarousel
+                              images={taskImages}
+                              currentIndex={imageIndex}
+                            />
                             <DialogClose className="text-white absolute top-6 right-6">
                               <MdClose className="text-2xl" />
                             </DialogClose>
@@ -1062,25 +1070,29 @@ export default function TaskDetails() {
             {taskImages.length > 0 && (
               <div className="flex items-center justify-start gap-3 w-[90%] overflow-y-hidden overflow-x-auto h-[105px] pb-4 mx-2">
                 <Dialog>
-                  {taskImages.map((doc) => {
-                    return (
-                      <DialogTrigger>
+                  <DialogTrigger className="flex items-center justify-start gap-6 w-full overflow-x-auto py-1">
+                    {taskImages.map((doc, index) => {
+                      return (
                         <Image
                           alt="photo"
-                          width={100}
-                          height={100}
+                          width={0}
+                          height={0}
                           key={doc.id}
                           src={doc.file_url_with_protocol}
-                          className="h-[100px] min-w-[100px] object-cover cursor-pointer"
+                          onClick={() => setImageIndex(index)}
+                          className="h-[100px]  min-w-[100px] object-cover !cursor-pointer"
                         />
-                      </DialogTrigger>
-                    );
-                  })}
+                      );
+                    })}
+                  </DialogTrigger>
                   <DialogContent className="min-w-full h-full bg-[#1717173d] border-transparent">
                     <DialogHeader className="mb-4 text-white">
                       <DialogTitle>Task Images</DialogTitle>
                     </DialogHeader>
-                    <TaskCarousel images={taskImages} />
+                    <TaskCarousel
+                      images={taskImages}
+                      currentIndex={imageIndex}
+                    />
                     <DialogClose className="text-white absolute top-6 right-6">
                       <MdClose className="text-2xl" />
                     </DialogClose>
@@ -1096,7 +1108,7 @@ export default function TaskDetails() {
             )}
           </div>
 
-          <div className="pb-4">
+          <div className="pb-4 h-[50%] overflow-y-auto">
             <div className="flex items-center justify-between my-2 mx-2">
               <p>Timeline</p>
 
@@ -1113,21 +1125,59 @@ export default function TaskDetails() {
                   <div className="w-full h-full overflow-y-auto bg-white mt-4">
                     {taskDetail?.timeline?.map((doc) => {
                       return (
-                        <div className="flex items-center justify-start border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
-                          <Image
-                            src="/images/timeline.png"
-                            alt="category"
-                            width={24}
-                            height={15}
-                            className="mr-4 w-7 h-7 text-slate-600 "
-                          />
-                          <div key={doc.task_update_id} className="">
-                            <p className="text-sm">{doc.title}</p>
-                            <div className="text-sm text-neutral-300 flex items-center justify-between">
-                              <p>{formatDate(doc.date)}</p>
-                              <p>{doc.updated_by}</p>
+                        <div className=" border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
+                          <div className="flex items-center justify-start">
+                            <Image
+                              src="/images/timeline.png"
+                              alt="category"
+                              width={24}
+                              height={15}
+                              className="mr-4 w-7 h-7 text-slate-600 "
+                            />
+                            <div key={doc.task_update_id} className="">
+                              <p className="text-sm">{doc.title}</p>
+                              <div className="text-sm text-neutral-300 flex items-center justify-between">
+                                <p>{formatDate(doc.date)}</p>
+                                <p>{doc.updated_by}</p>
+                              </div>
                             </div>
                           </div>
+
+                          {doc.photo.length > 0 && (
+                            <div className="flex items-center justify-start gap-x-4 w-[90%] overflow-y-hidden overflow-x-auto h-[130px] mt-3 rounded-sm">
+                              <Dialog>
+                                <DialogTrigger className="flex items-center justify-start gap-4 w-full overflow-x-auto py-3">
+                                  {doc.photo.map((doc, index) => {
+                                    return (
+                                      <Image
+                                        alt="photo"
+                                        width={0}
+                                        height={0}
+                                        key={doc.id}
+                                        src={doc.file_url_with_protocol}
+                                        onClick={() =>
+                                          setTimelineImageIndex(index)
+                                        }
+                                        className="h-[100px]  min-w-[100px] object-cover rounded-sm !cursor-pointer"
+                                      />
+                                    );
+                                  })}
+                                </DialogTrigger>
+                                <DialogContent className="min-w-full h-full bg-[#1717173d] border-transparent">
+                                  <DialogHeader className="mb-4 text-white">
+                                    <DialogTitle>Task Images</DialogTitle>
+                                  </DialogHeader>
+                                  <TaskCarousel
+                                    images={doc.photo}
+                                    currentIndex={timelineImageIndex}
+                                  />
+                                  <DialogClose className="text-white absolute top-6 right-6">
+                                    <MdClose className="text-2xl" />
+                                  </DialogClose>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -1159,116 +1209,116 @@ export default function TaskDetails() {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="w-full">
-          <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
-            <DialogTrigger className="w-full">
-              <Button className="w-full bg-green-600 hover:bg-green-500">
-                Update Task Progress
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="mb-6">Update Task Progress</DialogTitle>
+      <div className="w-[30%] absolute bottom-4 right-8">
+        <Dialog open={progressOpen} onOpenChange={setProgressOpen}>
+          <DialogTrigger className="w-full">
+            <Button className="w-full bg-green-600 hover:bg-green-500">
+              Update Task Progress
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="mb-6">Update Task Progress</DialogTitle>
 
-                <div>
-                  <div className="flex items-center justify-between w-max border-2 rounded-sm border-green-600">
-                    <p
-                      onClick={() => setNoProgress(false)}
-                      className={`px-4 py-2 cursor-pointer ${
-                        !noProgress ? "bg-green-600 text-white" : "text-black"
-                      } `}
-                    >
-                      Update Progress
-                    </p>
-                    <p
-                      onClick={() => setNoProgress(true)}
-                      className={`px-4 py-2 cursor-pointer ${
-                        noProgress ? "bg-green-600 text-white" : "text-black"
-                      } `}
-                    >
-                      No Progress Today
-                    </p>
-                  </div>
-
-                  <div className="flex items-start justify-start my-4">
-                    <p className="mt-3 text-sm w-[25%]">Estimated</p>
-                    <p className="mt-3 text-sm">
-                      {taskDetail?.task_progress}/{taskDetail?.estimated_work}{" "}
-                      {taskDetail?.unit}
-                    </p>
-                  </div>
-
-                  {!noProgress && (
-                    <div className="flex items-start justify-start my-4">
-                      <p className="mt-3 text-sm w-[25%]">Work Progress</p>
-
-                      {taskDetail?.unit === "Percentage" ? (
-                        <Slider
-                          color="#37AD4A"
-                          className="mt-4 w-[60%]"
-                          onValueChange={handleSliderChange}
-                          value={[progress]}
-                          min={0}
-                          max={100}
-                          step={1}
-                        />
-                      ) : (
-                        <div className="w-[75%] flex flex-col items-start justify-between">
-                          <div className="flex items-center justify-start mt-3 border-b-2 border-neutral-400 w-[60%] pb-1">
-                            <input
-                              placeholder="Ex. 100"
-                              type="number"
-                              max={taskDetail?.estimated_work}
-                              min={0}
-                              onChange={(e) => {}}
-                              className="text-sm  w-[60%] border-none outline-none"
-                            />
-                            <p className="text-sm ml-4 self-end">
-                              {taskDetail?.unit}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {taskDetail?.unit === "Percentage" && (
-                        <p className="mt-3 text-sm">{progress}/100%</p>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-start justify-between my-8">
-                    <p className="mt-1 text-sm w-[25%]">Remarks</p>
-
-                    <Textarea
-                      placeholder="Add Remarks here"
-                      rows={3}
-                      value={remark}
-                      onChange={(e) => setRemark(e.target.value)}
-                      className="w-[75%] mb-6"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      var taskData = {
-                        task_id: taskDetail?.id,
-                        progress: progress,
-                        remarks: remark,
-                      };
-
-                      dispatch(updateTaskProgress(taskData));
-                      setOpen(false);
-                    }}
-                    className="w-full bg-green-600 my-6"
+              <div>
+                <div className="flex items-center justify-between w-max border-2 rounded-sm border-green-600">
+                  <p
+                    onClick={() => setNoProgress(false)}
+                    className={`px-4 py-2 cursor-pointer ${
+                      !noProgress ? "bg-green-600 text-white" : "text-black"
+                    } `}
                   >
-                    Update
-                  </Button>
+                    Update Progress
+                  </p>
+                  <p
+                    onClick={() => setNoProgress(true)}
+                    className={`px-4 py-2 cursor-pointer ${
+                      noProgress ? "bg-green-600 text-white" : "text-black"
+                    } `}
+                  >
+                    No Progress Today
+                  </p>
                 </div>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        </div>
+
+                <div className="flex items-start justify-start my-4">
+                  <p className="mt-3 text-sm w-[25%]">Estimated</p>
+                  <p className="mt-3 text-sm">
+                    {taskDetail?.task_progress}/{taskDetail?.estimated_work}{" "}
+                    {taskDetail?.unit}
+                  </p>
+                </div>
+
+                {!noProgress && (
+                  <div className="flex items-start justify-start my-4">
+                    <p className="mt-3 text-sm w-[25%]">Work Progress</p>
+
+                    {taskDetail?.unit === "Percentage" ? (
+                      <Slider
+                        color="#37AD4A"
+                        className="mt-4 w-[60%]"
+                        onValueChange={handleSliderChange}
+                        value={[progress]}
+                        min={0}
+                        max={100}
+                        step={1}
+                      />
+                    ) : (
+                      <div className="w-[75%] flex flex-col items-start justify-between">
+                        <div className="flex items-center justify-start mt-3 border-b-2 border-neutral-400 w-[60%] pb-1">
+                          <input
+                            placeholder="Ex. 100"
+                            type="number"
+                            max={taskDetail?.estimated_work}
+                            min={0}
+                            onChange={(e) => {}}
+                            className="text-sm  w-[60%] border-none outline-none"
+                          />
+                          <p className="text-sm ml-4 self-end">
+                            {taskDetail?.unit}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {taskDetail?.unit === "Percentage" && (
+                      <p className="mt-3 text-sm">{progress}/100%</p>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-start justify-between my-8">
+                  <p className="mt-1 text-sm w-[25%]">Remarks</p>
+
+                  <Textarea
+                    placeholder="Add Remarks here"
+                    rows={3}
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                    className="w-[75%] mb-6"
+                  />
+                </div>
+
+                <Button
+                  onClick={() => {
+                    var taskData = {
+                      task_id: taskDetail?.id,
+                      progress: progress,
+                      remarks: remark,
+                    };
+
+                    dispatch(updateTaskProgress(taskData));
+                    setOpen(false);
+                  }}
+                  className="w-full bg-green-600 my-6"
+                >
+                  Update
+                </Button>
+              </div>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
