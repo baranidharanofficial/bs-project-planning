@@ -1099,7 +1099,41 @@ export default function TaskDetails() {
           <div className="pb-4">
             <div className="flex items-center justify-between my-2 mx-2">
               <p>Timeline</p>
-              <p className="text-sm text-blue-700 font-semibold">View All</p>
+
+              <Sheet>
+                <SheetTrigger>
+                  <p className="text-sm text-blue-700 font-semibold">
+                    View All
+                  </p>
+                </SheetTrigger>
+                <SheetContent className="w-[30vw] min-w-[30vw]">
+                  <SheetHeader className="w-full">
+                    <SheetTitle>Timeline</SheetTitle>
+                  </SheetHeader>
+                  <div className="w-full h-full overflow-y-auto bg-white mt-4">
+                    {taskDetail?.timeline?.map((doc) => {
+                      return (
+                        <div className="flex items-center justify-start border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
+                          <Image
+                            src="/images/timeline.png"
+                            alt="category"
+                            width={24}
+                            height={15}
+                            className="mr-4 w-7 h-7 text-slate-600 "
+                          />
+                          <div key={doc.task_update_id} className="">
+                            <p className="text-sm">{doc.title}</p>
+                            <div className="text-sm text-neutral-300 flex items-center justify-between">
+                              <p>{formatDate(doc.date)}</p>
+                              <p>{doc.updated_by}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
             <div className="pt-2">
               {taskDetail?.timeline?.map((doc) => {
