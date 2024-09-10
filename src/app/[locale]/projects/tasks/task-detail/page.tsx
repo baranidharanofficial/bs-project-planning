@@ -252,15 +252,21 @@ export default function TaskDetails() {
         <Breadcrumb className="text-[12px] mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Home</BreadcrumbLink>
+              <BreadcrumbLink>
+                <Link href="/projects">Home</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+              <BreadcrumbLink>
+                <Link href="/projects">Projects</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects/tasks">Tasks</BreadcrumbLink>
+              <BreadcrumbLink>
+                <Link href="/projects/tasks">Tasks</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -870,6 +876,9 @@ export default function TaskDetails() {
 
               <div className="mb-3">
                 <RadialChart
+                  estimated={task?.estimated_work}
+                  finished={task?.progress}
+                  unit={task?.unit ?? "Percentage"}
                   progress={{
                     completed: task?.progress_percentage ?? 0,
                     remaining: task?.progress_percentage

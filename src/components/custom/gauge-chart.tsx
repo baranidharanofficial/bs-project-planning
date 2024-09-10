@@ -1,14 +1,12 @@
-"use client"
+"use client";
 
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-
-
+} from "@/components/ui/chart";
 
 const chartConfig = {
   progress: {
@@ -19,76 +17,80 @@ const chartConfig = {
     label: "Remaining",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
-
-interface RadialChartProps{
+interface RadialChartProps {
   progress: {
-    completed: number, 
-    remaining: number,
-  },
+    completed: number;
+    remaining: number;
+  };
+  estimated: any;
+  finished: any;
+  unit: string;
 }
 
-
-export function RadialChart({progress}: RadialChartProps) {
-
+export function RadialChart({
+  progress,
+  estimated,
+  finished,
+  unit,
+}: RadialChartProps) {
   return (
     <ChartContainer
-    config={chartConfig}
-    className="mx-auto aspect-square w-full max-w-[250px]"
-  >
-    <RadialBarChart
-      data={[progress]}
-      endAngle={180}
-      innerRadius={110}
-      outerRadius={160}
+      config={chartConfig}
+      className="mx-auto aspect-square w-full max-w-[250px]"
     >
-      <ChartTooltip
-        cursor={false}
-        content={<ChartTooltipContent hideLabel />}
-      />
-      <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-        <Label
-          content={({ viewBox }) => {
-            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-              return (
-                <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                  <tspan
-                    x={viewBox.cx}
-                    y={(viewBox.cy || 0) - 32}
-                    className="fill-foreground text-2xl font-bold"
-                  >
-                    {progress.completed.toFixed()}%
-                  </tspan>
-                  <tspan
-                    x={viewBox.cx}
-                    y={(viewBox.cy || 0) - 12}
-                    className="fill-muted-foreground"
-                  >
-                    Percentage
-                  </tspan>
-                </text>
-              )
-            }
-          }}
+      <RadialBarChart
+        data={[progress]}
+        endAngle={180}
+        innerRadius={110}
+        outerRadius={160}
+      >
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel />}
         />
-      </PolarRadiusAxis>
-      <RadialBar
-        dataKey="remaining"
-        fill="#F6F6F6"
-        stackId="a"
-        cornerRadius={8}
-        className="stroke-transparent stroke-2"
-      />
-      <RadialBar
-        dataKey="completed"
-        stackId="a"
-        cornerRadius={8}
-        fill="#37AD4A"
-        className="stroke-transparent stroke-2"
-      />
-      
-    </RadialBarChart>
-  </ChartContainer>
-  )
+        <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+          <Label
+            content={({ viewBox }) => {
+              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                return (
+                  <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) - 32}
+                      className="fill-foreground text-2xl font-bold"
+                    >
+                      {finished}/{estimated} {unit == "Percentage" && "%"}
+                    </tspan>
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) - 12}
+                      className="fill-muted-foreground"
+                    >
+                      {unit}
+                    </tspan>
+                  </text>
+                );
+              }
+            }}
+          />
+        </PolarRadiusAxis>
+        <RadialBar
+          dataKey="remaining"
+          fill="#F6F6F6"
+          stackId="a"
+          cornerRadius={8}
+          className="stroke-transparent stroke-2"
+        />
+        <RadialBar
+          dataKey="completed"
+          stackId="a"
+          cornerRadius={8}
+          fill="#37AD4A"
+          className="stroke-transparent stroke-2"
+        />
+      </RadialBarChart>
+    </ChartContainer>
+  );
 }

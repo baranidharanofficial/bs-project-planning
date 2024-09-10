@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
 import { Provider, useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 
 export default function TasksPage() {
   const t = useTranslations("PathnamesPage");
@@ -52,11 +53,15 @@ export default function TasksPage() {
         <Breadcrumb className="mb-4">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Home</BreadcrumbLink>
+              <BreadcrumbLink>
+                <Link href="/projects">Home</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+              <BreadcrumbLink>
+                <Link href="/projects">Projects</Link>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
 
