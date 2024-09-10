@@ -89,6 +89,14 @@ import {
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -241,9 +249,26 @@ export default function TaskDetails() {
   return (
     <div className="bg-neutral-100 h-full w-full flex items-center rounded-sm justify-between">
       <div className="bg-white h-full w-[65%] p-6">
-        <p className="text-[12px] text-slate-400 mb-6">
-          Home / Projects / Tasks / {task?.title}
-        </p>
+        <Breadcrumb className="text-[12px] mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects/tasks">Tasks</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{task?.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex items-center justify-start text-xl font-semibold mb-4">
           <Link href="/projects/tasks">
             <MdArrowBackIos className="mr-2" />
@@ -896,7 +921,71 @@ export default function TaskDetails() {
                         {image ? taskImages.length : taskDocs.length} items
                       </p>
 
-                      <Button>+ Add Items</Button>
+                      <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger>
+                          <Button>+ Add Items</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Upload File</DialogTitle>
+                          </DialogHeader>
+                          <div className="my-4">
+                            <form onSubmit={uploadFiles}>
+                              <div
+                                {...getRootProps()}
+                                className="border-2 border-dashed bg-slate-50 border-slate-500 text-center rounded-md cursor-pointer h-40 flex items-center justify-center"
+                              >
+                                <input {...getInputProps()} id="fileInput" />
+                                {isDragActive ? (
+                                  <p>Drop the files here ...</p>
+                                ) : (
+                                  <div className="flex items-center justify-center flex-col">
+                                    <MdCloudUpload className="text-[80px] mb-2 text-slate-300" />
+                                    <p>Drag & drop files or Browse</p>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="mt-5">
+                                {files.map((file, index) => (
+                                  <div key={index} className="mb-8">
+                                    <div className="flex items-center justify-between">
+                                      <div className="w-[90%]">
+                                        <strong>{file.name}</strong>
+                                        <div className="h-[6px] w-full bg-gray-300 rounded mt-1">
+                                          <div
+                                            className={`h-full mt-2 rounded ${
+                                              file.progress === 100
+                                                ? "bg-green-600"
+                                                : "bg-[#143F8C]"
+                                            }`}
+                                            style={{
+                                              width: `${file.progress}%`,
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <IoMdCloseCircle
+                                        onClick={() => removeFile(file.name)}
+                                        className="text-2xl cursor-pointer text-neutral-500"
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <Button
+                                disabled={files.length == 0}
+                                type="submit"
+                                className="w-full bg-green-600 hover:bg-green-500"
+                              >
+                                Upload File
+                              </Button>
+                            </form>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
 
                     <div
@@ -921,11 +1010,14 @@ export default function TaskDetails() {
                               </DialogTrigger>
                             );
                           })}
-                          <DialogContent className="min-w-[700px]">
-                            <DialogHeader className="mb-4">
+                          <DialogContent className="min-w-full h-full bg-[#1717173d] border-transparent">
+                            <DialogHeader className="mb-4 text-white">
                               <DialogTitle>Task Images</DialogTitle>
                             </DialogHeader>
                             <TaskCarousel images={taskImages} />
+                            <DialogClose className="text-white absolute top-6 right-6">
+                              <MdClose className="text-2xl" />
+                            </DialogClose>
                           </DialogContent>
                         </Dialog>
                       )}
@@ -975,11 +1067,14 @@ export default function TaskDetails() {
                       </DialogTrigger>
                     );
                   })}
-                  <DialogContent className="min-w-[700px]">
-                    <DialogHeader className="mb-4">
+                  <DialogContent className="min-w-full h-full bg-[#1717173d] border-transparent">
+                    <DialogHeader className="mb-4 text-white">
                       <DialogTitle>Task Images</DialogTitle>
                     </DialogHeader>
                     <TaskCarousel images={taskImages} />
+                    <DialogClose className="text-white absolute top-6 right-6">
+                      <MdClose className="text-2xl" />
+                    </DialogClose>
                   </DialogContent>
                 </Dialog>
               </div>
@@ -1086,7 +1181,9 @@ export default function TaskDetails() {
                               onChange={(e) => {}}
                               className="text-sm  w-[60%] border-none outline-none"
                             />
-                            <p className="text-sm">{taskDetail?.unit}</p>
+                            <p className="text-sm ml-4 self-end">
+                              {taskDetail?.unit}
+                            </p>
                           </div>
                         </div>
                       )}

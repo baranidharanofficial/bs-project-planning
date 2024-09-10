@@ -13,6 +13,15 @@ import {
   setTaskFiles,
   setUnits,
 } from "@/state/task/taskSlice";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -40,9 +49,22 @@ export default function TasksPage() {
   return (
     <Provider store={store}>
       <div className="h-full w-full bg-white dark:bg-slate-900 overflow-y-hidden p-8 shadow-sm">
-        <p className="text-[12px] text-slate-400 mb-4">
-          Home / Projects / Tasks
-        </p>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+
+            <BreadcrumbItem>
+              <BreadcrumbPage>Tasks</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <p className="text-lg font-semibold text-slate-900 mb-4">Tasks</p>
         <TaskTable
           onTaskClick={(task: Task) => {
@@ -66,11 +88,11 @@ export default function TasksPage() {
                   symbol: "in",
                 },
                 {
-                  name: "Square feet",
+                  name: "Square Feet",
                   symbol: "sq ft",
                 },
                 {
-                  name: "Square meter",
+                  name: "Square Meter",
                   symbol: "sq m",
                 },
                 {
