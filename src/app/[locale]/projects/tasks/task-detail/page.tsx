@@ -41,6 +41,7 @@ import {
   getAssignees,
   removeAssignee,
   setTaskDetails,
+  setTaskFiles,
   setUnits,
   TaskCategory,
   TaskUnit,
@@ -97,6 +98,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import TaskImage from "@/components/custom/task-image";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -242,6 +244,10 @@ export default function TaskDetails() {
       });
 
       dispatch(addAttachments(formData));
+
+      if (taskDetail?.id) {
+        dispatch(setTaskFiles(taskDetail?.id ?? ""));
+      }
 
       setRawFiles([]);
       setFiles([]);
@@ -747,14 +753,8 @@ export default function TaskDetails() {
                     {image &&
                       taskImages.map((taskImage) => {
                         return (
-                          <div className="aspect-square bg-slate-200">
-                            <Image
-                              alt="Task Image"
-                              width={100}
-                              height={100}
-                              src={taskImage.file_url_with_protocol}
-                              className="object-cover w-full h-full"
-                            />
+                          <div className="aspect-square h-full w-full bg-slate-200">
+                            <TaskImage taskImage={taskImage} />
                           </div>
                         );
                       })}
@@ -762,14 +762,23 @@ export default function TaskDetails() {
                     {!image &&
                       taskDocs.map((taskDoc) => {
                         return (
-                          <div className="aspect-square bg-slate-200">
+                          <div
+                            onClick={() => {
+                              openPdfFromUrl(taskDoc.file_url_with_protocol);
+                            }}
+                            className="aspect-square bg-white border-[1px]  flex flex-col items-center justify-center overflow-hidden border-neutral-200"
+                          >
                             <Image
-                              alt="Task Image"
+                              alt="photo"
                               width={100}
                               height={100}
-                              src={taskDoc.file_url_with_protocol}
-                              className="object-cover w-full h-full"
+                              key={taskDoc.id}
+                              src="/images/file.png"
+                              className="h-[100px] min-w-[100px] object-cover cursor-pointer"
                             />
+                            <p className="text-sm text-center mt-2">
+                              {taskDoc.filename}
+                            </p>
                           </div>
                         );
                       })}
@@ -1011,15 +1020,8 @@ export default function TaskDetails() {
                           {taskImages.map((doc, index) => {
                             return (
                               <DialogTrigger>
-                                <div className="aspect-square bg-slate-200">
-                                  <Image
-                                    alt="Task Image"
-                                    width={100}
-                                    height={100}
-                                    src={doc.file_url_with_protocol}
-                                    onClick={() => setImageIndex(index)}
-                                    className="object-cover w-full h-full"
-                                  />
+                                <div className="aspect-square h-full w-full bg-slate-200">
+                                  <TaskImage taskImage={doc} />
                                 </div>
                               </DialogTrigger>
                             );

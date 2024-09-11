@@ -177,7 +177,14 @@ const taskSlice = createSlice({
       .addCase(
         addAttachments.fulfilled,
         (state, action: PayloadAction<TaskDocument[]>) => {
-          state.documents = [...state.documents, ...action.payload];
+          action.payload.forEach((doc) => {
+            if(!doc.filetype.includes('image')) {
+              state.documents = [...state.documents, ...action.payload];
+            }else{
+              state.photos = [...state.photos, ...action.payload];
+            }
+          })
+          
         }
       );
 

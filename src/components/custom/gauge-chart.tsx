@@ -42,8 +42,8 @@ export function RadialChart({
     >
       <RadialBarChart
         data={[progress]}
-        startAngle={0}
-        endAngle={180}
+        startAngle={180}
+        endAngle={0}
         innerRadius={110}
         outerRadius={160}
       >
@@ -77,18 +77,19 @@ export function RadialChart({
             }}
           />
         </PolarRadiusAxis>
-        <RadialBar
-          dataKey="Remaining"
-          fill="#F6F6F6"
-          stackId="a"
-          cornerRadius={8}
-          className="stroke-transparent stroke-2"
-        />
+
         <RadialBar
           dataKey="Completed"
           stackId="a"
           cornerRadius={8}
           fill="#37AD4A"
+          className="stroke-transparent stroke-2"
+        />
+        <RadialBar
+          dataKey="Remaining"
+          fill="#F6F6F6"
+          stackId="a"
+          cornerRadius={8}
           className="stroke-transparent stroke-2"
         />
       </RadialBarChart>
