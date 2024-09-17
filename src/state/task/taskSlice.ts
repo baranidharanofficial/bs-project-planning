@@ -55,20 +55,6 @@ const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    addTask: (state) => {
-      let newtask: Task = {
-        task_id: "",
-        title: "test",
-        category: "Test",
-        status: "In Progress",
-        expected_end_date: null,
-        estimated_work: 100,
-        unit: "",
-        progress: 10,
-        progress_percentage: 0,
-      };
-      state.tasks.push(newtask);
-    },
     clearTasks: (state) => {
       state.tasks = [];
     },
@@ -194,8 +180,11 @@ const taskSlice = createSlice({
       })
       .addCase(
         getAssignees.fulfilled,
-        (state, action: PayloadAction<User[]>) => {
-          state.assignees = action.payload;
+        (state, action: PayloadAction<User[]>) => {  
+          console.log(state.assignees);
+          state.assignees = action.payload.filter((element) =>
+            !element.roles.includes("Admin") && !element.roles.includes("Manager"),
+          );
         }
       );
 
@@ -208,6 +197,20 @@ const taskSlice = createSlice({
         (state, action: PayloadAction<Assignee[]>) => {
           if (state.currentTaskDetails) {
            state.currentTaskDetails.assignee = [...state.currentTaskDetails?.assignee, ...action.payload];
+          }
+        }
+      );
+
+      builder
+      .addCase(addTask.pending, () => {
+        console.log("Creating Task");
+      })
+      .addCase(
+        addTask.fulfilled,
+        (state, action: PayloadAction<Task>) => {
+          console.log(action.payload);
+          if (action.payload) {
+            state.tasks = [...state.tasks, action.payload];
           }
         }
       );
@@ -517,6 +520,35 @@ export const addAssigneeToTask = createAsyncThunk(
   }
 );
 
-export const { addTask, clearTasks, setTask, setUnits } = taskSlice.actions;
+export const addTask = createAsyncThunk(
+  'task/addTask',
+  async (taskData : any) => {
+    try {
+      const apiKey = localStorage.getItem("api_key");
+      const apiSecret = localStorage.getItem("api_secret");
+      const url = `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.create_task`;
+
+      const response = await axios.post(url,  
+        { "params" : taskData }, 
+        {
+          headers: {
+            Authorization: `token ${apiKey}:${apiSecret}`,
+          },
+      },
+      );
+
+      if (response.status == 201) {
+        return response.data.details; 
+      } else {
+        return null;
+      }
+    
+    } catch (error) {
+      return null; 
+    }
+  }
+);
+
+export const { clearTasks, setTask, setUnits } = taskSlice.actions;
 
 export default taskSlice.reducer;

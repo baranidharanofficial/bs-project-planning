@@ -29,9 +29,18 @@ import { RiBuilding2Line } from "react-icons/ri";
 import { Progress } from "../ui/progress";
 import { formatDate, getDaysLeft } from "./date-format";
 import DataTable from "./table";
-import { TaskCategory } from "@/state/task/taskSlice";
-import { RootState } from "@/state/store";
-import { useSelector } from "react-redux";
+import { addTask, getTasks, TaskCategory } from "@/state/task/taskSlice";
+import { AppDispatch, RootState } from "@/state/store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Label } from "../ui/label";
 
 export interface Task {
   task_id: string;
@@ -245,15 +254,13 @@ type DataTableDemoProps = {
   tasks: Task[];
   categories: TaskCategory[];
   onTaskClick: (task: Task) => void;
-  onAddTaskClick: () => void;
 };
 
-export function TaskTable({
-  onTaskClick,
-  onAddTaskClick,
-  categories,
-}: DataTableDemoProps) {
+export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
   const tasks = useSelector((state: RootState) => state.task.tasks);
+  const project = useSelector(
+    (state: RootState) => state.project.currentProject
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -268,6 +275,11 @@ export function TaskTable({
 
   const [tab, setTab] = React.useState("All");
   const [category, setCategory] = React.useState("All");
+
+  const [taskName, setTaskName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const columns = React.useMemo(
     () => createColumns(onTaskClick),
@@ -318,6 +330,21 @@ export function TaskTable({
     });
   }, [category]);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    dispatch(
+      addTask({
+        project_id: project?.id,
+        category: categories[0].name,
+        name: taskName,
+        description: description,
+      })
+    );
+
+    dispatch(getTasks(project?.id ?? ""));
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -359,7 +386,63 @@ export function TaskTable({
             </p>
           </TabsTrigger>
         </TabsList>
-        <Button onClick={onAddTaskClick}>Add Task</Button>
+
+        <Dialog>
+          <DialogTrigger>
+            <Button>Add Task</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Task</DialogTitle>
+            </DialogHeader>
+
+            <form className="w-full" onSubmit={handleSubmit}>
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="task-name">Task name</Label>
+                <Input
+                  type="text"
+                  id="task-name"
+                  className="mb-6 w-full"
+                  placeholder="Task name"
+                  onChange={(e) => {
+                    setTaskName(e.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="category">Categories</Label>
+                <Input
+                  type="text"
+                  id="category"
+                  className="mb-8 w-full"
+                  placeholder="Select Category"
+                />
+              </div>
+
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="category">Description</Label>
+                <Input
+                  type="text"
+                  id="Description"
+                  className="mb-8 w-full"
+                  placeholder="Task Description"
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                  }}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                onClick={handleSubmit}
+                className="w-full border-2 text-white bg-green-600 hover:bg-green-600 hover:p-1 hover:border-green-600"
+              >
+                Add Task
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="flex items-center justify-between pb-4 h-[10%]">

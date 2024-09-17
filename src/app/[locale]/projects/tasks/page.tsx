@@ -119,7 +119,6 @@ export default function TasksPage() {
             dispatch(getCategories());
             router.replace(`/projects/tasks/task-detail`);
           }}
-          onAddTaskClick={() => dispatch(addTask())}
           tasks={tasks}
           categories={categories}
         />

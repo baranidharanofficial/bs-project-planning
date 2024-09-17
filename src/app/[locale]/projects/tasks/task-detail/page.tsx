@@ -751,10 +751,12 @@ export default function TaskDetails() {
 
                   <div className="grid grid-cols-5 gap-4 overflow-x-auto">
                     {image &&
-                      taskImages.map((taskImage) => {
+                      taskImages.map((taskImage, index) => {
                         return (
                           <div className="aspect-square h-full w-full bg-slate-200">
-                            <TaskImage taskImage={taskImage} />
+                            <p onClick={() => setImageIndex(index)}>
+                              <TaskImage taskImage={taskImage} />
+                            </p>
                           </div>
                         );
                       })}
@@ -1020,7 +1022,10 @@ export default function TaskDetails() {
                           {taskImages.map((doc, index) => {
                             return (
                               <DialogTrigger>
-                                <div className="aspect-square h-full w-full bg-slate-200">
+                                <div
+                                  onClick={() => setImageIndex(index)}
+                                  className="aspect-square h-full w-full bg-slate-200"
+                                >
                                   <TaskImage taskImage={doc} />
                                 </div>
                               </DialogTrigger>
@@ -1138,6 +1143,9 @@ export default function TaskDetails() {
                             />
                             <div key={doc.task_update_id} className="">
                               <p className="text-sm">{doc.title}</p>
+                              <p className="text-[10px] text-neutral-500 w-max overflow-x-hidden py-1">
+                                {doc.remark.substring(0, 100)}
+                              </p>
                               <div className="text-sm text-neutral-300 flex items-center justify-between">
                                 <p>{formatDate(doc.date)}</p>
                                 <p>{doc.updated_by}</p>
@@ -1190,21 +1198,60 @@ export default function TaskDetails() {
             <div className="pt-2">
               {taskDetail?.timeline?.map((doc) => {
                 return (
-                  <div className="flex items-center justify-start border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
-                    <Image
-                      src="/images/timeline.png"
-                      alt="category"
-                      width={24}
-                      height={15}
-                      className="mr-4 w-7 h-7 text-slate-600 "
-                    />
-                    <div key={doc.task_update_id} className="">
-                      <p className="text-sm">{doc.title}</p>
-                      <div className="text-sm text-neutral-300 flex items-center justify-between">
-                        <p>{formatDate(doc.date)}</p>
-                        <p>{doc.updated_by}</p>
+                  <div className=" border-[1px] border-neutral-200 rounded-md p-4 mx-2 mb-3">
+                    <div className="flex items-center justify-start">
+                      <Image
+                        src="/images/timeline.png"
+                        alt="category"
+                        width={24}
+                        height={15}
+                        className="mr-4 w-7 h-7 text-slate-600 "
+                      />
+                      <div key={doc.task_update_id} className="">
+                        <p className="text-sm">{doc.title}</p>
+                        <p className="text-[10px] text-neutral-500 w-max overflow-x-hidden">
+                          {doc.remark.substring(0, 100)}
+                        </p>
+                        <div className="text-sm text-neutral-300 flex items-center justify-between">
+                          <p>{formatDate(doc.date)}</p>
+                          <p>{doc.updated_by}</p>
+                        </div>
                       </div>
                     </div>
+
+                    {doc.photo.length > 0 && (
+                      <div className="flex items-center justify-start gap-x-4 w-[90%] overflow-y-hidden overflow-x-auto h-[130px] mt-3 rounded-sm">
+                        <Dialog>
+                          <DialogTrigger className="flex items-center justify-start gap-4 w-full overflow-x-auto py-3">
+                            {doc.photo.map((doc, index) => {
+                              return (
+                                <Image
+                                  alt="photo"
+                                  width={0}
+                                  height={0}
+                                  key={doc.id}
+                                  src={doc.file_url_with_protocol}
+                                  onClick={() => setTimelineImageIndex(index)}
+                                  className="h-[100px]  min-w-[100px] object-cover rounded-sm !cursor-pointer"
+                                />
+                              );
+                            })}
+                          </DialogTrigger>
+                          <DialogContent className="min-w-full h-full bg-[#1717173d] border-transparent">
+                            <DialogHeader className="mb-4 text-white">
+                              <DialogTitle>Task Images</DialogTitle>
+                            </DialogHeader>
+                            <TaskCarousel
+                              images={doc.photo}
+                              currentIndex={timelineImageIndex}
+                            />
+                            <DialogClose className="text-white absolute top-6 right-6">
+                              <MdClose className="text-2xl" />
+                            </DialogClose>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    )}
                   </div>
                 );
               })}
