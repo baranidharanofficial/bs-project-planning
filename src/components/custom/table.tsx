@@ -17,7 +17,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MdArrowBackIos, MdArrowDownward, MdArrowForwardIos } from "react-icons/md";
+import {
+  MdArrowBackIos,
+  MdArrowDownward,
+  MdArrowForwardIos,
+} from "react-icons/md";
 
 interface TableProps {
   tableData: RTable<any>;
@@ -34,7 +38,7 @@ export default function DataTable({ tableData, colLength }: TableProps) {
   const endRow = startRow + rowCount - 1;
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full">
       <div className="h-[90%] overflow-y-auto rounded-md border border-slate-100">
         <Table className="h-full">
           <TableHeader>
@@ -83,54 +87,58 @@ export default function DataTable({ tableData, colLength }: TableProps) {
         </Table>
       </div>
 
-      <div className="h-[10%] flex items-center justify-end space-x-2 py-4">
-        <div className="ml-4">
-          <label htmlFor="pageSize" className="mr-2 text-sm text-slate-400">
-            Rows per page:
-          </label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                {pageSize} <MdArrowDownward className="ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-32">
-              {[5, 10, 15, 20].map((size) => (
-                <DropdownMenuItem
-                  className={`px-2 cursor-pointer ${size === pageSize ? 'bg-slate-100' : ''}`}
-                  key={size}
-                  onClick={() => {
-                    setPageSize(size);
-                    tableData.setPageSize(size);
-                  }}
-                >
-                  {size}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <p className="mr-2 text-sm text-slate-800">
+      <div className="h-[10%] w-full flex items-center justify-between space-x-2 py-4">
+        <p className="ml-4 bg-slate-100 px-2 py-1 rounded-sm text-sm text-slate-800">
           {startRow}-{endRow} of {tableData.getCoreRowModel().rows.length}
         </p>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => tableData.previousPage()}
-          disabled={!tableData.getCanPreviousPage()}
-        >
-          <MdArrowBackIos className="ml-2" />
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => tableData.nextPage()}
-          disabled={!tableData.getCanNextPage()}
-        >
-          <MdArrowForwardIos className="mx-1" />
-        </Button>
+        <div className="flex items-center justify-end">
+          <div className="ml-4">
+            <label htmlFor="pageSize" className="mr-2 text-sm text-slate-400">
+              Rows per page:
+            </label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  {pageSize} <MdArrowDownward className="ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-32">
+                {[5, 10, 15, 20].map((size) => (
+                  <DropdownMenuItem
+                    className={`px-2 cursor-pointer ${
+                      size === pageSize ? "bg-slate-100" : ""
+                    }`}
+                    key={size}
+                    onClick={() => {
+                      setPageSize(size);
+                      tableData.setPageSize(size);
+                    }}
+                  >
+                    {size}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => tableData.previousPage()}
+            disabled={!tableData.getCanPreviousPage()}
+          >
+            <MdArrowBackIos className="ml-2" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => tableData.nextPage()}
+            disabled={!tableData.getCanNextPage()}
+          >
+            <MdArrowForwardIos className="mx-1" />
+          </Button>
+        </div>
       </div>
     </div>
   );

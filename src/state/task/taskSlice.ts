@@ -2,6 +2,16 @@ import { Assignee, Task, TaskDetails } from "@/components/custom/task-table";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
+interface Task2 {
+  id: string;
+  name: string;
+  category: string;
+  project: string;
+  description: string;
+  status: string;
+  priority: string;
+}
+
 export interface TaskDocument {
   id: string;
   filename: string;
@@ -207,10 +217,22 @@ const taskSlice = createSlice({
       })
       .addCase(
         addTask.fulfilled,
-        (state, action: PayloadAction<Task>) => {
+        (state, action: PayloadAction<Task2>) => {
           console.log(action.payload);
-          if (action.payload) {
-            state.tasks = [...state.tasks, action.payload];
+          if(action.payload){
+            let newTask:Task = {
+              title: action.payload.name,
+              task_id: action.payload.id,
+              expected_end_date: null,
+              status: "Yet To Start",
+              category: action.payload.category,
+              estimated_work: 100,
+              unit: "Percentage",
+              progress: 0,
+              progress_percentage: 0,
+            }
+  
+            state.tasks = [...state.tasks, newTask];
           }
         }
       );

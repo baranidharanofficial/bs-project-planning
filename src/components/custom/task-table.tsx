@@ -41,6 +41,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
+import { useToast } from "../ui/use-toast";
 
 export interface Task {
   task_id: string;
@@ -276,10 +277,16 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
   const [tab, setTab] = React.useState("All");
   const [category, setCategory] = React.useState("All");
 
+  const [newTaskCategory, setNewTaskCategory] = React.useState<string | null>(
+    null
+  );
+
   const [taskName, setTaskName] = React.useState("");
   const [description, setDescription] = React.useState("");
 
   const dispatch = useDispatch<AppDispatch>();
+
+  const { toast } = useToast();
 
   const columns = React.useMemo(
     () => createColumns(onTaskClick),
@@ -330,19 +337,33 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
     });
   }, [category]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    if (!newTaskCategory) {
+      toast({
+        title: "Category is required",
+        description: `to create a task`,
+      });
+    }
+
+    if (taskName.length === 0) {
+      toast({
+        title: "Task name is required",
+        description: `to create a task`,
+      });
+    }
 
     dispatch(
       addTask({
         project_id: project?.id,
-        category: categories[0].name,
+        category: newTaskCategory,
         name: taskName,
         description: description,
       })
     );
 
-    dispatch(getTasks(project?.id ?? ""));
+    setNewTaskCategory(null);
+    setTaskName("");
+    setDescription("");
   };
 
   if (loading) return <p>Loading...</p>;
@@ -395,8 +416,7 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
             <DialogHeader>
               <DialogTitle>Add New Task</DialogTitle>
             </DialogHeader>
-
-            <form className="w-full" onSubmit={handleSubmit}>
+            <div>
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="task-name">Task name</Label>
                 <Input
@@ -410,17 +430,37 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
                 />
               </div>
 
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="category">Categories</Label>
-                <Input
-                  type="text"
-                  id="category"
-                  className="mb-8 w-full"
-                  placeholder="Select Category"
-                />
-              </div>
+              <Label htmlFor="category">Category</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`ml-auto w-full capitalize justify-start  ${
+                      !newTaskCategory && "text-slate-400"
+                    } `}
+                  >
+                    {newTaskCategory ? newTaskCategory : "Select Category"}
+                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[300px]">
+                  {categories.map((ccategory: TaskCategory) => {
+                    return (
+                      <DropdownMenuItem
+                        key={ccategory.name}
+                        className={`px-2 w-full cursor-pointer capitalize ${
+                          category == ccategory.name ? "bg-slate-100" : ""
+                        }`}
+                        onClick={() => setNewTaskCategory(ccategory.name)}
+                      >
+                        {ccategory.name}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-              <div className="grid w-full items-center gap-1.5">
+              <div className="grid w-full items-center gap-1.5 mt-6">
                 <Label htmlFor="category">Description</Label>
                 <Input
                   type="text"
@@ -428,11 +468,12 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
                   className="mb-8 w-full"
                   placeholder="Task Description"
                   onChange={(e) => {
-                    setCategory(e.target.value);
+                    setDescription(e.target.value);
                   }}
                 />
               </div>
-
+            </div>
+            <DialogClose className="w-full">
               <Button
                 type="submit"
                 onClick={handleSubmit}
@@ -440,7 +481,7 @@ export function TaskTable({ onTaskClick, categories }: DataTableDemoProps) {
               >
                 Add Task
               </Button>
-            </form>
+            </DialogClose>
           </DialogContent>
         </Dialog>
       </div>
