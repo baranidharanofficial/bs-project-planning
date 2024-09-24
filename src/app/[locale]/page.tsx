@@ -22,7 +22,7 @@ export default function IndexPage({ params: { locale } }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
-  const sessionExpired = searchParams.get('session-expired');
+  const sessionExpired = searchParams.get("session-expired");
 
   useEffect(() => {
     // Check if api_key and api_secret exist in localStorage
@@ -31,7 +31,7 @@ export default function IndexPage({ params: { locale } }: Props) {
 
     if (apiKey && apiSecret) {
       // Redirect to the dashboard if they exist
-      router.push("/buildsuite/projects");
+      router.push("/${gcompanyId}/projects");
     }
   }, [router]);
 
@@ -114,9 +114,11 @@ export default function IndexPage({ params: { locale } }: Props) {
           </Button>
         </form>
 
-        {sessionExpired === 'true' &&
-          <p className="w-full text-[12px] text-red-500 text-center mt-2">Your session has expired. Please log in again.</p>
-        }
+        {sessionExpired === "true" && (
+          <p className="w-full text-[12px] text-red-500 text-center mt-2">
+            Your session has expired. Please log in again.
+          </p>
+        )}
       </div>
     </div>
   );

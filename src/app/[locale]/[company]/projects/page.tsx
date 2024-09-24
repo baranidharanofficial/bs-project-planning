@@ -46,8 +46,8 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
       dispatch(getTasks(project.id));
       dispatch(getCategories());
-
-      router.replace(`/buildsuite/projects/tasks`);
+      console.log(gcompanyId);
+      router.push(`/${gcompanyId}/projects/tasks`);
     },
     [router]
   );
@@ -88,8 +88,6 @@ export default function DashboardPage({ params: { locale } }: Props) {
     }
   };
 
-
-
   return (
     <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
       <ProjectList
@@ -102,8 +100,9 @@ export default function DashboardPage({ params: { locale } }: Props) {
       />
 
       <div
-        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${addProject ? "block" : "hidden"
-          }`}
+        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
+          addProject ? "block" : "hidden"
+        }`}
       >
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-semibold">Add New Project</h1>
@@ -113,7 +112,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
           />
         </div>
 
-        <form className="w-full" onSubmit={() => { }}>
+        <form className="w-full" onSubmit={() => {}}>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="email">Project name</Label>
             <Input
@@ -121,7 +120,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
               id="email"
               className=" mb-6 w-full"
               placeholder="Project name"
-              onChange={(e) => { }}
+              onChange={(e) => {}}
             />
           </div>
 
@@ -132,7 +131,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
               id="password"
               className=" mb-8 w-full"
               placeholder="Customer Name"
-              onChange={(e) => { }}
+              onChange={(e) => {}}
             />
           </div>
 

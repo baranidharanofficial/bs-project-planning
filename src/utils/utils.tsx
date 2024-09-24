@@ -2,7 +2,7 @@ import { locales } from "@/config";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
-export let gcompanyId = "";
+export let gcompanyId = "buildsuite-dev";
 
 type Props = {
   children: ReactNode;
@@ -24,7 +24,7 @@ export async function generateMetadata({
 }
 
 export async function getBaseUrl() {
-  let companyId = await localStorage.getItem('company_id');
+  let companyId = await localStorage.getItem("company_id");
   if (companyId && companyId.length > 0) {
     gcompanyId = companyId;
     return `https://${companyId}.app.buildsuite.io`;
@@ -37,5 +37,5 @@ export function logout() {
   localStorage.setItem("sid", "");
   localStorage.setItem("api_key", "");
   localStorage.setItem("api_secret", "");
-  window.location.href = "/?session-expired=true"
-};
+  window.location.href = "/?session-expired=true";
+}

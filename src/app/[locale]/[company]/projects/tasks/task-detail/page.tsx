@@ -262,19 +262,19 @@ export default function TaskDetails() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/buildsuite/projects">Home</Link>
+                <Link href="/${gcompanyId}/projects">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/buildsuite/projects">Projects</Link>
+                <Link href="/${gcompanyId}/projects">Projects</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/buildsuite/projects/tasks">Tasks</Link>
+                <Link href="/${gcompanyId}/projects/tasks">Tasks</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -285,7 +285,7 @@ export default function TaskDetails() {
         </Breadcrumb>
 
         <div className="flex items-center justify-start text-xl font-semibold mb-4">
-          <Link href="/buildsuite/projects/tasks">
+          <Link href="/${gcompanyId}/projects/tasks">
             <MdArrowBackIos className="mr-2" />
           </Link>
           <p className="mr-2">{task?.title}</p>
@@ -309,9 +309,9 @@ export default function TaskDetails() {
                     <p className="text-[#5A74B8] font-medium">
                       {selectedCategory
                         ? categories.find(
-                          (category) =>
-                            category.name === selectedCategory.name
-                        )?.name
+                            (category) =>
+                              category.name === selectedCategory.name
+                          )?.name
                         : "Select Category..."}
                     </p>
                   </div>
@@ -401,11 +401,12 @@ export default function TaskDetails() {
                       {filteredUnits.map((unit: TaskUnit) => {
                         return (
                           <Card
-                            className={`w-full cursor-pointer px-3 py-2 mb-2 ${selectedUnit != null &&
+                            className={`w-full cursor-pointer px-3 py-2 mb-2 ${
+                              selectedUnit != null &&
                               selectedUnit.name == unit.name
-                              ? "border-green-600 "
-                              : ""
-                              }`}
+                                ? "border-green-600 "
+                                : ""
+                            }`}
                             key={unit.name}
                             onClick={() => {
                               setSelectedUnit(unit);
@@ -416,11 +417,12 @@ export default function TaskDetails() {
                                 {unit.name} ( {unit.symbol} )
                               </p>
                               <MdCheckCircle
-                                className={`px-2 text-[42px] ${selectedUnit != null &&
+                                className={`px-2 text-[42px] ${
+                                  selectedUnit != null &&
                                   selectedUnit.name == unit.name
-                                  ? "text-green-600 "
-                                  : "text-slate-300"
-                                  }`}
+                                    ? "text-green-600 "
+                                    : "text-slate-300"
+                                }`}
                               />
                             </div>
                           </Card>
@@ -692,8 +694,9 @@ export default function TaskDetails() {
           {!descEdit && (
             <p
               onClick={() => setDescEdit(true)}
-              className={`w-[70%] text-sm mb-6 ml-2 ${desc.length > 0 ? "text-slate-800" : "text-neutral-400"
-                }`}
+              className={`w-[70%] text-sm mb-6 ml-2 ${
+                desc.length > 0 ? "text-slate-800" : "text-neutral-400"
+              }`}
             >
               {desc.length > 0 ? desc : "Add Description here"}
             </p>
@@ -722,15 +725,17 @@ export default function TaskDetails() {
                   <div className="flex items-center justify-between mb-6 w-max border-2 rounded-sm border-green-600">
                     <p
                       onClick={() => setImage(true)}
-                      className={`px-4 py-2 cursor-pointer ${image ? "bg-green-600 text-white" : "text-black"
-                        } `}
+                      className={`px-4 py-2 cursor-pointer ${
+                        image ? "bg-green-600 text-white" : "text-black"
+                      } `}
                     >
                       Images
                     </p>
                     <p
                       onClick={() => setImage(false)}
-                      className={`px-4 py-2 cursor-pointer ${!image ? "bg-green-600 text-white" : "text-black"
-                        } `}
+                      className={`px-4 py-2 cursor-pointer ${
+                        !image ? "bg-green-600 text-white" : "text-black"
+                      } `}
                     >
                       Documents
                     </p>
@@ -819,10 +824,11 @@ export default function TaskDetails() {
                               <strong>{file.name}</strong>
                               <div className="h-[6px] w-full bg-gray-300 rounded mt-1">
                                 <div
-                                  className={`h-full mt-2 rounded ${file.progress === 100
-                                    ? "bg-green-600"
-                                    : "bg-[#143F8C]"
-                                    }`}
+                                  className={`h-full mt-2 rounded ${
+                                    file.progress === 100
+                                      ? "bg-green-600"
+                                      : "bg-[#143F8C]"
+                                  }`}
                                   style={{ width: `${file.progress}%` }}
                                 />
                               </div>
@@ -918,15 +924,17 @@ export default function TaskDetails() {
                     <div className="flex items-center justify-between mb-6 w-max border-2 rounded-sm border-green-600">
                       <p
                         onClick={() => setImage(true)}
-                        className={`px-4 py-2 cursor-pointer ${image ? "bg-green-600 text-white" : "text-black"
-                          } `}
+                        className={`px-4 py-2 cursor-pointer ${
+                          image ? "bg-green-600 text-white" : "text-black"
+                        } `}
                       >
                         Images
                       </p>
                       <p
                         onClick={() => setImage(false)}
-                        className={`px-4 py-2 cursor-pointer ${!image ? "bg-green-600 text-white" : "text-black"
-                          } `}
+                        className={`px-4 py-2 cursor-pointer ${
+                          !image ? "bg-green-600 text-white" : "text-black"
+                        } `}
                       >
                         Documents
                       </p>
@@ -970,10 +978,11 @@ export default function TaskDetails() {
                                         <strong>{file.name}</strong>
                                         <div className="h-[6px] w-full bg-gray-300 rounded mt-1">
                                           <div
-                                            className={`h-full mt-2 rounded ${file.progress === 100
-                                              ? "bg-green-600"
-                                              : "bg-[#143F8C]"
-                                              }`}
+                                            className={`h-full mt-2 rounded ${
+                                              file.progress === 100
+                                                ? "bg-green-600"
+                                                : "bg-[#143F8C]"
+                                            }`}
                                             style={{
                                               width: `${file.progress}%`,
                                             }}
@@ -1004,8 +1013,9 @@ export default function TaskDetails() {
                     </div>
 
                     <div
-                      className={`grid gap-4 overflow-x-auto ${image ? "grid-cols-5" : "grid-cols-4"
-                        }`}
+                      className={`grid gap-4 overflow-x-auto ${
+                        image ? "grid-cols-5" : "grid-cols-4"
+                      }`}
                     >
                       {image && (
                         <Dialog>
@@ -1265,15 +1275,17 @@ export default function TaskDetails() {
                 <div className="flex items-center justify-between w-max border-2 rounded-sm border-green-600">
                   <p
                     onClick={() => setNoProgress(false)}
-                    className={`px-4 py-2 cursor-pointer ${!noProgress ? "bg-green-600 text-white" : "text-black"
-                      } `}
+                    className={`px-4 py-2 cursor-pointer ${
+                      !noProgress ? "bg-green-600 text-white" : "text-black"
+                    } `}
                   >
                     Update Progress
                   </p>
                   <p
                     onClick={() => setNoProgress(true)}
-                    className={`px-4 py-2 cursor-pointer ${noProgress ? "bg-green-600 text-white" : "text-black"
-                      } `}
+                    className={`px-4 py-2 cursor-pointer ${
+                      noProgress ? "bg-green-600 text-white" : "text-black"
+                    } `}
                   >
                     No Progress Today
                   </p>
@@ -1309,7 +1321,7 @@ export default function TaskDetails() {
                             type="number"
                             max={taskDetail?.estimated_work}
                             min={0}
-                            onChange={(e) => { }}
+                            onChange={(e) => {}}
                             className="text-sm  w-[60%] border-none outline-none"
                           />
                           <p className="text-sm ml-4 self-end">
