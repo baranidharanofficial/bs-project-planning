@@ -55,13 +55,13 @@ export default function TasksPage() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/${gcompanyId}/projects">Home</Link>
+                <Link href={`/${gcompanyId}/projects`}>Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/${gcompanyId}/projects">Projects</Link>
+                <Link href={`/${gcompanyId}/projects`}>Projects</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/state/store";
+import { gcompanyId } from "@/utils/utils";
 
 type Props = {
   params: { locale: string };
@@ -31,7 +32,7 @@ export default function IndexPage({ params: { locale } }: Props) {
 
     if (apiKey && apiSecret) {
       // Redirect to the dashboard if they exist
-      router.push("/${gcompanyId}/projects");
+      router.push(`/${gcompanyId}/projects`);
     }
   }, [router]);
 

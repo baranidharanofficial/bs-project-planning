@@ -99,6 +99,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import TaskImage from "@/components/custom/task-image";
+import { gcompanyId } from "@/utils/utils";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -262,19 +263,19 @@ export default function TaskDetails() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/${gcompanyId}/projects">Home</Link>
+                <Link href={`/${gcompanyId}/projects`}>Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/${gcompanyId}/projects">Projects</Link>
+                <Link href={`/${gcompanyId}/projects`}>Projects</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/${gcompanyId}/projects/tasks">Tasks</Link>
+                <Link href={`/${gcompanyId}/projects/tasks`}>Tasks</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -285,7 +286,7 @@ export default function TaskDetails() {
         </Breadcrumb>
 
         <div className="flex items-center justify-start text-xl font-semibold mb-4">
-          <Link href="/${gcompanyId}/projects/tasks">
+          <Link href={`/${gcompanyId}/projects/tasks`}>
             <MdArrowBackIos className="mr-2" />
           </Link>
           <p className="mr-2">{task?.title}</p>

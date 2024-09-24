@@ -10,6 +10,7 @@ import Navigation from "@/components/custom/navigation";
 import { Provider } from "react-redux";
 import { store } from "@/state/store";
 import { Toaster } from "@/components/ui/toaster";
+import { gcompanyId } from "@/utils/utils";
 
 type Props = {
   children: ReactNode;
@@ -47,7 +48,7 @@ export default function DashboardLayout({ children }: Props) {
               alt={""}
             />
           ) : (
-            <Link href={"/${gcompanyId}/projects"}>
+            <Link href={`/${gcompanyId}/projects`}>
               <Image
                 priority={true}
                 className="w-[80%] ml-[10%] scale-60 rounded-md mb-8"
@@ -63,7 +64,7 @@ export default function DashboardLayout({ children }: Props) {
           )}
           <Link
             onClick={() => setNavItem("dashboard")}
-            href="/${gcompanyId}/projects"
+            href={`/${gcompanyId}/projects`}
           >
             <div className="flex flex-col items-center justify-center mb-4">
               <div
@@ -95,7 +96,7 @@ export default function DashboardLayout({ children }: Props) {
           </Link>
           <Link
             onClick={() => setNavItem("book")}
-            href="/${gcompanyId}/projects/book"
+            href={`/${gcompanyId}/projects/book`}
           >
             <div className="flex flex-col items-center justify-center mb-4">
               <div
@@ -124,7 +125,7 @@ export default function DashboardLayout({ children }: Props) {
 
           <Link
             onClick={() => setNavItem("teams")}
-            href="/${gcompanyId}/projects/teams"
+            href={`/${gcompanyId}/projects/teams`}
           >
             <div className="flex flex-col items-center justify-center mb-4">
               <div
