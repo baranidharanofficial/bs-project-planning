@@ -10,8 +10,8 @@ export const pathnames: Pathnames<typeof locales> = {
         de: '/pfadnamen'
     },
     '/projects': {
-        en: '/projects',
-        de: '/projects-de'
+        en: '/id/projects',
+        de: '/id/projects-de'
     }
 };
 

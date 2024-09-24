@@ -54,13 +54,13 @@ export default function TasksPage() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/projects">Home</Link>
+                <Link href="/buildsuite/projects">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link href="/projects">Projects</Link>
+                <Link href="/buildsuite/projects">Projects</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -117,16 +117,15 @@ export default function TasksPage() {
             dispatch(setTaskDetails(task.task_id));
             dispatch(setTaskFiles(task.task_id));
             dispatch(getCategories());
-            router.replace(`/projects/tasks/task-detail`);
+            router.replace(`/buildsuite/projects/tasks/task-detail`);
           }}
           tasks={tasks}
           categories={categories}
         />
 
         <div
-          className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
-            showAddTask ? "block" : "hidden"
-          }`}
+          className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${showAddTask ? "block" : "hidden"
+            }`}
         >
           <div className="flex items-center justify-between mb-8">
             <h1 className="font-semibold">Add New Task</h1>
@@ -144,7 +143,7 @@ export default function TasksPage() {
                 id="task-name"
                 className="mb-6 w-full"
                 placeholder="Task name"
-                onChange={(e) => {}}
+                onChange={(e) => { }}
               />
             </div>
 
@@ -155,7 +154,7 @@ export default function TasksPage() {
                 id="category"
                 className="mb-8 w-full"
                 placeholder="Select Category"
-                onChange={(e) => {}}
+                onChange={(e) => { }}
               />
             </div>
 

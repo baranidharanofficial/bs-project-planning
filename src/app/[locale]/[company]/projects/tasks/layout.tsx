@@ -28,7 +28,7 @@ export default function TaskLayout({ children }: Props) {
     <main className="relative w-full h-[90vh] flex items-center justify-between box-border">
       <div className="!w-[15%] h-full bg-white dark:bg-slate-900 p-4 rounded-sm">
         <Link
-          href={"/projects"}
+          href={"/buildsuite/projects"}
           className="w-[100%] flex items-center justify-start cursor-pointer mb-6"
         >
           <MdArrowBackIos />
@@ -49,24 +49,22 @@ export default function TaskLayout({ children }: Props) {
 
         <Link
           onClick={() => setNavItem("dashboard")}
-          href="/projects/tasks/project-dashboard"
+          href="/buildsuite/projects/tasks/project-dashboard"
         >
           <div
-            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
-              navItem == "dashboard"
-                ? "bg-[#37AD4A]  text-white"
-                : "text-slate-950"
-            }`}
+            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == "dashboard"
+              ? "bg-[#37AD4A]  text-white"
+              : "text-slate-950"
+              }`}
           >
             <p className="ml-2">Dashboard</p>
           </div>
         </Link>
 
-        <Link onClick={() => setNavItem("tasks")} href="/projects/tasks">
+        <Link onClick={() => setNavItem("tasks")} href="/buildsuite/projects/tasks">
           <div
-            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
-              navItem == "tasks" ? "bg-[#37AD4A]  text-white" : "text-slate-950"
-            }`}
+            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == "tasks" ? "bg-[#37AD4A]  text-white" : "text-slate-950"
+              }`}
           >
             <p className="ml-2">Tasks</p>
           </div>
@@ -74,24 +72,22 @@ export default function TaskLayout({ children }: Props) {
 
         <Link
           onClick={() => setNavItem("attendance")}
-          href="/projects/tasks/attendance"
+          href="/buildsuite/projects/tasks/attendance"
         >
           <div
-            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
-              navItem == "attendance"
-                ? "bg-[#37AD4A]  text-white"
-                : "text-slate-950"
-            }`}
+            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == "attendance"
+              ? "bg-[#37AD4A]  text-white"
+              : "text-slate-950"
+              }`}
           >
             <p className="ml-2">Attendance</p>
           </div>
         </Link>
 
-        <Link onClick={() => setNavItem("files")} href="/projects/tasks/files">
+        <Link onClick={() => setNavItem("files")} href="/buildsuite/projects/tasks/files">
           <div
-            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${
-              navItem == "files" ? "bg-[#37AD4A]  text-white" : "text-slate-950"
-            }`}
+            className={`text-md px-4 py-2 mb-1 flex items-center  rounded-sm dark:bg-slate-800 text-sm cursor-pointer ${navItem == "files" ? "bg-[#37AD4A]  text-white" : "text-slate-950"
+              }`}
           >
             <p className="ml-2">Files</p>
           </div>

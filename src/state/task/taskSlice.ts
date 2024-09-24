@@ -1,4 +1,5 @@
 import { Assignee, Task, TaskDetails } from "@/components/custom/task-table";
+import { getBaseUrl, logout } from "@/utils/utils";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -131,18 +132,18 @@ const taskSlice = createSlice({
       .addCase(
         updateTask.fulfilled,
         (state, action: PayloadAction<TaskDetails>) => {
-          if(action.payload != null){
+          if (action.payload != null) {
             state.currentTaskDetails = action.payload;
-            
+
           }
 
-          if(state.currentTask != null && action.payload != null) {
+          if (state.currentTask != null && action.payload != null) {
             state.currentTask = {
               ...state.currentTask,
               category: action.payload.category,
               status: action.payload.status,
             };
-            state.tasks = state.tasks.filter((task ) => task.task_id != action.payload.id);
+            state.tasks = state.tasks.filter((task) => task.task_id != action.payload.id);
             state.tasks = [state.currentTask, ...state.tasks]
             console.log("SLICE TEST");
           }
@@ -174,13 +175,13 @@ const taskSlice = createSlice({
         addAttachments.fulfilled,
         (state, action: PayloadAction<TaskDocument[]>) => {
           action.payload.forEach((doc) => {
-            if(!doc.filetype.includes('image')) {
+            if (!doc.filetype.includes('image')) {
               state.documents = [...state.documents, ...action.payload];
-            }else{
+            } else {
               state.photos = [...state.photos, ...action.payload];
             }
           })
-          
+
         }
       );
 
@@ -190,7 +191,7 @@ const taskSlice = createSlice({
       })
       .addCase(
         getAssignees.fulfilled,
-        (state, action: PayloadAction<User[]>) => {  
+        (state, action: PayloadAction<User[]>) => {
           console.log(state.assignees);
           state.assignees = action.payload.filter((element) =>
             !element.roles.includes("Admin") && !element.roles.includes("Manager"),
@@ -198,7 +199,7 @@ const taskSlice = createSlice({
         }
       );
 
-      builder
+    builder
       .addCase(addAssigneeToTask.pending, () => {
         console.log("Adding Assignees");
       })
@@ -206,12 +207,12 @@ const taskSlice = createSlice({
         addAssigneeToTask.fulfilled,
         (state, action: PayloadAction<Assignee[]>) => {
           if (state.currentTaskDetails) {
-           state.currentTaskDetails.assignee = [...state.currentTaskDetails?.assignee, ...action.payload];
+            state.currentTaskDetails.assignee = [...state.currentTaskDetails?.assignee, ...action.payload];
           }
         }
       );
 
-      builder
+    builder
       .addCase(addTask.pending, () => {
         console.log("Creating Task");
       })
@@ -219,8 +220,8 @@ const taskSlice = createSlice({
         addTask.fulfilled,
         (state, action: PayloadAction<Task2>) => {
           console.log(action.payload);
-          if(action.payload){
-            let newTask:Task = {
+          if (action.payload) {
+            let newTask: Task = {
               title: action.payload.name,
               task_id: action.payload.id,
               expected_end_date: null,
@@ -231,7 +232,7 @@ const taskSlice = createSlice({
               progress: 0,
               progress_percentage: 0,
             }
-  
+
             state.tasks = [...state.tasks, newTask];
           }
         }
@@ -251,7 +252,7 @@ export const getTasks = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_tasks_list?project_id=${projectId}`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.get_tasks_list?project_id=${projectId}`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -261,8 +262,11 @@ export const getTasks = createAsyncThunk(
 
       console.log("Get Tasks:", response.data);
       return response.data.tasks;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
       return [];
     }
   }
@@ -280,7 +284,7 @@ export const getCategories = createAsyncThunk(
       }
 
       const response = await axios.get(
-        "https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_task_category_list",
+        `${await getBaseUrl()}/api/method/bs_customisations.api.get_task_category_list`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -290,8 +294,11 @@ export const getCategories = createAsyncThunk(
 
       console.log("Get Categories:", response.data);
       return response.data.category_options;
-    } catch (error) {
-      console.error("Get Categories failed:", error);
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
       return [];
     }
   }
@@ -309,7 +316,7 @@ export const setTaskDetails = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.task_detail_view?task_id=${taskId}`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.task_detail_view?task_id=${taskId}`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -319,8 +326,11 @@ export const setTaskDetails = createAsyncThunk(
 
       console.log("Get Task Detail:", response.data);
       return response.data.task_details;
-    } catch (error) {
-      console.error("Get Task Detail failed:", error);
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
       return [];
     }
   }
@@ -338,7 +348,7 @@ export const setTaskFiles = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_task_attachments?task_id=${taskId}`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.get_task_attachments?task_id=${taskId}`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -348,8 +358,11 @@ export const setTaskFiles = createAsyncThunk(
 
       console.log("Get Task Attachemnts:", response.data);
       return response.data.data;
-    } catch (error) {
-      console.error("Get Task Attachemnts failed:", error);
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
       return [];
     }
   }
@@ -367,7 +380,7 @@ export const updateTask = createAsyncThunk(
       }
 
       const response = await axios.put(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.update_task`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.update_task`,
         taskPayload,
         {
           headers: {
@@ -378,9 +391,12 @@ export const updateTask = createAsyncThunk(
 
       console.log("Task Updated", response.data);
       return response.data.details;
-    } catch (error) {
-      console.error("Task Update failed:", error);
-      return null;
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
+      return [];
     }
   }
 );
@@ -397,7 +413,7 @@ export const removeAssignee = createAsyncThunk(
       }
 
       const response = await axios.post(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.remove_users_from_task`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.remove_users_from_task`,
         assigneePayload,
         {
           headers: {
@@ -413,9 +429,12 @@ export const removeAssignee = createAsyncThunk(
       } else {
         return null;
       }
-    } catch (error) {
-      console.error("Assignee Remove failed:", error);
-      return null;
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
+      return [];
     }
   }
 );
@@ -432,7 +451,7 @@ export const addAttachments = createAsyncThunk(
       }
 
       const response = await axios.post(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.upload_attachment`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.upload_attachment`,
         formData,
         {
           headers: {
@@ -444,9 +463,12 @@ export const addAttachments = createAsyncThunk(
       console.log("Assignee Removed", response.data);
 
       return response.data.filedata;
-    } catch (error) {
-      console.error("Assignee Remove failed:", error);
-      return null;
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
+      return [];
     }
   }
 );
@@ -458,7 +480,7 @@ export const updateTaskProgress = createAsyncThunk(
       const formData = new FormData();
 
       const response = await axios.post(
-        "https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.update_task_progress",
+        `${await getBaseUrl()}/api/method/bs_customisations.api.update_task_progress`,
         formData, // Pass the formData object in the request body
         {
           params: payload,
@@ -471,8 +493,12 @@ export const updateTaskProgress = createAsyncThunk(
       console.log("Task Progress Updated", response.data);
 
       return response.data; // Return the response data
-    } catch (error) {
-      return null;
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
+      return [];
     }
   }
 );
@@ -487,7 +513,7 @@ export const getAssignees = createAsyncThunk("task/getAssignees", async () => {
     }
 
     const response = await axios.get(
-      `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_core_team`,
+      `${await getBaseUrl()}/api/method/bs_customisations.api.get_core_team`,
       {
         headers: {
           Authorization: `token ${apiKey}:${apiSecret}`,
@@ -497,8 +523,11 @@ export const getAssignees = createAsyncThunk("task/getAssignees", async () => {
 
     console.log("Get Users:", response.data);
     return response.data.user_list;
-  } catch (error) {
-    console.error("Get Users failed:", error);
+  } catch (error: any) {
+    console.error("Get Tasks failed:", error);
+    if (error.response.status == 401) {
+      logout();
+    }
     return [];
   }
 });
@@ -515,7 +544,7 @@ export const addAssigneeToTask = createAsyncThunk(
       }
 
       const response = await axios.post(
-        `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.assign_users_to_task`,
+        `${await getBaseUrl()}/api/method/bs_customisations.api.assign_users_to_task`,
         assigneeData,
         {
           headers: {
@@ -535,8 +564,11 @@ export const addAssigneeToTask = createAsyncThunk(
       } else {
         return [];
       }
-    } catch (error) {
-      console.error("Add Assignee failed:", error);
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
       return [];
     }
   }
@@ -544,29 +576,33 @@ export const addAssigneeToTask = createAsyncThunk(
 
 export const addTask = createAsyncThunk(
   'task/addTask',
-  async (taskData : any) => {
+  async (taskData: any) => {
     try {
       const apiKey = localStorage.getItem("api_key");
       const apiSecret = localStorage.getItem("api_secret");
-      const url = `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.create_task`;
+      const url = `${await getBaseUrl()}/api/method/bs_customisations.api.create_task`;
 
-      const response = await axios.post(url,  
-        { "params" : taskData }, 
+      const response = await axios.post(url,
+        { "params": taskData },
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
           },
-      },
+        },
       );
 
       if (response.status == 201) {
-        return response.data.details; 
+        return response.data.details;
       } else {
         return null;
       }
-    
-    } catch (error) {
-      return null; 
+
+    } catch (error: any) {
+      console.error("Get Tasks failed:", error);
+      if (error.response.status == 401) {
+        logout();
+      }
+      return [];
     }
   }
 );

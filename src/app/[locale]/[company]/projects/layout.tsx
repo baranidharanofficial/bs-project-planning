@@ -33,9 +33,8 @@ export default function DashboardLayout({ children }: Props) {
     <Provider store={store}>
       <main className="w-full h-[100vh] overflow-x-hidden bg-neutral-100 dark:bg-slate-800 flex justify-start box-border">
         <div
-          className={`h-[100vh] bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${
-            collapsed ? "w-[5%]" : "w-[300px]"
-          }`}
+          className={`h-[100vh] bg-white p-4 relative transition-all duration-800 dark:bg-slate-900 ${collapsed ? "w-[5%]" : "w-[300px]"
+            }`}
         >
           {!collapsed ? (
             <Image
@@ -47,7 +46,7 @@ export default function DashboardLayout({ children }: Props) {
               alt={""}
             />
           ) : (
-            <Link href={"/projects"}>
+            <Link href={"/buildsuite/projects"}>
               <Image
                 priority={true}
                 className="w-[80%] ml-[10%] scale-60 rounded-md mb-8"
@@ -61,17 +60,15 @@ export default function DashboardLayout({ children }: Props) {
           {!collapsed && (
             <p className="text-sm text-slate-400 mb-2 ml-2">Overview</p>
           )}
-          <Link onClick={() => setNavItem("dashboard")} href="/projects">
+          <Link onClick={() => setNavItem("dashboard")} href="/buildsuite/projects">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
-                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${
-                  navItem == "dashboard" ? "bg-green-50" : "bg-slate-50"
-                }`}
+                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "dashboard" ? "bg-green-50" : "bg-slate-50"
+                  }`}
               >
                 <RiBuilding2Line
-                  className={`text-xl  dark:text-white ${
-                    navItem == "dashboard" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`text-xl  dark:text-white ${navItem == "dashboard" ? "text-green-700" : "text-slate-950"
+                    }`}
                 />
                 {!collapsed && (
                   <p className="ml-2 text-green-700 dark:text-white">
@@ -81,34 +78,30 @@ export default function DashboardLayout({ children }: Props) {
               </div>
               {collapsed && (
                 <p
-                  className={`ml-2 text-sm dark:text-white ${
-                    navItem == "dashboard" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`ml-2 text-sm dark:text-white ${navItem == "dashboard" ? "text-green-700" : "text-slate-950"
+                    }`}
                 >
                   Projects
                 </p>
               )}
             </div>
           </Link>
-          <Link onClick={() => setNavItem("book")} href="/projects/book">
+          <Link onClick={() => setNavItem("book")} href="/buildsuite/projects/book">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
-                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${
-                  navItem == "book" ? "bg-green-50" : "bg-slate-50"
-                }`}
+                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "book" ? "bg-green-50" : "bg-slate-50"
+                  }`}
               >
                 <MdOutlineBook
-                  className={`text-xl  dark:text-white ${
-                    navItem == "book" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`text-xl  dark:text-white ${navItem == "book" ? "text-green-700" : "text-slate-950"
+                    }`}
                 />
                 {!collapsed && <p className="ml-2  dark:text-white">Book</p>}
               </div>
               {collapsed && (
                 <p
-                  className={`ml-2 text-sm dark:text-white ${
-                    navItem == "book" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`ml-2 text-sm dark:text-white ${navItem == "book" ? "text-green-700" : "text-slate-950"
+                    }`}
                 >
                   Book
                 </p>
@@ -116,25 +109,22 @@ export default function DashboardLayout({ children }: Props) {
             </div>
           </Link>
 
-          <Link onClick={() => setNavItem("teams")} href="/projects/teams">
+          <Link onClick={() => setNavItem("teams")} href="/buildsuite/projects/teams">
             <div className="flex flex-col items-center justify-center mb-4">
               <div
-                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${
-                  navItem == "teams" ? "bg-green-50" : "bg-slate-50"
-                }`}
+                className={`text-md px-4 py-2 mb-1 flex items-center bg-green-50 dark:bg-slate-800 text-sm rounded-md cursor-pointer ${navItem == "teams" ? "bg-green-50" : "bg-slate-50"
+                  }`}
               >
                 <MdOutlineGroup
-                  className={`text-xl  dark:text-white ${
-                    navItem == "teams" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`text-xl  dark:text-white ${navItem == "teams" ? "text-green-700" : "text-slate-950"
+                    }`}
                 />
                 {!collapsed && <p className="ml-2  dark:text-white">Team</p>}
               </div>
               {collapsed && (
                 <p
-                  className={`ml-2 text-sm dark:text-white ${
-                    navItem == "teams" ? "text-green-700" : "text-slate-950"
-                  }`}
+                  className={`ml-2 text-sm dark:text-white ${navItem == "teams" ? "text-green-700" : "text-slate-950"
+                    }`}
                 >
                   Team
                 </p>

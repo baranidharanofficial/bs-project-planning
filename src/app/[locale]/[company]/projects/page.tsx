@@ -9,10 +9,9 @@ import { Label } from "@/components/ui/label";
 import { setProject } from "@/state/project/projectSlice";
 import { AppDispatch } from "@/state/store";
 import { getCategories, getTasks } from "@/state/task/taskSlice";
+import { gcompanyId, logout } from "@/utils/utils";
 import axios, { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
-import { unstable_setRequestLocale } from "next-intl/server";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -48,7 +47,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
       dispatch(getTasks(project.id));
       dispatch(getCategories());
 
-      router.replace(`/projects/tasks`);
+      router.replace(`/buildsuite/projects/tasks`);
     },
     [router]
   );
@@ -59,13 +58,14 @@ export default function DashboardPage({ params: { locale } }: Props) {
       const apiKey = localStorage.getItem("api_key");
       const apiSecret = localStorage.getItem("api_secret");
       const sid = localStorage.getItem("sid");
+      const companyId = localStorage.getItem("company_id");
 
       if (!apiKey || !apiSecret) {
         throw new Error("Missing API credentials");
       }
 
       const response = await axios.get(
-        "https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list",
+        `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.api.get_projects_list`,
         {
           headers: {
             Authorization: `token ${apiKey}:${apiSecret}`,
@@ -76,9 +76,9 @@ export default function DashboardPage({ params: { locale } }: Props) {
 
       console.log("Get Projects:", response.data);
       setData(response.data.message.projects);
-      router.push("/projects");
+      router.push(`/${companyId}/projects`);
     } catch (error: any) {
-      console.error("Get Projects failed:", error.response.status);
+      console.log("Get Projects failed:", error.response.status);
       if (error.response.status == 401) {
         logout();
         return;
@@ -88,12 +88,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
     }
   };
 
-  const logout = () => {
-    localStorage.setItem("sid", "");
-    localStorage.setItem("api_key", "");
-    localStorage.setItem("api_secret", "");
-    router.push("/");
-  };
+
 
   return (
     <div className="relative h-[90vh] bg-white dark:bg-slate-900 rounded-sm w-full overflow-y-auto px-8 py-6 ">
@@ -107,9 +102,8 @@ export default function DashboardPage({ params: { locale } }: Props) {
       />
 
       <div
-        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${
-          addProject ? "block" : "hidden"
-        }`}
+        className={`absolute z-40 right-0 top-0 w-[500px] h-full bg-white shadow-lg p-8 transition-all duration-150 ${addProject ? "block" : "hidden"
+          }`}
       >
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-semibold">Add New Project</h1>
@@ -119,7 +113,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
           />
         </div>
 
-        <form className="w-full" onSubmit={() => {}}>
+        <form className="w-full" onSubmit={() => { }}>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="email">Project name</Label>
             <Input
@@ -127,7 +121,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
               id="email"
               className=" mb-6 w-full"
               placeholder="Project name"
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
 
@@ -138,7 +132,7 @@ export default function DashboardPage({ params: { locale } }: Props) {
               id="password"
               className=" mb-8 w-full"
               placeholder="Customer Name"
-              onChange={(e) => {}}
+              onChange={(e) => { }}
             />
           </div>
 

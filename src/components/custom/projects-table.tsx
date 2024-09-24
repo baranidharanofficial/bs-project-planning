@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
-import {  RiBuilding2Line } from "react-icons/ri";
+import { RiBuilding2Line } from "react-icons/ri";
 import { Progress } from "../ui/progress";
 import { formatDate, getDaysLeft } from "./date-format";
 import DataTable from "./table";
@@ -41,25 +41,25 @@ export type Project = {
 }
 
 
-function getColor(status : string) {
-    if(status == "New") {
+function getColor(status: string) {
+    if (status == "New") {
         return "bg-[#BAF8F1]"
     }
 
 
-    if(status == "Delayed") {
+    if (status == "Delayed") {
         return "bg-[#FAA0A0]"
     }
 
-    if(status == "Ongoing") {
+    if (status == "Ongoing") {
         return "bg-[#ADF3C9]"
     }
 
-    if(status == "Completed") {
+    if (status == "Completed") {
         return "bg-[#D0D0D0]"
     }
 
-    
+
 }
 
 const createColumns = (onProjectClick: (project: Project) => void): ColumnDef<Project>[] => [
@@ -106,7 +106,7 @@ const createColumns = (onProjectClick: (project: Project) => void): ColumnDef<Pr
         accessorKey: "percent_complete",
         header: "Progress",
         cell: ({ row }) => (
-            <div  onClick={() => {
+            <div onClick={() => {
                 onProjectClick(row.original);
             }} >
                 <Progress className="h-2 bg-green-100 w-[80%] mb-1" indicatorColor="bg-green-500" value={parseInt(row.getValue("percent_complete"), 10)} />
@@ -116,9 +116,9 @@ const createColumns = (onProjectClick: (project: Project) => void): ColumnDef<Pr
     },
     {
         accessorKey: "expected_end_date",
-        header: () => <div  className="text-left">End Date</div>,
+        header: () => <div className="text-left">End Date</div>,
         cell: ({ row }) => {
-            return <div  onClick={() => {
+            return <div onClick={() => {
                 onProjectClick(row.original);
             }} className="text-left font-medium">
                 <p>{formatDate(row.getValue("expected_end_date"))}</p>
@@ -181,7 +181,7 @@ export function ProjectList({ onProjectClick, onAddProjectClick, projects }: Dat
             return statusFilter ? [...newFilters, { id: "status", value: statusFilter }] : newFilters;
         });
     }, [tab]);
-    
+
     if (loading) return <p>Loading...</p>
     if (error) return <p>{error}</p>
 
@@ -251,7 +251,7 @@ export function ProjectList({ onProjectClick, onAddProjectClick, projects }: Dat
             </div>
 
             <div className="h-[80%]">
-                 <DataTable colLength={columns.length} tableData={table} />   
+                <DataTable colLength={columns.length} tableData={table} />
             </div>
         </Tabs>
     )
