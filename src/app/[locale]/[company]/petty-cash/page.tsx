@@ -35,8 +35,8 @@ export default function IndexPage({ params: { locale } }: Props) {
           { user_id },
           {
             headers: {
-              "Content-Type": "application/json",
               Cookie: `sid=${sid}`,
+              "Content-Type": "application/json",
             },
           }
         );
