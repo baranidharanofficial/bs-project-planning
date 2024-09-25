@@ -16,7 +16,6 @@ type Props = {
 };
 
 export default function IndexPage({ params: { locale } }: Props) {
-  const [companyId, setCompanyId] = useState("");
   const [empId, setEmpId] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,13 +23,14 @@ export default function IndexPage({ params: { locale } }: Props) {
   const searchParams = useSearchParams();
   const api_key = searchParams.get("api-key");
   const api_secret = searchParams.get("api-secret");
+  const companyId = searchParams.get("company-id");
 
   useEffect(() => {
     const login = async () => {
       setLoading(true);
       try {
         const response = await axios.post(
-          `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.auth.user_login`,
+          `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.auth.get_user_details`,
           { api_key, api_secret }
         );
 
@@ -39,7 +39,7 @@ export default function IndexPage({ params: { locale } }: Props) {
         localStorage.setItem("sid", user.sid);
         localStorage.setItem("api_key", user.api_key);
         localStorage.setItem("api_secret", user.api_secret);
-        localStorage.setItem("company_id", companyId);
+
         setEmpId(user.employee_id);
         setLoggedIn(true);
       } catch (error) {
