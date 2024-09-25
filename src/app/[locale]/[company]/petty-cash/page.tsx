@@ -1,16 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/state/store";
-import { gcompanyId } from "@/utils/utils";
-import { headers } from "next/headers";
 
 type Props = {
   params: { locale: string };
@@ -26,8 +18,8 @@ export default function IndexPage({ params: { locale } }: Props) {
   const sid = searchParams.get("sid");
   const companyId = searchParams.get("company-id");
 
-  const apiKey = searchParams.get("api-key");
-  const apiSecret = searchParams.get("api-secret");
+  // const apiKey = searchParams.get("api-key");
+  // const apiSecret = searchParams.get("api-secret");
 
   useEffect(() => {
     const login = async () => {
@@ -36,13 +28,7 @@ export default function IndexPage({ params: { locale } }: Props) {
         console.log("sid=" + sid);
         const response = await axios.post(
           `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.auth.get_user_details`,
-          { user_id },
-          {
-            headers: {
-              Authorization: `token ${apiKey}:${apiSecret}`,
-              "Content-Type": "application/json",
-            },
-          }
+          { user_id, sid }
         );
 
         const user = response.data.message.user;
