@@ -10,6 +10,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/state/store";
 import { gcompanyId } from "@/utils/utils";
+import { headers } from "next/headers";
 
 type Props = {
   params: { locale: string };
@@ -22,6 +23,7 @@ export default function IndexPage({ params: { locale } }: Props) {
   const [loggedIn, setLoggedIn] = useState(false);
   const searchParams = useSearchParams();
   const user_id = searchParams.get("user-id");
+  const sid = searchParams.get("sid");
   const companyId = searchParams.get("company-id");
 
   useEffect(() => {
@@ -30,7 +32,12 @@ export default function IndexPage({ params: { locale } }: Props) {
       try {
         const response = await axios.post(
           `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.auth.get_user_details`,
-          { user_id }
+          { user_id },
+          {
+            headers: {
+              Cookie: `sid=${sid}`,
+            },
+          }
         );
 
         const user = response.data.message.user;
