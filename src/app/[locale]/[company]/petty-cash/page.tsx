@@ -26,16 +26,20 @@ export default function IndexPage({ params: { locale } }: Props) {
   const sid = searchParams.get("sid");
   const companyId = searchParams.get("company-id");
 
+  const apiKey = searchParams.get("api-key");
+  const apiSecret = searchParams.get("api-secret");
+
   useEffect(() => {
     const login = async () => {
       setLoading(true);
       try {
+        console.log("sid=" + sid);
         const response = await axios.post(
           `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.auth.get_user_details`,
           { user_id },
           {
             headers: {
-              Cookie: `sid=${sid}`,
+              Authorization: `token ${apiKey}:${apiSecret}`,
               "Content-Type": "application/json",
             },
           }
