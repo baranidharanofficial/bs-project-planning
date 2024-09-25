@@ -17,12 +17,13 @@ type Props = {
 
 export default function IndexPage({ params: { locale } }: Props) {
   const [companyId, setCompanyId] = useState("");
+  const [empId, setEmpId] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [loggedIn, setLoggedIn] = useState(false);
   const searchParams = useSearchParams();
-  const usr = searchParams.get("user");
-  const pwd = searchParams.get("password");
+  const api_key = searchParams.get("api-key");
+  const api_secret = searchParams.get("api-secret");
 
   useEffect(() => {
     const login = async () => {
@@ -30,16 +31,16 @@ export default function IndexPage({ params: { locale } }: Props) {
       try {
         const response = await axios.post(
           `https://buildsuite-dev.app.buildsuite.io/api/method/bs_customisations.auth.user_login`,
-          { usr, pwd }
+          { api_key, api_secret }
         );
-        const message = response.data.message;
 
+        const user = response.data.message.user;
         // Store necessary data in localStorage
-        localStorage.setItem("sid", message.sid);
-        localStorage.setItem("api_key", message.api_key);
-        localStorage.setItem("api_secret", message.api_secret);
+        localStorage.setItem("sid", user.sid);
+        localStorage.setItem("api_key", user.api_key);
+        localStorage.setItem("api_secret", user.api_secret);
         localStorage.setItem("company_id", companyId);
-
+        setEmpId(user.employee_id);
         setLoggedIn(true);
       } catch (error) {
         console.error("Login failed:", error);
@@ -62,9 +63,9 @@ export default function IndexPage({ params: { locale } }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-[100vh] bg-white dark:bg-slate-950">
-      {loggedIn ? (
+      {loggedIn && empId.length > 0 ? (
         <p className="w-full text-[12px] text-green-500 dark:text-white text-center mt-2">
-          {usr}
+          {empId}
         </p>
       ) : (
         <div>Not a valid user</div>
