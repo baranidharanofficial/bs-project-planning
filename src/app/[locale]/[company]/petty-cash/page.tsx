@@ -21,8 +21,7 @@ export default function IndexPage({ params: { locale } }: Props) {
 
   const [loggedIn, setLoggedIn] = useState(false);
   const searchParams = useSearchParams();
-  const api_key = searchParams.get("api-key");
-  const api_secret = searchParams.get("api-secret");
+  const user_id = searchParams.get("user-id");
   const companyId = searchParams.get("company-id");
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function IndexPage({ params: { locale } }: Props) {
       try {
         const response = await axios.post(
           `https://${companyId}.app.buildsuite.io/api/method/bs_customisations.auth.get_user_details`,
-          { api_key, api_secret }
+          { user_id }
         );
 
         const user = response.data.message.user;
@@ -43,8 +42,8 @@ export default function IndexPage({ params: { locale } }: Props) {
         setEmpId(user.employee_id);
         setLoggedIn(true);
       } catch (error) {
-        console.error("Login failed:", error);
-        alert("Login failed");
+        console.error("Auth failed:", error);
+        alert("Auth failed");
       } finally {
         setLoading(false);
       }
