@@ -79,10 +79,10 @@ export default function DashboardPage({ params: { locale } }: Props) {
       router.push(`/${companyId}/projects`);
     } catch (error: any) {
       console.log("Get Projects failed:", error.response.status);
-      // if (error.response.status == 401) {
-      //   logout();
-      //   return;
-      // }
+      if (error.response.status == 401) {
+        logout();
+        return;
+      }
     } finally {
       setLoading(false);
     }
